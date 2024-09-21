@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Identity.PasswordHasher" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.8" />
+  </ItemGroup>
+
 </Project>

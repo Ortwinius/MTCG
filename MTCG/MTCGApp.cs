@@ -5,6 +5,7 @@ using System;
 using MTCG.Card;
 using MTCG.Card.Monster;
 using MTCG.Card.Spell;
+using MTCG.Services;
 using MTCG.Users;
 
 namespace MTCG
@@ -19,19 +20,16 @@ namespace MTCG
             List<ICard> exPackage = new List<ICard>();
             exPackage.Add(monster);
             exPackage.Add(waterWave);
-/*            foreach (var card in exPackage) 
-            {
-                Console.WriteLine($"{card.Name} of type {card.Type}: {card.Damage} Damage");
-            }*/
 
-
-            User userA = new User("Ortwinius", "safepassword123");
+            User userA = new User();
+            AuthService.Register(userA, "Ortwinius", "safepassword123");
+            Console.WriteLine($"Hashed password of {userA.Username}: {userA.HashedPassword}");
             foreach(var card in exPackage) 
             {
                 userA.AddCardToStack(card);
             }
             userA.PrintStackInfo();
-
+            AuthService.Logout(userA);
         }
     }
 }
