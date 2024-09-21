@@ -1,10 +1,11 @@
 ﻿/*
 Monster Trading Card Game - Main file
 */
-using MTCG.Card;
-using MTCG.Card.MonsterCard;
-using MTCG.Card.SpellCard;
 using System;
+using MTCG.Card;
+using MTCG.Card.Monster;
+using MTCG.Card.Spell;
+using MTCG.Users;
 
 namespace MTCG
 {
@@ -15,13 +16,22 @@ namespace MTCG
             MonsterCard monster = new MonsterCard("Terminator", Card.ElementType.Fire, 20);
             SpellCard waterWave = new SpellCard("Waterwave", Card.ElementType.Water, 15);
 
-            List<ICard> cards = new List<ICard>();
-            cards.Add(monster);
-            cards.Add(waterWave);
-            foreach (var card in cards) 
+            List<ICard> exPackage = new List<ICard>();
+            exPackage.Add(monster);
+            exPackage.Add(waterWave);
+/*            foreach (var card in exPackage) 
             {
                 Console.WriteLine($"{card.Name} of type {card.Type}: {card.Damage} Damage");
+            }*/
+
+
+            User userA = new User("Ortwinius", "safepassword123");
+            foreach(var card in exPackage) 
+            {
+                userA.AddCardToStack(card);
             }
+            userA.PrintStackInfo();
+
         }
     }
 }
