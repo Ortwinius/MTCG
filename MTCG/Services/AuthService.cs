@@ -14,9 +14,8 @@ namespace MTCG.Services
 
         // Registers the user and generates an authToken if successful
         // TODO: SAVE USER IN DATABASE
-        public static string Register(User user, string inputUsername, string inputPassword)
+        public static void Register(User user, string inputUsername, string inputPassword)
         {
-            Console.WriteLine($"Registering... Welcome {user.Username}");
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -24,20 +23,30 @@ namespace MTCG.Services
 
             // Hash the password and save it in user
             var hashedPassword = passwordHasher.HashPassword(user, inputPassword);
+
+            if (string.IsNullOrEmpty(hashedPassword))
+            {
+                throw new Exception("Password hashing could not be executed");
+            }
+
             user.HashedPassword = hashedPassword;
             user.Username = inputUsername;
 
             // Generate authToken 
             string authToken = Guid.NewGuid().ToString();
 
+            if (string.IsNullOrEmpty(authToken))
+            {
+                throw new Exception("AuthToken-generation was not successful");
+            }
+            user.AuthToken = authToken;
             // Save the user with hashedPassword and token in the database 
             // TODO: SaveUserToDatabase(user);
-
-            return authToken;
+            Console.WriteLine($"Registration successful");
         }
         public static void Login(User user, string inputUsername, string inputPassword)
         {
-            //if username || password arent correct or username cant be found in database -> error
+            // If username || password arent correct or username cant be found in database -> error
 
             if (user == null)
             {

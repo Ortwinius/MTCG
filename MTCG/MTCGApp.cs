@@ -14,21 +14,29 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            MonsterCard monster = new MonsterCard("Terminator", Card.ElementType.Fire, 20);
-            SpellCard waterWave = new SpellCard("Waterwave", Card.ElementType.Water, 15);
+            MonsterCard Alchiax = new MonsterCard("FireElve", Card.ElementType.Fire, 20);
+            MonsterCard Krakos = new MonsterCard("Kraken", Card.ElementType.Water, 25);
+            SpellCard Sech = new SpellCard("Waterwave", Card.ElementType.Water, 15);
 
             List<ICard> exPackage = new List<ICard>();
-            exPackage.Add(monster);
-            exPackage.Add(waterWave);
+            exPackage.Add(Alchiax);
+            exPackage.Add(Krakos);
+            exPackage.Add(Sech);
 
             User userA = new User();
+            User userB = new User();
+            // POST Register Http Request with username and password
             AuthService.Register(userA, "Ortwinius", "safepassword123");
+            // POST Login Http Request with username and password
+            AuthService.Login(userA, "Ortwinius", "safepassword123");
+            // Debug info:
             Console.WriteLine($"Hashed password of {userA.Username}: {userA.HashedPassword}");
+            Console.WriteLine($"AuthToken of {userA.Username}: {userA.AuthToken}");
             foreach(var card in exPackage) 
             {
                 userA.AddCardToStack(card);
             }
-            userA.PrintStackInfo();
+            userA.ShowStackInfo();
             AuthService.Logout(userA);
         }
     }
