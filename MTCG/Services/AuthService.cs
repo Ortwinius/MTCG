@@ -1,82 +1,92 @@
-﻿using MTCG.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using Microsoft.AspNetCore.Identity;
+using MTCG.Models.Users;
+using MTCG.Repositories;
 
 namespace MTCG.Services
 {
-    public static class AuthService
+    public class AuthService
     {
-        private static PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
+        private readonly UserRepository _userRepository;
+        private readonly PasswordHasher<User> _passwordHasher;
 
-        // Registers the user and generates an authToken if successful
-        // TODO: SAVE USER IN DATABASE
-        public static void Register(User user, string inputUsername, string inputPassword)
+        // Dependency Injection über Konstruktor
+        public AuthService(UserRepository userRepository)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            // Hash the password and save it in user
-            var hashedPassword = passwordHasher.HashPassword(user, inputPassword);
-
-            if (string.IsNullOrEmpty(hashedPassword))
-            {
-                throw new Exception("Password hashing could not be executed");
-            }
-
-            user.HashedPassword = hashedPassword;
-            user.Username = inputUsername;
-
-            // Generate authToken 
-            string authToken = Guid.NewGuid().ToString();
-
-            if (string.IsNullOrEmpty(authToken))
-            {
-                throw new Exception("AuthToken-generation was not successful");
-            }
-            user.AuthToken = authToken;
-            // Save the user with hashedPassword and token in the database 
-            // TODO: SaveUserToDatabase(user);
-            Console.WriteLine($"Registration successful");
-        }
-        public static void Login(User user, string inputUsername, string inputPassword)
-        {
-            // If username || password arent correct or username cant be found in database -> error
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            // Verify the password against the stored hash
-            var verificationResult = passwordHasher.VerifyHashedPassword(user, user.HashedPassword, inputPassword);
-
-            if (verificationResult != PasswordVerificationResult.Success || inputUsername != user.Username)
-            {
-                throw new UnauthorizedAccessException("Invalid login credentials.");
-            }
-
-            // Set user as logged in 
-            user.IsLoggedIn = true;
-
-            Console.WriteLine($"Logging in... Welcome {user.Username}!");
+            // may not be null :
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _passwordHasher = new PasswordHasher<User>();
         }
 
-        public static void Logout(User user)
+        #region Register
+
+        // Register Http "POST /users"
+        public string Register(string inputUsername, string inputPassword)
         {
-            if (user == null)
+            // check if user already exists
+            if (_userRepository.UserExists(inputUsername))
             {
-                throw new ArgumentNullException(nameof(user));
+                throw new Exception("Username already exists.");
             }
 
-            Console.WriteLine($"Logging out {user.Username}...");
+            // Object initializer constructor => calls base constructor
+            var user = new User
+            {
+                Username = inputUsername,
+                HashedPassword = _passwordHasher.HashPassword(null, inputPassword),  
+                AuthToken = Guid.NewGuid().ToString() 
+            };
+
+            // save user in database
+            _userRepository.AddUser(user);
+
+            return user.AuthToken;
+        }
+        #endregion
+
+        #region Login
+
+        // Login Http "POST /sessions"
+        public string Login(string inputUsername, string inputPassword)
+        {
+            var user = _userRepository.GetUserByUsername(inputUsername);
+
+            // user not found:
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Invalid username.");
+            }
+
+            // verify password
+            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, inputPassword);
+
+            if (verificationResult != PasswordVerificationResult.Success)
+            {
+                throw new UnauthorizedAccessException("Invalid password.");
+            }
+        
+            user.AuthToken = Guid.NewGuid().ToString(); // update token
+            _userRepository.UpdateUser(user); // update user in DB
+
+            return user.AuthToken; 
+        }
+        #endregion
+
+        #region Logout
+
+        // Benutzer abmelden
+        public void Logout(string inputUsername)
+        {
+            var user = _userRepository.GetUserByUsername(inputUsername);
+
+            if (user == null || !user.IsLoggedIn)
+            {
+                throw new InvalidOperationException("User not logged in.");
+            }
+
             user.IsLoggedIn = false;
+            _userRepository.UpdateUser(user);
         }
+        #endregion
     }
 }
-

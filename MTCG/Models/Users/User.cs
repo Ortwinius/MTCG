@@ -57,63 +57,79 @@ namespace MTCG.Users
             return true;
         }
         #region Stack
-        public void AddCardToStack(ICard card)
+        public bool AddCardToStack(ICard card)
         {
-            if (!validateAction()) return;
+            if (!validateAction()) return false;
 
             if (card == null)
             {
-                throw new ArgumentNullException(nameof(card), "Card to be added cannot be null");
+                /*throw new ArgumentNullException(nameof(card), "Card to be added cannot be null");*/
+                return false;
             }
             Stack.Add(card);
+            return true;
         }
-        public void RemoveCardFromStack(ICard card)
+        public bool RemoveCardFromStack(Guid cardId)
         {
-            if (!validateAction()) return;
+            if (!validateAction()) return false;
+            // search for card in Stack
+            var cardToRemove = Stack.Find(card => card.Id == cardId);
 
-            if (Stack.Count <= 0)
+            if (Stack.Count <= 0 || cardToRemove == null)
             {
-                throw new InvalidOperationException("User stack is empty");
-            }
-            if (card == null)
-            {
-                throw new ArgumentNullException("Card to be removed was null");
-            }
-            if (!Stack.Contains(card))
-            {
-                throw new InvalidOperationException("Can't be deleted because user does not possess the card to be removed");
+                return false;
             }
 
-            Stack.Remove(card);
+            Stack.Remove(cardToRemove);
+            return true; 
+            
         }
 
         #endregion
-        public void AddCardToDeck(ICard card)
+        // Configure deck via four provided cards (array of strings)
+        // Failed request doesnt change previously defined stack
+        // uuid1, uuid2, uuid3, uuid4
+        public bool ConfigureDeck(string[] cardIds)
         {
-            if (!validateAction()) return;
+            if (!validateAction()) return false; // 401 Unauthorized
 
-            if(card == null)
+            if(Stack.Count < 1) 
             {
-                throw new ArgumentNullException(nameof(card), "Card to be added cannot be null");
+                return false;
             }
-            if(!Stack.Contains(card))
-            {
-                throw new InvalidOperationException("Can't be added to deck because user doesn't possess this card in his stack");
-            }
-            if(Deck.Count >= 4)
+            if(cardIds.Length != 4) // 400 Bad Request
             {
                 Console.WriteLine("Can't add card to deck because the deck is already full (4/4). Consider replacing another card");
-                ShowDeckInfo();
+                ShowDeck();
+                return false;
             }
-            Deck.Add(card);
+
+            // if min 1 card is not in UserStack -> 403 Forbidden
+            // TODO
+
+            // 200 "OK"
+
+            // set new deck 
+            // foreach(var id in cardIds)
+            // {
+            // Deck.Add(GetCardById(cardIds[i]));
+            // }
+
+            return true; 
         }
 
         #region Info
-        public void ShowStackInfo()
+
+        // TODO Get User Info : Name, (opt) description : Http "GET users/{username}
+        // 1. 200 OK
+        // 2. 401 Unauthorized (only user or admin can do that)
+        // 3. 404 Not found
+
+        public void ShowStack() //Htpp "GET /cards"
         {
             if (!validateAction()) return;
 
-            Console.WriteLine($"Stack of User: {Username}:\n");
+            Console.WriteLine($"\nStack of User: {Username}:");
 
             if (Stack.Count < 1)
             {
@@ -127,11 +143,11 @@ namespace MTCG.Users
                 i++;
             }
         }        
-        public void ShowDeckInfo()
+        public void ShowDeck() //Htpp "GET /deck"
         {
             if (!validateAction()) return;
 
-            Console.WriteLine($"Battledeck of User: {Username}:\n");
+            Console.WriteLine($"\nBattledeck of User: {Username}:");
 
             if (Deck.Count < 1)
             {
@@ -145,6 +161,7 @@ namespace MTCG.Users
                 i++;
             }
         }
+
         #endregion
     }
 }
