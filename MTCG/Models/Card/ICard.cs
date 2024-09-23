@@ -1,5 +1,5 @@
 ﻿// interface class for cards
-namespace MTCG.Card
+namespace MTCG.Models.Card
 {
     public enum ElementType
     {

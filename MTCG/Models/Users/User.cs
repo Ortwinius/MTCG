@@ -1,9 +1,9 @@
-﻿using MTCG.Card;
+﻿using MTCG.Models.Card;
 using MTCG.Services;
 using System;
 using System.Net.WebSockets;
 
-namespace MTCG.Users
+namespace MTCG.Models.Users
 {
     public class User
     {
@@ -26,7 +26,7 @@ namespace MTCG.Users
         public List<ICard> Stack { get; }
         public List<ICard> Deck { get; }
         // base constructor
-        public User() 
+        public User()
         {
             Username = "";
             HashedPassword = "";
@@ -81,8 +81,8 @@ namespace MTCG.Users
             }
 
             Stack.Remove(cardToRemove);
-            return true; 
-            
+            return true;
+
         }
 
         #endregion
@@ -93,11 +93,11 @@ namespace MTCG.Users
         {
             if (!validateAction()) return false; // 401 Unauthorized
 
-            if(Stack.Count < 1) 
+            if (Stack.Count < 1)
             {
                 return false;
             }
-            if(cardIds.Length != 4) // 400 Bad Request
+            if (cardIds.Length != 4) // 400 Bad Request
             {
                 Console.WriteLine("Can't add card to deck because the deck is already full (4/4). Consider replacing another card");
                 ShowDeck();
@@ -115,7 +115,7 @@ namespace MTCG.Users
             // Deck.Add(GetCardById(cardIds[i]));
             // }
 
-            return true; 
+            return true;
         }
 
         #region Info
@@ -137,12 +137,12 @@ namespace MTCG.Users
                 return;
             }
             int i = 1;
-            foreach(var card in Stack)
+            foreach (var card in Stack)
             {
                 Console.WriteLine($"{i}. -> \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
                 i++;
             }
-        }        
+        }
         public void ShowDeck() //Htpp "GET /deck"
         {
             if (!validateAction()) return;
@@ -155,7 +155,7 @@ namespace MTCG.Users
                 return;
             }
             int i = 1;
-            foreach(var card in Stack)
+            foreach (var card in Stack)
             {
                 Console.WriteLine($"{i}. -> \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
                 i++;
