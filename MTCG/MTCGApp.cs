@@ -29,7 +29,7 @@ namespace MTCG
                 // Zuweisen von Karten an Benutzer A
                 for (int i = 0; i < cardCount; i++)
                 {
-                    cardS.AddCardToUser(ortwinius, cardS.GetRandomCard());
+                    cardS.AddCardToStack(ortwinius, cardS.GetRandomCard());
                 }
 
                 // Testing: Zeige den Kartenstapel an
