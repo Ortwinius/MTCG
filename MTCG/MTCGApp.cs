@@ -12,7 +12,7 @@ namespace MTCG
             CardRepository cardRepos = new CardRepository();
             UserRepository userRepos = new UserRepository();
             var authS = AuthService.GetInstance(userRepos);
-            var cardS = CardService.GetInstance(cardRepos);
+            var cardS = CardService.GetInstance(cardRepos, userRepos); // TODO: own UserService
 
             try
             {
@@ -22,7 +22,7 @@ namespace MTCG
                 authS.Login("Ortwinius", "safepassword123");
 
                 // Anzahl der Karten, die jedem Benutzer zugewiesen werden sollen
-                int cardCount = 5;
+                int cardCount = 20;
 
                 var ortwinius = userRepos.GetUserByUsername("Ortwinius");
 

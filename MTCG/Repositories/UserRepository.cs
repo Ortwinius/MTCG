@@ -48,5 +48,10 @@ namespace MTCG.Repositories
                 _users.Remove(user);
             }
         }
+        
+        public bool IsCardInUserStack(User user, Guid cardId)
+        {
+            return user.Stack.Any(c => c.Id == cardId);
+        }
     }
 }

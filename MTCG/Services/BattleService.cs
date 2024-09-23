@@ -14,6 +14,7 @@ He who deals more damage wins and gets the card of the opponent - the opponent l
 */
 namespace MTCG.Services
 {
+    // TODO : change constructor to private and add GetInstance
     public class BattleService
     {
         private static BattleService _instance;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MTCG.Models.Users;
 
 namespace MTCG.Repositories
 {
@@ -42,7 +43,6 @@ namespace MTCG.Repositories
         {
             _cards.Add(card);
         }
-
         public ICard GetRandomCard()
         {
             if (_cards.Count == 0)
@@ -54,5 +54,6 @@ namespace MTCG.Repositories
             int index = rand.Next(_cards.Count);
             return _cards[index];
         }
+        
     }
 }
