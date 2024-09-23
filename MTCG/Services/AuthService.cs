@@ -39,6 +39,7 @@ namespace MTCG.Services
 
             // save user in database
             _userRepository.AddUser(user);
+            Console.WriteLine($"Registration successful");
 
             return user.AuthToken;
         }
@@ -67,6 +68,8 @@ namespace MTCG.Services
         
             user.AuthToken = Guid.NewGuid().ToString(); // update token
             _userRepository.UpdateUser(user); // update user in DB
+            user.IsLoggedIn = true;
+            Console.WriteLine($"Logging in... Welcome {user.Username}!");
 
             return user.AuthToken; 
         }
@@ -86,6 +89,7 @@ namespace MTCG.Services
 
             user.IsLoggedIn = false;
             _userRepository.UpdateUser(user);
+            Console.WriteLine($"\nLogging out {user.Username}...");
         }
         #endregion
     }
