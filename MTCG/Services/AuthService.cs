@@ -36,10 +36,12 @@ namespace MTCG.Services
         // Register Http "POST /users"
         public string Register(string inputUsername, string inputPassword)
         {
-            // check if user already exists
+            // 409: check if user already exists
             if (_userRepository.UserExists(inputUsername))
             {
-                throw new Exception("Username already exists.");
+                //throw new Exception("Username already exists.");
+                Console.WriteLine("Error: Username already exists");
+                return ""; 
             }
 
             // Object initializer constructor => calls base constructor
@@ -50,7 +52,7 @@ namespace MTCG.Services
                 AuthToken = Guid.NewGuid().ToString() 
             };
 
-            // save user in database
+            // 201: succesfully created -> save user in database
             _userRepository.AddUser(user);
             Console.WriteLine($"Registration successful");
 
@@ -61,6 +63,7 @@ namespace MTCG.Services
         #region Login
 
         // Login Http "POST /sessions"
+        // TODO change exceptions to errors?
         public string Login(string inputUsername, string inputPassword)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
@@ -68,7 +71,9 @@ namespace MTCG.Services
             // user not found:
             if (user == null)
             {
-                throw new UnauthorizedAccessException("Invalid username.");
+                //throw new UnauthorizedAccessException("Invalid username.");
+                Console.WriteLine("Invalid username");
+                return "";
             }
 
             // verify password
@@ -76,7 +81,9 @@ namespace MTCG.Services
 
             if (verificationResult != PasswordVerificationResult.Success)
             {
-                throw new UnauthorizedAccessException("Invalid password.");
+                //throw new UnauthorizedAccessException("Invalid password.");
+                Console.WriteLine("Invalid password");
+                return "";
             }
         
             user.AuthToken = Guid.NewGuid().ToString(); // update token
@@ -97,7 +104,8 @@ namespace MTCG.Services
 
             if (user == null || !user.IsLoggedIn)
             {
-                throw new InvalidOperationException("User not logged in.");
+                //throw new InvalidOperationException("User not logged in.");
+                Console.WriteLine("Error: User not logged in");
             }
 
             user.IsLoggedIn = false;

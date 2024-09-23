@@ -1,4 +1,5 @@
 ﻿using MTCG.Models.Card;
+using MTCG.Models.Users;
 using MTCG.Repositories;
 using MTCG.Services;
 
@@ -13,36 +14,35 @@ namespace MTCG
             var authS = AuthService.GetInstance(userRepos);
             var cardS = CardService.GetInstance(cardRepos);
 
-            // Registrieren und Einloggen von Benutzern
-            authS.Register("Ortwinius", "safepassword123");
-            authS.Register("Lyria", "anotherpassword456");
-            authS.Login("Ortwinius", "safepassword123");
-            authS.Login("Lyria", "anotherpassword456");
-
-            // Anzahl der Karten, die jedem Benutzer zugewiesen werden sollen
-            int cardCount = 5;
-
-            // Zuweisen von Karten an Benutzer A
-            for (int i = 0; i < cardCount; i++)
+            try
             {
-                ICard randomCard = cardRepos.GetRandomCard(); // Verwendung der neuen Methode
-                userRepos.GetUserByUsername("Ortwinius").AddCardToStack(randomCard);
+                // Registrieren und Einloggen von Benutzern
+                authS.Register("Ortwinius", "safepassword123");
+                authS.Register("Ortwinius", "safepassword123");
+                authS.Login("Ortwinius", "safepassword123");
+
+                // Anzahl der Karten, die jedem Benutzer zugewiesen werden sollen
+                int cardCount = 5;
+
+                var ortwinius = userRepos.GetUserByUsername("Ortwinius");
+
+                // Zuweisen von Karten an Benutzer A
+                for (int i = 0; i < cardCount; i++)
+                {
+                    cardS.AddCardToUser(ortwinius, cardS.GetRandomCard());
+                }
+
+                // Testing: Zeige den Kartenstapel an
+                ortwinius.ShowStack();
+
+                // Ausloggen der Benutzer
+                authS.Logout("Ortwinius");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
 
-            // Zuweisen von Karten an Benutzer B
-            for (int i = 0; i < cardCount; i++)
-            {
-                ICard randomCard = cardRepos.GetRandomCard(); // Verwendung der neuen Methode
-                userRepos.GetUserByUsername("Lyria").AddCardToStack(randomCard);
-            }
-
-            // Testing: Zeige den Kartenstapel an
-            userRepos.GetUserByUsername("Ortwinius").ShowStack();
-            userRepos.GetUserByUsername("Lyria").ShowStack();
-
-            // Ausloggen der Benutzer
-            authS.Logout("Ortwinius");
-            authS.Logout("Lyria");
         }
 
     }
