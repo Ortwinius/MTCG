@@ -10,6 +10,7 @@ namespace MTCG.Card
 
     public interface ICard
     {
+        Guid Id { get; }
         int Damage { get; }
         string Name { get; }
         ElementType Type { get; }
