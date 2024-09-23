@@ -56,70 +56,8 @@ namespace MTCG.Models.Users
             }
             return true;
         }
-        #region Stack
-        public bool AddCardToStack(ICard card)
-        {
-            if (!validateAction()) return false;
-
-            if (card == null)
-            {
-                /*throw new ArgumentNullException(nameof(card), "Card to be added cannot be null");*/
-                return false;
-            }
-            Stack.Add(card);
-            return true;
-        }
-        public bool RemoveCardFromStack(Guid cardId)
-        {
-            if (!validateAction()) return false;
-            // search for card in Stack
-            var cardToRemove = Stack.Find(card => card.Id == cardId);
-
-            if (Stack.Count <= 0 || cardToRemove == null)
-            {
-                return false;
-            }
-
-            Stack.Remove(cardToRemove);
-            return true;
-
-        }
-
-        #endregion
-        // Configure deck via four provided cards (array of strings)
-        // Failed request doesnt change previously defined stack
-        // uuid1, uuid2, uuid3, uuid4
-        public bool ConfigureDeck(string[] cardIds)
-        {
-            if (!validateAction()) return false; // 401 Unauthorized
-
-            if (Stack.Count < 1)
-            {
-                return false;
-            }
-            if (cardIds.Length != 4) // 400 Bad Request
-            {
-                Console.WriteLine("Can't add card to deck because the deck is already full (4/4). Consider replacing another card");
-                ShowDeck();
-                return false;
-            }
-
-            // if min 1 card is not in UserStack -> 403 Forbidden
-            // TODO
-
-            // 200 "OK"
-
-            // set new deck 
-            // foreach(var id in cardIds)
-            // {
-            // Deck.Add(GetCardById(cardIds[i]));
-            // }
-
-            return true;
-        }
 
         #region Info
-
         // TODO Get User Info : Name, (opt) description : Http "GET users/{username}
         // 1. 200 OK
         // 2. 401 Unauthorized (only user or admin can do that)
@@ -160,6 +98,15 @@ namespace MTCG.Models.Users
                 Console.WriteLine($"{i}. -> \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
                 i++;
             }
+        }
+
+        public void ShowUserInfo()
+        {
+            if (!validateAction()) return;
+
+            // TODO
+            // Shows Elo, Coins, Wins, Losses
+
         }
 
         #endregion
