@@ -162,6 +162,15 @@ namespace MTCG.Models.Users
             }
         }
 
+        public void ShowUserInfo()
+        {
+            if (!validateAction()) return;
+
+            // TODO
+            // Shows Elo, Coins, Wins, Losses
+
+        }
+
         #endregion
     }
 }

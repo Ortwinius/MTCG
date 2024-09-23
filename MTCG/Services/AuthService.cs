@@ -3,19 +3,32 @@ using Microsoft.AspNetCore.Identity;
 using MTCG.Models.Users;
 using MTCG.Repositories;
 
+/*
+Singleton Service for User-related authentication logic 
+*/
 namespace MTCG.Services
 {
     public class AuthService
     {
+        private static AuthService _instance;
+
         private readonly UserRepository _userRepository;
         private readonly PasswordHasher<User> _passwordHasher;
 
         // Dependency Injection über Konstruktor
-        public AuthService(UserRepository userRepository)
+        private AuthService(UserRepository userRepository)
         {
             // may not be null :
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _passwordHasher = new PasswordHasher<User>();
+        }
+        public static AuthService GetInstance(UserRepository userRepository)
+        {
+            if(_instance == null)
+            {
+                _instance = new AuthService(userRepository);
+            }
+            return _instance;
         }
 
         #region Register

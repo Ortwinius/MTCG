@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 /*
-BattleService is a container for handling fights between cards
+Singleton BattleService 
+is a container for handling fights between cards
 If userA attacks user B => get one random card of userA's and userB's userDeck
 Those two cards fight each other depending on cardType(Monster/Spell), damage & effectivity
 calculateHigherDamage() => checks who deals more damage and returns card
@@ -15,5 +16,7 @@ namespace MTCG.Services
 {
     public class BattleService
     {
+        private static BattleService _instance;
+        public BattleService() { }
     }
 }

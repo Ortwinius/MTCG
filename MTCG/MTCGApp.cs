@@ -10,13 +10,14 @@ namespace MTCG
         {
             CardRepository cardRepos = new CardRepository();
             UserRepository userRepos = new UserRepository();
-            AuthService auth = new AuthService(userRepos);
+            var authS = AuthService.GetInstance(userRepos);
+            var cardS = CardService.GetInstance(cardRepos);
 
             // Registrieren und Einloggen von Benutzern
-            auth.Register("Ortwinius", "safepassword123");
-            auth.Register("Lyria", "anotherpassword456");
-            auth.Login("Ortwinius", "safepassword123");
-            auth.Login("Lyria", "anotherpassword456");
+            authS.Register("Ortwinius", "safepassword123");
+            authS.Register("Lyria", "anotherpassword456");
+            authS.Login("Ortwinius", "safepassword123");
+            authS.Login("Lyria", "anotherpassword456");
 
             // Anzahl der Karten, die jedem Benutzer zugewiesen werden sollen
             int cardCount = 5;
@@ -40,8 +41,8 @@ namespace MTCG
             userRepos.GetUserByUsername("Lyria").ShowStack();
 
             // Ausloggen der Benutzer
-            auth.Logout("Ortwinius");
-            auth.Logout("Lyria");
+            authS.Logout("Ortwinius");
+            authS.Logout("Lyria");
         }
 
     }
