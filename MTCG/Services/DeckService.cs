@@ -30,7 +30,7 @@ namespace MTCG.Services
         public void ClearDeck(User user)
         {        
             // TODO: fix access 
-            user.Stack.Clear();
+            user.Deck.Clear();
         }
         // Configure deck via four provided cards (array of strings)
         // Failed request doesnt change previously defined stack
@@ -43,6 +43,7 @@ namespace MTCG.Services
             {
                 return false;
             }
+
             if (cardIds.Length != 4) // 400 Bad Request
             {
                 Console.WriteLine("Error: Can't add card to deck because the deck is already full (4/4). Consider replacing another card");
@@ -62,12 +63,12 @@ namespace MTCG.Services
             }
 
             // 200 "OK" -> set new deck 
-            ClearDeck(user);
+            ClearDeck(user); // TODO -> change access later
 
             foreach (var id in cardIds)
             {
                 var card = _cardService.GetCardById(Guid.Parse(id));
-                _cardService.AddCardToStack(user, card);
+                user.Deck.Add(card); // TODO -> change access later
             }
 
             return true;

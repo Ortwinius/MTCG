@@ -13,30 +13,51 @@ namespace MTCG
             UserRepository userRepos = new UserRepository();
             var authS = AuthService.GetInstance(userRepos);
             var cardS = CardService.GetInstance(cardRepos, userRepos); // TODO: own UserService
-
+            var deckS = DeckService.GetInstance(cardS);
             try
             {
-                // Registrieren und Einloggen von Benutzern
+                // Registering
                 authS.Register("Ortwinius", "safepassword123");
-                authS.Register("Ortwinius", "safepassword123");
+                authS.Register("Lyria", "anothersafepassword456");
+
+                // Login validation
                 authS.Login("Ortwinius", "safepassword123");
+                authS.Login("Lyria", "anothersafepassword456");
 
-                // Anzahl der Karten, die jedem Benutzer zugewiesen werden sollen
+                User ortwinius = userRepos.GetUserByUsername("Ortwinius");
+                User lyria = userRepos.GetUserByUsername("Lyria");
+
+                // Add 20 random cards to both users
                 int cardCount = 20;
-
-                var ortwinius = userRepos.GetUserByUsername("Ortwinius");
-
-                // Zuweisen von Karten an Benutzer A
                 for (int i = 0; i < cardCount; i++)
                 {
                     cardS.AddCardToStack(ortwinius, cardS.GetRandomCard());
+                    cardS.AddCardToStack(lyria, cardS.GetRandomCard());
                 }
 
-                // Testing: Zeige den Kartenstapel an
-                ortwinius.ShowStack();
+                string[] deckCardIds = new string[4];
 
-                // Ausloggen der Benutzer
-                authS.Logout("Ortwinius");
+                for(int i = 0; i < 4; i++)
+                {
+                    ICard card = cardS.GetRandomCardOfUser(ortwinius);
+                    deckCardIds[i] = Convert.ToString(card.Id);
+                }
+                deckS.ConfigureDeck(ortwinius, deckCardIds);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    ICard card = cardS.GetRandomCardOfUser(lyria);
+                    deckCardIds[i] = Convert.ToString(card.Id);
+                }
+                deckS.ConfigureDeck(lyria, deckCardIds);
+
+                ortwinius.ShowStack();
+                ortwinius.ShowDeck();
+                lyria.ShowStack();
+                lyria.ShowDeck();
+
+                authS.Logout("Ortwinius");                
+                authS.Logout("Lyria");
             }
             catch(Exception ex)
             {

@@ -96,7 +96,7 @@ namespace MTCG.Models.Users
                 return;
             }
             int i = 1;
-            foreach (var card in Stack)
+            foreach (var card in Deck)
             {
                 // Type checking:
                 string cardType = card is MonsterCard ? "Monster" : "Spell";

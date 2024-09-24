@@ -54,6 +54,13 @@ namespace MTCG.Repositories
             int index = rand.Next(_cards.Count);
             return _cards[index];
         }
-        
+        // for debugging
+        public ICard GetRandomCardOfUser(User user)
+        {
+            List<ICard> userCards = user.Stack.ToList();
+            Random rand = new Random();
+            int index = rand.Next(userCards.Count);
+            return userCards[index];
+        }
     }
 }

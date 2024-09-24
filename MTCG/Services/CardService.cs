@@ -76,5 +76,11 @@ namespace MTCG.Services
         {
             return _userRepository.IsCardInUserStack(user, cardId);
         }
+
+        // for debugging
+        public ICard GetRandomCardOfUser(User user)
+        {
+            return _cardRepository.GetRandomCardOfUser(user);
+        }
     }
 }
