@@ -1,4 +1,5 @@
 ﻿using MTCG.Models.Card;
+using MTCG.Models.Card.Monster;
 using MTCG.Services;
 using System;
 using System.Net.WebSockets;
@@ -77,7 +78,9 @@ namespace MTCG.Models.Users
             int i = 1;
             foreach (var card in Stack)
             {
-                Console.WriteLine($"{i}. -> \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
+                string cardType = card is MonsterCard ? "Monster" : "Spell";
+
+                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
                 i++;
             }
         }
@@ -93,9 +96,12 @@ namespace MTCG.Models.Users
                 return;
             }
             int i = 1;
-            foreach (var card in Stack)
+            foreach (var card in Deck)
             {
-                Console.WriteLine($"{i}. -> \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
+                // Type checking:
+                string cardType = card is MonsterCard ? "Monster" : "Spell";
+
+                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
                 i++;
             }
         }

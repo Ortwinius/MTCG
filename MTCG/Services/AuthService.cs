@@ -12,7 +12,7 @@ namespace MTCG.Services
     {
         private static AuthService _instance;
 
-        private readonly UserRepository _userRepository;
+        private readonly UserRepository _userRepository; // readonly to ensure Service always uses the same repos
         private readonly PasswordHasher<User> _passwordHasher;
 
         // Dependency Injection über Konstruktor

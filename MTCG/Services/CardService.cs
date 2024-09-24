@@ -8,29 +8,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/* Singleton Service for Card-related CRUD logic*/
 namespace MTCG.Services
 {
-    
-    /* Singleton Service for Card-related CRUD logic*/
     public class CardService
     {
         private static CardService _instance;
-        private readonly CardRepository _cardRepository;
-        private CardService(CardRepository cardRepository)
+        private readonly CardRepository _cardRepository; // readonly to ensure Service always uses the same repos
+        private readonly UserRepository _userRepository;
+        private CardService(CardRepository cardRepository, UserRepository userRepository)
         {
             _cardRepository = cardRepository;
+            _userRepository = userRepository;
         }
-        public static CardService GetInstance(CardRepository cardRepository)
+        public static CardService GetInstance(CardRepository cardRepository, UserRepository userRepository)
         {
             if (_instance == null)
             {
-                _instance = new CardService(cardRepository);
+                _instance = new CardService(cardRepository, userRepository);
             }
             return _instance;
+        }
+        public ICard GetCardById(Guid id)
+        {
+            return _cardRepository.GetCardById(id);
         }
         public ICard GetRandomCard()
         { 
             return _cardRepository.GetRandomCard();
+        }
+        public Guid GetRandomCardId()
+        {
+            return GetRandomCard().Id;
         }
 
         public bool AddCardToStack(User user, ICard card)
@@ -42,6 +51,7 @@ namespace MTCG.Services
                 /*throw new ArgumentNullException(nameof(card), "Card to be added cannot be null");*/
                 return false;
             }
+            // TODO : fix access -> POST Request
             user.Stack.Add(card);
             return true;
         }
@@ -56,42 +66,21 @@ namespace MTCG.Services
                 return false;
             }
 
+            // TODO: fix access -> POST Request
             user.Stack.Remove(cardToRemove);
             return true;
 
         }
-
-        // Configure deck via four provided cards (array of strings)
-        // Failed request doesnt change previously defined stack
-        // uuid1, uuid2, uuid3, uuid4
-        public bool ConfigureDeck(User user, string[] cardIds)
+        // TODO: put in UserService
+        public bool IsCardInUserStack(User user, Guid cardId)
         {
-            if (!user.validateAction()) return false; // 401 Unauthorized
-
-            if (user.Stack.Count < 1)
-            {
-                return false;
-            }
-            if (cardIds.Length != 4) // 400 Bad Request
-            {
-                Console.WriteLine("Error: Can't add card to deck because the deck is already full (4/4). Consider replacing another card");
-                user.ShowDeck();
-                return false;
-            }
-
-            // if min 1 card is not in UserStack -> 403 Forbidden
-            // TODO
-
-            // 200 "OK"
-
-            // set new deck 
-            // foreach(var id in cardIds)
-            // {
-            // Deck.Add(GetCardById(cardIds[i]));
-            // }
-
-            return true;
+            return _userRepository.IsCardInUserStack(user, cardId);
         }
 
+        // for debugging
+        public ICard GetRandomCardOfUser(User user)
+        {
+            return _cardRepository.GetRandomCardOfUser(user);
+        }
     }
 }
