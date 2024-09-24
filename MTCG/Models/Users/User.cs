@@ -17,10 +17,10 @@ namespace MTCG.Models.Users
         private List<ICard> _stack;
         private List<ICard> _deck;
 
-        // TODO : change username & hashedPassword & AuthToken & IsLoggedIn
+        // TODO : change username & AuthToken & IsLoggedIn
         // setter to private <-> in conflict with authservice!
         public string Username { get; set; }
-        public string HashedPassword { get; set; }
+        public string HashedPassword { get; }
         public string AuthToken { get; set; }
         public bool IsLoggedIn { get; set; }
         public int Coins { get; private set; } = 20;
@@ -37,10 +37,11 @@ namespace MTCG.Models.Users
             IsLoggedIn = false;
         }
         // TODO : make logic applicable that AuthService can be performed on this constructor?
-        public User(string username, string hashedPassword)
+        public User(string username, string hashedPassword, string authToken)
         {
             Username = username;
             HashedPassword = hashedPassword;
+            AuthToken = authToken.ToString();
             Stack = new List<ICard>();
             Deck = new List<ICard>();
             IsLoggedIn = false;

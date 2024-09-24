@@ -30,8 +30,9 @@ namespace MTCG.Repositories
             var existingUser = GetUserByUsername(user.Username);
             if (existingUser != null)
             {
-                existingUser.HashedPassword = user.HashedPassword;
-                existingUser.AuthToken = user.AuthToken;
+                //existingUser.HashedPassword = user.HashedPassword; // BAD!!
+                Console.WriteLine("Info: Password can't be updated yet due to missing database and otherwise potential securityleak");
+                //TODO: update Userbio etc.
             }
         }
         // checks if user exists in DB, if so return true

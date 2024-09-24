@@ -44,13 +44,9 @@ namespace MTCG.Services
                 return ""; 
             }
 
-            // Object initializer constructor => calls base constructor
-            var user = new User
-            {
-                Username = inputUsername,
-                HashedPassword = _passwordHasher.HashPassword(null, inputPassword),  
-                AuthToken = Guid.NewGuid().ToString() 
-            };
+            string HashedPassword = _passwordHasher.HashPassword(null, inputPassword);
+            string authToken = Guid.NewGuid().ToString();
+            var user = new User(inputUsername,HashedPassword,authToken);
 
             // 201: succesfully created -> save user in database
             _userRepository.AddUser(user);
@@ -87,7 +83,7 @@ namespace MTCG.Services
             }
         
             user.AuthToken = Guid.NewGuid().ToString(); // update token
-            _userRepository.UpdateUser(user); // update user in DB
+            //_userRepository.UpdateUser(user); // WRONG -> Todo: Change so that new authToken is saved in DB
             user.IsLoggedIn = true;
             Console.WriteLine($"Logging in... Welcome {user.Username}!");
 
