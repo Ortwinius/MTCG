@@ -14,5 +14,7 @@ namespace MTCG.Models.Card
         int Damage { get; }
         string Name { get; }
         ElementType Type { get; }
+
+        void attack(ICard other);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MTCG.Models.Card;
+using MTCG.Models.Card.Monster;
 using MTCG.Models.Users;
 using MTCG.Repositories;
 using System;

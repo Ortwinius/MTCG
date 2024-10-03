@@ -1,6 +1,6 @@
-﻿using MTCG.Models.Card.Monster;
+﻿using MTCG.Models.Card;
+using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
-using MTCG.Models.Card;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +47,7 @@ namespace MTCG.Repositories
         {
             if (_cards.Count == 0)
             {
+                // TODO : exception ersetzen durch return "" mit Fehlermeldung
                 throw new InvalidOperationException("Keine Karten im Repository vorhanden.");
             }
 

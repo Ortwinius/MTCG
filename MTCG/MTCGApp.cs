@@ -12,8 +12,9 @@ namespace MTCG
             CardRepository cardRepos = new CardRepository();
             UserRepository userRepos = new UserRepository();
             var authS = AuthService.GetInstance(userRepos);
-            var cardS = CardService.GetInstance(cardRepos, userRepos); // TODO: own UserService
+            var cardS = CardService.GetInstance(cardRepos, userRepos); // TODO: Combine UserService as DeckService+StackService
             var deckS = DeckService.GetInstance(cardS);
+            var battleS = BattleService.GetInstance(userRepos);
             try
             {
                 // Registering
@@ -56,6 +57,8 @@ namespace MTCG
                 lyria.ShowStack();
                 lyria.ShowDeck();
 
+                //battleS.AddPlayerToLobby("Ortwinius");
+                
                 authS.Logout("Ortwinius");                
                 authS.Logout("Lyria");
             }

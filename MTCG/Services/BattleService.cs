@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,24 @@ namespace MTCG.Services
     public class BattleService
     {
         private static BattleService _instance;
-        public BattleService() { }
+        private readonly UserRepository _userRepository;
+
+
+        public const int MaxBattleRounds = 100;
+        public int currentRound { get; private set; } = 1;
+        public BattleService(UserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+        public static BattleService GetInstance(UserRepository userRepository)
+        {
+            if(_instance == null)
+            {
+                _instance = new BattleService(userRepository);
+            }
+            return _instance;
+        }
+
+
     }
 }

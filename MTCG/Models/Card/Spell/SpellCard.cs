@@ -1,4 +1,4 @@
-﻿using MTCG.Models.Card;
+﻿using MTCG.Models.Card.Monster;
 
 namespace MTCG.Models.Card.Spell
 {
@@ -15,6 +15,10 @@ namespace MTCG.Models.Card.Spell
             Name = name;
             Type = type;
             Damage = damage;
+        }
+        public void attack(ICard other)
+        {
+
         }
     }
 }

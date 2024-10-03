@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MTCG.Services.AuthService">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAgAAAAAAAAAAAAAAIABAABAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Services\AuthService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Services.BattleService" Collapsed="true">
+    <Position X="5.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\BattleService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Services.CardService">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAgAAAEAAIAACAAAAAEBAABAIAABAAAAAAAAgA=</HashCode>
+      <FileName>Services\CardService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Services.DeckService">
+    <Position X="7.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAACBAAAAAAAAAAAAABAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\DeckService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Repositories.CardRepository" Collapsed="true">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAEAAAAACAAAABAAAAAAAAAQAAAAAAAAgA=</HashCode>
+      <FileName>Repositories\CardRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Repositories.UserRepository" Collapsed="true">
+    <Position X="9.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAEAAAAAAAAARAAAIAgAAAAAAAAAAA=</HashCode>
+      <FileName>Repositories\UserRepository.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Models.Card.Spell.SpellCard" Collapsed="true">
+    <Position X="1.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAACAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\Card\Spell\SpellCard.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MTCG.Models.Card.Monster.MonsterCard" Collapsed="true">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAACAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\Card\Monster\MonsterCard.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MTCG.Controllers.ApiController" Collapsed="true">
+    <Position X="9.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\ApiController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="MTCG.Models.Card.ICard">
+    <Position X="2.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAACAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\Card\ICard.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="MTCG.Models.Card.ElementType">
+    <Position X="0.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Card\ICard.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
