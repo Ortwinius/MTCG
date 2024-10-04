@@ -1,4 +1,5 @@
-﻿using MTCG.Models.Card;
+﻿using MTCG.Controllers;
+using MTCG.Models.Card;
 using MTCG.Models.Users;
 using MTCG.Repositories;
 using MTCG.Services;
@@ -9,8 +10,13 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
+            ServerController serverController = new ServerController();
+            serverController.Demo();
+
             CardRepository cardRepos = new CardRepository();
             UserRepository userRepos = new UserRepository();
+
+
             var authS = AuthService.GetInstance(userRepos);
             var cardS = CardService.GetInstance(cardRepos, userRepos); // TODO: Combine UserService as DeckService+StackService
             var deckS = DeckService.GetInstance(cardS);
