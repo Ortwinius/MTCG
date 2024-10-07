@@ -17,22 +17,27 @@ namespace MTCG.Repositories
         public CardRepository()
         {
             // Beispielhafte Karten
-            _cards.Add(new MonsterCard("FireElve", ElementType.Fire, 20));
-            _cards.Add(new MonsterCard("Kraken", ElementType.Water, 25));
-            _cards.Add(new SpellCard("Waterwave", ElementType.Water, 15));
-            _cards.Add(new MonsterCard("Gornak the Goblin", ElementType.Normal, 18));
-            _cards.Add(new MonsterCard("Thrag the Dragon", ElementType.Fire, 50));
-            _cards.Add(new MonsterCard("Morgath the Wizzard", ElementType.Fire, 40));
-            _cards.Add(new MonsterCard("Grulok the Orc", ElementType.Normal, 35));
-            _cards.Add(new MonsterCard("Sir Gallant the Knight", ElementType.Normal, 45));
-            _cards.Add(new MonsterCard("Ragnar the Kraken", ElementType.Water, 50));
-            _cards.Add(new MonsterCard("Elvina the FireElve", ElementType.Fire, 30));
-            _cards.Add(new SpellCard("Flame Burst", ElementType.Fire, 30));
-            _cards.Add(new SpellCard("Tsunami Wave", ElementType.Water, 35));
-            _cards.Add(new SpellCard("Rock Slam", ElementType.Normal, 25));
-            _cards.Add(new SpellCard("Inferno Blast", ElementType.Fire, 40));
-            _cards.Add(new SpellCard("Aqua Strike", ElementType.Water, 28));
-            _cards.Add(new SpellCard("Stone Crusher", ElementType.Normal, 20));
+            //_cards.Add(new MonsterCard("FireElve", ElementType.Fire, 20));
+            //_cards.Add(new MonsterCard("Kraken", ElementType.Water, 25));
+            //_cards.Add(new SpellCard("Waterwave", ElementType.Water, 15));
+            //_cards.Add(new MonsterCard("Gornak the Goblin", ElementType.Normal, 18));
+            //_cards.Add(new MonsterCard("Thrag the Dragon", ElementType.Fire, 50));
+            //_cards.Add(new MonsterCard("Morgath the Wizzard", ElementType.Fire, 40));
+            //_cards.Add(new MonsterCard("Grulok the Orc", ElementType.Normal, 35));
+            //_cards.Add(new MonsterCard("Sir Gallant the Knight", ElementType.Normal, 45));
+            //_cards.Add(new MonsterCard("Ragnar the Kraken", ElementType.Water, 50));
+            //_cards.Add(new MonsterCard("Elvina the FireElve", ElementType.Fire, 30));
+            //_cards.Add(new SpellCard("Flame Burst", ElementType.Fire, 30));
+            //_cards.Add(new SpellCard("Tsunami Wave", ElementType.Water, 35));
+            //_cards.Add(new SpellCard("Rock Slam", ElementType.Normal, 25));
+            //_cards.Add(new SpellCard("Inferno Blast", ElementType.Fire, 40));
+            //_cards.Add(new SpellCard("Aqua Strike", ElementType.Water, 28));
+            //_cards.Add(new SpellCard("Stone Crusher", ElementType.Normal, 20));
+            _cards.Add(new MonsterCard(MonsterType.Ork, ElementType.Normal, 35));
+            _cards.Add(new MonsterCard(MonsterType.WaterElf, ElementType.Water, 40));
+            _cards.Add(new MonsterCard(MonsterType.Dragon, ElementType.Fire, 60));
+            _cards.Add(new SpellCard(SpellType.WaterSpell, ElementType.Water, 15));
+
         }
         public List<ICard> GetAllCards() => _cards;
 

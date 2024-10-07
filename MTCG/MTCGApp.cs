@@ -11,7 +11,7 @@ namespace MTCG
         static void Main(string[] args)
         {
             ServerController serverController = new ServerController();
-            serverController.Demo();
+            //serverController.Demo();
 
             CardRepository cardRepos = new CardRepository();
             UserRepository userRepos = new UserRepository();

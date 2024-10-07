@@ -31,7 +31,7 @@ namespace MTCG.Repositories
             if (existingUser != null)
             {
                 //existingUser.HashedPassword = user.HashedPassword; // BAD!!
-                Console.WriteLine("Info: Password can't be updated yet due to missing database and otherwise potential securityleak");
+                //Console.WriteLine("Info: Password can't be updated yet due to missing database and otherwise potential securityleak");
                 //TODO: update Userbio etc.
             }
         }

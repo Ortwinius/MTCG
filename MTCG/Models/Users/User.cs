@@ -81,7 +81,7 @@ namespace MTCG.Models.Users
             {
                 string cardType = card is MonsterCard ? "Monster" : "Spell";
 
-                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
+                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.ElemType}) {card.Damage} Damage");
                 i++;
             }
         }
@@ -102,7 +102,7 @@ namespace MTCG.Models.Users
                 // Type checking:
                 string cardType = card is MonsterCard ? "Monster" : "Spell";
 
-                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.Type}) {card.Damage} Damage");
+                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.ElemType}) {card.Damage} Damage");
                 i++;
             }
         }

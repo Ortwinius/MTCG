@@ -7,13 +7,33 @@ namespace MTCG.Models.Card
         Water,
         Normal
     }
-
+    public enum MonsterType
+    {
+        Goblin = 0,
+        Troll,
+        FireTroll,
+        RegularTroll,
+        WaterElf,
+        FireElf,
+        RegularElf,
+        Knight,
+        Dragon,
+        Ork,
+        Kraken,
+        Wizzard
+    }
+    public enum SpellType
+    {
+        WaterSpell,
+        FireSpell,
+        RegularSpell,
+    }
     public interface ICard
     {
         Guid Id { get; }
         int Damage { get; }
         string Name { get; }
-        ElementType Type { get; }
+        ElementType ElemType { get; }
 
         void attack(ICard other);
     }
