@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/*
-Controller Class for managing Http Requests and sending them to the 
-*/
-namespace MTCG.Controllers
+namespace MTCG.BusinessLogic.Services
 {
-    public class ApiController
+    public class PackageService
     {
+        public PackageService() { }
     }
 }

@@ -6,13 +6,13 @@ using MTCG.Repositories;
 /*
 Singleton Service for User-related authentication logic 
 */
-namespace MTCG.Services
+namespace MTCG.BusinessLogic.Services
 {
     public class AuthService
     {
         private static AuthService _instance;
 
-        private readonly UserRepository _userRepository; // readonly to ensure Service always uses the same repos
+        private readonly UserRepository _userRepository; 
         private readonly PasswordHasher<User> _passwordHasher;
 
         // Dependency Injection über Konstruktor
@@ -29,6 +29,17 @@ namespace MTCG.Services
                 _instance = new AuthService(userRepository);
             }
             return _instance;
+        }
+
+        // validate each action by checking if user is logged in and authToken is valid
+        public bool IsAuthenticated(User user)
+        {
+            if (!user.IsLoggedIn || string.IsNullOrEmpty(user.AuthToken))
+            {
+                Console.WriteLine("You cannot perform this action due to missing permission. Are you logged in?");
+                return false;
+            }
+            return true;
         }
 
         #region Register
@@ -71,7 +82,11 @@ namespace MTCG.Services
                 Console.WriteLine("Invalid username");
                 return "";
             }
-
+            if (user.IsLoggedIn)
+            {
+                Console.WriteLine($"User {user.Username} is already logged in.");
+                return "";
+            }
             // verify password
             var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, inputPassword);
 
@@ -109,5 +124,11 @@ namespace MTCG.Services
             Console.WriteLine($"\nLogging out {user.Username}...");
         }
         #endregion
+
+        // Get user by username
+        public User GetUserByUsername(string username)
+        {
+            return _userRepository.GetUserByUsername(username);
+        }
     }
 }

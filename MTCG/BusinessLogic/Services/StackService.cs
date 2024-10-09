@@ -9,43 +9,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/* Singleton Service for Card-related CRUD logic*/
-namespace MTCG.Services
+namespace MTCG.BusinessLogic.Services
 {
-    public class CardService
+    // Service for stack related logic 
+    public class StackService
     {
-        private static CardService _instance;
-        private readonly CardRepository _cardRepository; // readonly to ensure Service always uses the same repos
+        private static StackService _instance;
         private readonly UserRepository _userRepository;
-        private CardService(CardRepository cardRepository, UserRepository userRepository)
-        {
-            _cardRepository = cardRepository;
-            _userRepository = userRepository;
-        }
-        public static CardService GetInstance(CardRepository cardRepository, UserRepository userRepository)
+
+        // singleton instance
+        public static StackService GetInstance(UserRepository userRepository)
         {
             if (_instance == null)
             {
-                _instance = new CardService(cardRepository, userRepository);
+                _instance = new StackService(userRepository);
             }
             return _instance;
         }
-        public ICard GetCardById(Guid id)
+        //constructor
+        private StackService(UserRepository userRepository)
         {
-            return _cardRepository.GetCardById(id);
+            _userRepository = userRepository;
         }
-        public ICard GetRandomCard()
-        { 
-            return _cardRepository.GetRandomCard();
-        }
-        public Guid GetRandomCardId()
+
+        public void ShowStack(User user) //Htpp "GET /cards"
         {
-            return GetRandomCard().Id;
+            if (user == null)
+            {
+                Console.WriteLine($"User {user.Username} not found.");
+                return;
+            }
+
+            Console.WriteLine($"\nStack of User: {user.Username}:");
+
+            if (user.Stack.Count < 1)
+            {
+                Console.WriteLine("[Empty]");
+                return;
+            }
+            int i = 1;
+            foreach (var card in user.Stack)
+            {
+                string cardType = card is MonsterCard ? "Monster" : "Spell";
+
+                Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.ElemType}) {card.Damage} Damage");
+                i++;
+            }
         }
 
         public bool AddCardToStack(User user, ICard card)
         {
-            if (!user.validateAction()) return false;
+            //if (!user.validateAction()) return false;
 
             if (card == null)
             {
@@ -58,7 +72,7 @@ namespace MTCG.Services
         }
         public bool RemoveCardFromStack(User user, Guid cardId)
         {
-            if (!user.validateAction()) return false;
+            //if (!user.validateAction()) return false;
             // search for card in Stack
             var cardToRemove = user.Stack.Find(card => card.Id == cardId);
 
@@ -76,12 +90,6 @@ namespace MTCG.Services
         public bool IsCardInUserStack(User user, Guid cardId)
         {
             return _userRepository.IsCardInUserStack(user, cardId);
-        }
-
-        // for debugging
-        public ICard GetRandomCardOfUser(User user)
-        {
-            return _cardRepository.GetRandomCardOfUser(user);
         }
     }
 }

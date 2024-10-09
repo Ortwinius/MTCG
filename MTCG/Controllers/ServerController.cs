@@ -5,12 +5,33 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using MTCG.BusinessLogic.Manager;
 
 namespace MTCG.Controllers
 {
     public class ServerController
     {
-        public ServerController() { }
+        private GameManager _gameManager;
+
+        public ServerController(GameManager gameManager)
+        {
+            _gameManager = gameManager;
+        }
+
+        public void RegisterRequest(string username, string password)
+        {
+            _gameManager.RegisterUser(username, password);
+        }
+
+        public void ConfigureDeckRequest(string username, string[] cardIds)
+        {
+            _gameManager.ConfigureUserDeck(username, cardIds);
+        }
+
+        public void BattleRequest(string username)
+        {
+            _gameManager.JoinBattle(username);
+        }
         public void Demo()
         {
             Console.WriteLine("Server-Demo^use port http://localhost:8000/");

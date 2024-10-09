@@ -2,7 +2,8 @@
 using MTCG.Models.Card;
 using MTCG.Models.Users;
 using MTCG.Repositories;
-using MTCG.Services;
+using MTCG.BusinessLogic.Services;
+using MTCG.BusinessLogic.Manager;
 
 namespace MTCG
 {
@@ -10,65 +11,51 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            ServerController serverController = new ServerController();
+            var userRepos = new UserRepository();
+            var cardRepos = new CardRepository();
+            var authService = AuthService.GetInstance(userRepos);
+            var cardService = CardService.GetInstance(cardRepos, userRepos);
+            var deckService = DeckService.GetInstance();
+            var battleService = BattleService.GetInstance(deckService);
+            var stackService = StackService.GetInstance(userRepos);
+
+            var gameManager = new GameManager(authService, cardService, deckService, battleService, stackService);
+            var serverController = new ServerController(gameManager);
+
             //serverController.Demo();
 
-            CardRepository cardRepos = new CardRepository();
-            UserRepository userRepos = new UserRepository();
-
-
-            var authS = AuthService.GetInstance(userRepos);
-            var cardS = CardService.GetInstance(cardRepos, userRepos); // TODO: Combine UserService as DeckService+StackService
-            var deckS = DeckService.GetInstance(cardS);
-            var battleS = BattleService.GetInstance(userRepos);
             try
             {
-                // Registering
-                authS.Register("Ortwinius", "safepassword123");
-                authS.Register("Lyria", "anothersafepassword456");
+                gameManager.RegisterUser("Ortwinius", "safepassword123");
+                gameManager.RegisterUser("Lyria", "anothersafepassword456");
 
-                // Login validation
-                authS.Login("Ortwinius", "safepassword123");
-                authS.Login("Lyria", "anothersafepassword456");
+                gameManager.ShowUserStack("Ortwinius");
 
-                User ortwinius = userRepos.GetUserByUsername("Ortwinius");
-                User lyria = userRepos.GetUserByUsername("Lyria");
+                gameManager.LoginUser("Ortwinius", "safepassword123");
+                gameManager.LoginUser("Lyria", "anothersafepassword456");
 
-                // Add 20 random cards to both users
-                int cardCount = 20;
-                for (int i = 0; i < cardCount; i++)
-                {
-                    cardS.AddCardToStack(ortwinius, cardS.GetRandomCard());
-                    cardS.AddCardToStack(lyria, cardS.GetRandomCard());
-                }
+                // TODO: Add cards to stack first, then fix that cards need to be from stack
+                gameManager.Debug_CreateDummyStack("Ortwinius");
+                gameManager.Debug_CreateDummyStack("Lyria");
 
-                string[] deckCardIds = new string[4];
+                string[] deckOrtwin = gameManager.Debug_CreateDummyDeck("Ortwinius");
+                gameManager.ConfigureUserDeck("Ortwinius", deckOrtwin);
 
-                for(int i = 0; i < 4; i++)
-                {
-                    ICard card = cardS.GetRandomCardOfUser(ortwinius);
-                    deckCardIds[i] = Convert.ToString(card.Id);
-                }
-                deckS.ConfigureDeck(ortwinius, deckCardIds);
+                string[] deckLyria = gameManager.Debug_CreateDummyDeck("Lyria");
+                gameManager.ConfigureUserDeck("Lyria", deckLyria);
 
-                for (int i = 0; i < 4; i++)
-                {
-                    ICard card = cardS.GetRandomCardOfUser(lyria);
-                    deckCardIds[i] = Convert.ToString(card.Id);
-                }
-                deckS.ConfigureDeck(lyria, deckCardIds);
+                gameManager.ShowUserStack("Ortwinius");
+                gameManager.ShowUserStack("Lyria");
 
-                ortwinius.ShowStack();
-                ortwinius.ShowDeck();
-                lyria.ShowStack();
-                lyria.ShowDeck();
+                gameManager.ShowUserDeck("Ortwinius");
 
-                //battleS.AddPlayerToLobby("Ortwinius");
-                
-                authS.Logout("Ortwinius");                
-                authS.Logout("Lyria");
+                gameManager.JoinBattle("Ortwinius");
+                gameManager.JoinBattle("Lyria");
+
+                gameManager.LogoutUser("Ortwinius");                
+                gameManager.LogoutUser("Lyria");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
