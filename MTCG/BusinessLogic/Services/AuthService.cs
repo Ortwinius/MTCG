@@ -45,83 +45,84 @@ namespace MTCG.BusinessLogic.Services
         #region Register
 
         // Register Http "POST /users"
-        public string Register(string inputUsername, string inputPassword)
+        public bool Register(string inputUsername, string inputPassword)
         {
             // 409: check if user already exists
             if (_userRepository.UserExists(inputUsername))
             {
-                //throw new Exception("Username already exists.");
                 Console.WriteLine("Error: Username already exists");
-                return ""; 
+                return false;
             }
 
             string HashedPassword = _passwordHasher.HashPassword(null, inputPassword);
             string authToken = Guid.NewGuid().ToString();
-            var user = new User(inputUsername,HashedPassword,authToken);
+            var user = new User(inputUsername,HashedPassword);
+            user.AuthToken = authToken;
 
             // 201: succesfully created -> save user in database
             _userRepository.AddUser(user);
             Console.WriteLine($"Registration successful");
 
-            return user.AuthToken;
+            return true;
         }
         #endregion
 
         #region Login
 
         // Login Http "POST /sessions"
-        // TODO change exceptions to errors?
-        public string Login(string inputUsername, string inputPassword)
+        public bool Login(string inputUsername, string inputPassword, out string authToken)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
+            authToken = null;
 
             // user not found:
             if (user == null)
             {
-                //throw new UnauthorizedAccessException("Invalid username.");
                 Console.WriteLine("Invalid username");
-                return "";
+                return false;
             }
             if (user.IsLoggedIn)
             {
                 Console.WriteLine($"User {user.Username} is already logged in.");
-                return "";
+                return false;
             }
             // verify password
-            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, inputPassword);
+            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.Password, inputPassword);
 
             if (verificationResult != PasswordVerificationResult.Success)
             {
-                //throw new UnauthorizedAccessException("Invalid password.");
                 Console.WriteLine("Invalid password");
-                return "";
+                return false;
             }
         
-            user.AuthToken = Guid.NewGuid().ToString(); // update token
-            //_userRepository.UpdateUser(user); // WRONG -> Todo: Change so that new authToken is saved in DB
+            user.AuthToken = user.Username + "-mtcgToken";
+            authToken = user.AuthToken;
+
             user.IsLoggedIn = true;
             Console.WriteLine($"Logging in... Welcome {user.Username}!");
 
-            return user.AuthToken; 
+            return true;
         }
         #endregion
 
         #region Logout
 
         // Benutzer abmelden
-        public void Logout(string inputUsername)
+        public bool Logout(string inputUsername)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
 
             if (user == null || !user.IsLoggedIn)
             {
                 //throw new InvalidOperationException("User not logged in.");
-                Console.WriteLine("Error: User not logged in");
+                Console.WriteLine("Error: User not logged in or user does not exist");
+                return false;
             }
 
             user.IsLoggedIn = false;
             _userRepository.UpdateUser(user);
             Console.WriteLine($"\nLogging out {user.Username}...");
+            return true;
         }
         #endregion
 

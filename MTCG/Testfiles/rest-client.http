@@ -1,0 +1,93 @@
+# VS integrated Rest Client
+
+
+### Create Users
+### Should return HTTP 201
+POST http://localhost:10001/users HTTP/1.1
+Content-Type: application/json
+{
+  "username":"kienboec",
+  "password":"daniel"
+}
+
+### Should return HTTP 201
+POST http://localhost:10001/users HTTP/1.1
+Content-Type: application/json
+{
+  "username": "altenhof",
+  "password": "markus"
+}
+
+### a POST request from the integration-test script
+# curl -i -X POST http://localhost:10001/users --header "Content-Type: application/json" -d "{\"Username\":\"kienboec\", \"Password\":\"daniel\"}"
+POST http://localhost:10001/users HTTP/1.1
+Content-Type: application/json
+{
+  "username": "Ortwinius",
+  "password": "safepassword123"
+}
+
+
+### Should return HTTP 201
+POST http://localhost:10001/users HTTP/1.1
+Content-Type: application/json
+{
+  "username": "admin",
+  "password": "istrator"
+}
+
+### Should return HTTP 4xx - User already exists
+POST http://localhost:10001/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "kienboec",
+  "password": "daniel"
+}
+
+### Should return HTTP 4xx - User already exists
+POST http://localhost:10001/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "kienboec",
+  "password": "different"
+}
+
+
+### Login Users
+### Should return HTTP 200 with generated token for the user, here: kienboec-mtcgToken
+POST http://localhost:10001/sessions HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "kienboec",
+  "password": "daniel"
+}
+
+### Should return HTTP 200 with generated token for the user, here: altenhof-mtcgToken
+POST http://localhost:10001/sessions HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "altenhof",
+  "password": "markus"
+}
+
+### Should return HTTP 200 with generated token for the user, here: admin-mtcgToken
+POST http://localhost:10001/sessions HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "istrator"
+}
+
+### Should return HTTP 4xx - Login failed
+POST http://localhost:10001/sessions HTTP/1.1
+Content-Type: application/json
+
+{
+"username": "kienboec",
+"password": "wrongpassword"
+}

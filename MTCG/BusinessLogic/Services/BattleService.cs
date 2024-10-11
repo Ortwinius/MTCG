@@ -75,13 +75,14 @@ namespace MTCG.BusinessLogic.Services
         }
         private void ExecuteBattleRound(ICard cardA, ICard cardB, User playerA, User playerB)
         {
-            // Hier findet die Kampf-Logik statt (z. B. Schadenberechnung, Elementar-Effekte usw.)
+            // retrieve damage from cards
             int damageA = cardA.Damage;
             int damageB = cardB.Damage;
 
             // spell card vs monster
+            // TODO
 
-            // Beispielhafte Schadenslogik (siehe vorherige Implementierung)
+            // check absolute damage difference (to be changed for check if its monster vs monster)
             if (damageA > damageB)
             {
                 Console.WriteLine($"{playerA.Username}'s card {cardA.Name} wins this round.");
