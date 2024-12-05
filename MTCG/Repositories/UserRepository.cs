@@ -10,16 +10,17 @@ namespace MTCG.Repositories
     // TODO : replace with DB later
     public class UserRepository
     {
-        private readonly List<User> _users = new List<User>();
-
+        private readonly Dictionary<string, User> _users = new();
+        private readonly string _connectionString = 
+            "Server=localhost;Database=mtcg-db;User=postgres;Password=postgres;";
         public void AddUser(User user)
         {
-            _users.Add(user);
+            _users.Add(user.Username, user);
         }
 
         public User GetUserByUsername(string username)
         {
-            return _users.FirstOrDefault(u => u.Username == username);
+            return _users[username];
         }
 
         // TODO: update user info (Username, description?)
@@ -46,12 +47,13 @@ namespace MTCG.Repositories
             var user = GetUserByUsername(username);
             if (user != null)
             {
-                _users.Remove(user);
+                _users.Remove(username);
             }
         }
-        
+
         public bool IsCardInUserStack(User user, Guid cardId)
         {
+            // TODO
             return user.Stack!.Any(c => c.Id == cardId);
         }
     }

@@ -12,7 +12,7 @@ namespace MTCG.Repositories
 {
     public class CardRepository
     {
-        private readonly Dictionary<Guid, ICard> _cards = new Dictionary<Guid, ICard>();
+        private readonly Dictionary<Guid, ICard> _cards = new();
         public CardRepository()
         {
             // Beispielhafte Karten

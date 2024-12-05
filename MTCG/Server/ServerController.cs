@@ -27,6 +27,7 @@ namespace MTCG.Server
             // Initialize AuthService singleton with UserRepository
             var authService = AuthService.GetInstance(userRepository);
 
+
             // Initialize your endpoints with the necessary services
             var usersEndpoint = new UsersEndPoint(authService, userRepository);
             var sessionsEndpoint = new SessionsEndpoint(authService, userRepository);
