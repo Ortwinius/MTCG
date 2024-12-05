@@ -9,11 +9,11 @@ using System.Text.Json;
 
 namespace MTCG.Server.Endpoints
 {
-    public class UsersEndpoint : IHttpEndpoint
+    public class UsersEndPoint : IHttpEndpoint
     {
         private readonly AuthService _authService;
         private readonly UserRepository _userRepository;
-        public UsersEndpoint(AuthService authService, UserRepository userRepository)
+        public UsersEndPoint(AuthService authService, UserRepository userRepository)
         {
             _authService = authService;
             _userRepository = userRepository;

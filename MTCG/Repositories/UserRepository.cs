@@ -52,7 +52,7 @@ namespace MTCG.Repositories
         
         public bool IsCardInUserStack(User user, Guid cardId)
         {
-            return user.Stack.Any(c => c.Id == cardId);
+            return user.Stack!.Any(c => c.Id == cardId);
         }
     }
 }

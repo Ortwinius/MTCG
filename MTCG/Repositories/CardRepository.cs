@@ -12,8 +12,7 @@ namespace MTCG.Repositories
 {
     public class CardRepository
     {
-        private readonly List<ICard> _cards = new List<ICard>();
-
+        private readonly Dictionary<Guid, ICard> _cards = new Dictionary<Guid, ICard>();
         public CardRepository()
         {
             // Beispielhafte Karten
@@ -33,37 +32,40 @@ namespace MTCG.Repositories
             //_cards.Add(new SpellCard("Inferno Blast", ElementType.Fire, 40));
             //_cards.Add(new SpellCard("Aqua Strike", ElementType.Water, 28));
             //_cards.Add(new SpellCard("Stone Crusher", ElementType.Normal, 20));
-            _cards.Add(new MonsterCard(MonsterType.Ork, ElementType.Normal, 35));
-            _cards.Add(new MonsterCard(MonsterType.WaterElf, ElementType.Water, 40));
-            _cards.Add(new MonsterCard(MonsterType.Dragon, ElementType.Fire, 60));
-            _cards.Add(new SpellCard(SpellType.WaterSpell, ElementType.Water, 15));
+            //_cards.Add(new MonsterCard(MonsterType.Ork, ElementType.Normal, 35));
+            //_cards.Add(new MonsterCard(MonsterType.WaterElf, ElementType.Water, 40));
+            //_cards.Add(new MonsterCard(MonsterType.Dragon, ElementType.Fire, 60));
+            //_cards.Add(new SpellCard(SpellType.WaterSpell, ElementType.Water, 15));
+            _cards.Add(Guid.NewGuid(), new MonsterCard(MonsterType.Ork, ElementType.Fire, 48));
+            _cards.Add(Guid.NewGuid(), new MonsterCard(MonsterType.WaterElf, ElementType.Water, 40));
+            _cards.Add(Guid.NewGuid(), new MonsterCard(MonsterType.Dragon, ElementType.Fire, 70));
 
         }
-        public List<ICard> GetAllCards() => _cards;
+        public List<ICard> GetAllCards() => _cards.Values.ToList();
 
-        public ICard GetCardById(Guid id) => _cards.FirstOrDefault(card => card.Id == id);
+        public ICard GetCardById(Guid id) => _cards[id];
 
         // TODO only possible if you are admin!!
         public void AddCard(ICard card)
         {
-            _cards.Add(card);
+            _cards.Add(card.Id, card);
         }
-        public ICard GetRandomCard()
+        public ICard? GetRandomCard()
         {
             if (_cards.Count == 0)
             {
-                // TODO : exception ersetzen durch return "" mit Fehlermeldung
-                throw new InvalidOperationException("Keine Karten im Repository vorhanden.");
+                Console.WriteLine("Card repository is empty");
+                return null;
             }
 
             Random rand = new Random();
             int index = rand.Next(_cards.Count);
-            return _cards[index];
+            return _cards.Values.ElementAt(index);
         }
         // for debugging
         public ICard GetRandomCardOfUser(User user)
         {
-            List<ICard> userCards = user.Stack.ToList();
+            List<ICard> userCards = user.Stack!.ToList();
             Random rand = new Random();
             int index = rand.Next(userCards.Count);
             return userCards[index];
