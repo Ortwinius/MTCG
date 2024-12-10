@@ -17,8 +17,9 @@ namespace MTCG.Models.Users
         [JsonPropertyName("password")]
         public string Password { get; set; }
         public string? AuthToken { get; set; }
-        public bool IsLoggedIn { get; set; }
+        public bool IsLoggedIn { get; set; } = false;
         public int Coins { get; set; } = 20;
+        public int Elo { get; set; } = 100;
         public Dictionary<string, ICard>? Stack { get; set; }
         public Dictionary<string, ICard>? Deck { get; set; }
         [JsonConstructor]
@@ -30,6 +31,16 @@ namespace MTCG.Models.Users
             Stack = new();
             Deck = new();
             IsLoggedIn = false;
+        }
+        // for db
+        public User(string username, string password, int coins, int elo)
+        {
+            Username = username;
+            Password = password;
+            Coins = coins;
+            Elo = elo;
+            Stack = new();
+            Deck = new();
         }
         #endregion
     }

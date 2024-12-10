@@ -1,42 +1,73 @@
 ﻿using MTCG.Models.Users;
+using Npgsql;
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace MTCG.Repositories
 {
-    // TODO : replace with DB later
     public class UserRepository
     {
-        private readonly Dictionary<string, User> _users = new();
-        private readonly string _connectionString = 
-            "Server=localhost;Database=mtcg-db;User=postgres;Password=postgres;";
         public void AddUser(User user)
         {
-            _users.Add(user.Username, user);
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var command = new NpgsqlCommand(
+                "INSERT INTO Users (Username, Password) " +
+                "VALUES (@Username, @Password)", connection);
+
+            DataLayer.AddParameterWithValue(command, "Username", NpgsqlDbType.Varchar, user.Username);
+            DataLayer.AddParameterWithValue(command, "Password", NpgsqlDbType.Varchar, user.Password);
+            //                                                                                                                                                                                                                                                                                                                                                                         .AddParameterWithValue(command, "Coin", NpgsqlDbType.Integer, user.Coins);
+            //DataLayer.AddParameterWithValue(command, "Elo", NpgsqlDbType.Integer, user.Elo);
+
+            command.ExecuteNonQuery();
         }
 
-        public User GetUserByUsername(string username)
+        public User? GetUserByUsername(string username)
         {
-            return _users[username];
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var command = new NpgsqlCommand(
+                "SELECT Username, Password, Coin, Elo FROM Users " +
+                "WHERE Username = @Username", connection);
+            command.Parameters.AddWithValue("Username", username);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return new User(
+                    reader.GetString(0), // Username
+                    reader.GetString(1), // Password
+                    reader.GetInt32(2),  // Coins
+                    reader.GetInt32(3)   // Elo
+                );
+            }
+
+            return null;
         }
 
-        // TODO: update user info (Username, description?)
-        // Http : PUT /users/{username}
-        // 200, 401 (unauthorized), 404 (not found)
         public void UpdateUser(User user)
         {
-            var existingUser = GetUserByUsername(user.Username);
-            if (existingUser != null)
-            {
-                //existingUser.HashedPassword = user.HashedPassword; // BAD!!
-                //Console.WriteLine("Info: Password can't be updated yet due to missing database and otherwise potential securityleak");
-                //TODO: update Userbio etc.
-            }
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var command = new NpgsqlCommand(
+                "UPDATE Users " +
+                "SET Password = @Password, Coin = @Coin, Elo = @Elo " +
+                "WHERE Username = @Username", connection);
+
+            DataLayer.AddParameterWithValue(command, "Username", NpgsqlDbType.Varchar, user.Username);
+            DataLayer.AddParameterWithValue(command, "Password", NpgsqlDbType.Varchar, user.Password);
+            DataLayer.AddParameterWithValue(command, "Coin", NpgsqlDbType.Integer, user.Coins);
+            DataLayer.AddParameterWithValue(command, "Elo", NpgsqlDbType.Integer, user.Elo);
+
+            command.ExecuteNonQuery();
         }
-        // checks if user exists in DB, if so return true
+
         public bool UserExists(string username)
         {
             return GetUserByUsername(username) != null;
@@ -44,17 +75,22 @@ namespace MTCG.Repositories
 
         public void DeleteUser(string username)
         {
-            var user = GetUserByUsername(username);
-            if (user != null)
-            {
-                _users.Remove(username);
-            }
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var command = new NpgsqlCommand(
+                "DELETE FROM Users " +
+                "WHERE Username = @Username", connection);
+
+            command.Parameters.AddWithValue("Username", username);
+
+            command.ExecuteNonQuery();
         }
 
         public bool IsCardInUserStack(User user, Guid cardId)
         {
-            // TODO
-            return user.Stack!.Any(c => c.Id == cardId);
+            // TODO: Implement stack-related logic with the Cards table.
+            return true;
         }
     }
 }

@@ -4,7 +4,7 @@
 ### Create Users
 ### Should return HTTP 201
 POST http://localhost:10001/users HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json 
 {
   "username":"kienboec",
   "password":"daniel"

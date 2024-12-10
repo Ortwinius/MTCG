@@ -65,7 +65,7 @@ namespace MTCG.Repositories
         // for debugging
         public ICard GetRandomCardOfUser(User user)
         {
-            List<ICard> userCards = user.Stack!.ToList();
+            List<ICard> userCards = user.Stack!.Values.ToList();
             Random rand = new Random();
             int index = rand.Next(userCards.Count);
             return userCards[index];

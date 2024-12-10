@@ -41,7 +41,7 @@ namespace MTCG.Server
             Console.WriteLine($"Server listening on http://localhost:{_port}/");
             var server = new TcpListener(IPAddress.Any, _port);
             server.Start();
-
+            
             while (true)
             {
                 var client = server.AcceptTcpClient();

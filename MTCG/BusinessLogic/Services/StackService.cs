@@ -3,11 +3,8 @@ using MTCG.Models.Card.Monster;
 using MTCG.Models.Users;
 using MTCG.Repositories;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTCG.BusinessLogic.Services
 {
@@ -26,17 +23,19 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
-        //constructor
+
+        // constructor
         private StackService(UserRepository userRepository)
         {
-            _userRepository = userRepository;
+            _userRepository = userRepository 
+                ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
-        public void ShowStack(User user) //Htpp "GET /cards"
+        public void ShowStack(User user) // Http "GET /cards"
         {
-            if (user == null)
+            if (user == null || user.Stack == null)
             {
-                Console.WriteLine($"User {user.Username} not found.");
+                Console.WriteLine("User could not be found.");
                 return;
             }
 
@@ -47,48 +46,60 @@ namespace MTCG.BusinessLogic.Services
                 Console.WriteLine("[Empty]");
                 return;
             }
+
             int i = 1;
-            foreach (var card in user.Stack)
+            foreach (var card in user.Stack.Values)
             {
                 string cardType = card is MonsterCard ? "Monster" : "Spell";
-
                 Console.WriteLine($"{i}. -> {cardType}: \"{card.Name}\" ({card.ElemType}) {card.Damage} Damage");
                 i++;
             }
         }
 
-        public bool AddCardToStack(User user, ICard card)
+        public bool AddCardToStack(User user, string cardKey, ICard card)
         {
-            //if (!user.validateAction()) return false;
-
-            if (card == null)
+            if (user == null || user.Stack == null || card == null)
             {
-                /*throw new ArgumentNullException(nameof(card), "Card to be added cannot be null");*/
-                return false;
-            }
-            // TODO : fix access -> POST Request
-            user.Stack.Add(card);
-            return true;
-        }
-        public bool RemoveCardFromStack(User user, Guid cardId)
-        {
-            //if (!user.validateAction()) return false;
-            // search for card in Stack
-            var cardToRemove = user.Stack.Find(card => card.Id == cardId);
-
-            if (user.Stack.Count <= 0 || cardToRemove == null)
-            {
+                Console.WriteLine("Error: User, stack, or card is null.");
                 return false;
             }
 
             // TODO: fix access -> POST Request
-            user.Stack.Remove(cardToRemove);
-            return true;
+            if (!user.Stack.ContainsKey(cardKey))
+            {
+                user.Stack.Add(cardKey, card);
+                return true;
+            }
 
+            Console.WriteLine($"Card with key {cardKey} already exists in the stack.");
+            return false;
         }
+
+        public bool RemoveCardFromStack(User user, string cardKey)
+        {
+            if (user?.Stack == null)
+            {
+                return false;
+            }
+
+            if (!user.Stack.Remove(cardKey))
+            {
+                Console.WriteLine($"Error: Card with key {cardKey} not found.");
+                return false;
+            }
+
+            return true;
+        }
+
         // TODO: put in UserService
         public bool IsCardInUserStack(User user, Guid cardId)
         {
+            if (user == null || user.Stack == null)
+            {
+                Console.WriteLine("Error: User or stack is null.");
+                return false;
+            }
+
             return _userRepository.IsCardInUserStack(user, cardId);
         }
     }

@@ -17,3 +17,26 @@ There were difficulties in deciding how to connect the server structure with the
 Because I initially tried a bottom-up approach, I had to refactor the code to a top-down approach in order to make the server and services work together.
 First, I tried to implement a singleton "service manager", which would hold all the services and provide them to the server.
 However, nested singleton classes caused problems with the dependency injection, so I decided to use a simple service locator pattern.
+
+## DEBUG PostgreSQL Compilation
+Create docker container
+docker run -d --name postgresdb -e POSTGRES_USER=postgres -e
+POSTGRES_PASSWORD=postgres -p 5432:5432 -v pgdata:/var/lib/postgresql/data
+postgres
+
+To get into the docker container shell enter:
+docker exec -it postgresdb bash
+
+To authenticate for PSQL:
+psql -U postgres
+
+Or to do both in one command:
+docker exec -it postgresdb psql -U postgres -h localhost -d postgres -P
+
+Then create database
+CREATE DATABASE postgresdb;
+Then connect to it via:
+\c mtcgdb
+
+Drop the database via
+DROP DATABASE mtcgdb;

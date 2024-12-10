@@ -28,7 +28,8 @@ namespace MTCG.BusinessLogic.Services
         private List<User> playerLobby = new List<User>(); // put this in battle repository?
         public BattleService(DeckService deckService)
         {
-            _deckService = deckService;
+            _deckService = deckService
+                ?? throw new ArgumentNullException(nameof(deckService));
         }
         public static BattleService GetInstance(DeckService deckService)
         {
@@ -87,13 +88,13 @@ namespace MTCG.BusinessLogic.Services
             {
                 Console.WriteLine($"{playerA.Username}'s card {cardA.Name} wins this round.");
                 // Karte von playerB zu playerA transferieren
-                _deckService.TransferCard(playerB, playerA, cardB);
+                _deckService.TransferCard(playerB, playerA, cardB.Id.ToString());
             }
             else if (damageB > damageA)
             {
                 Console.WriteLine($"{playerB.Username}'s card {cardB.Name} wins this round.");
                 // Karte von playerA zu playerB transferieren
-                _deckService.TransferCard(playerA, playerB, cardA);
+                _deckService.TransferCard(playerA, playerB, cardA.Id.ToString());
             }
             else
             {

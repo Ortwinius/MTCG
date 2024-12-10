@@ -19,7 +19,8 @@ namespace MTCG.BusinessLogic.Services
         private AuthService(UserRepository userRepository)
         {
             // may not be null :
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _userRepository = userRepository 
+                ?? throw new ArgumentNullException(nameof(userRepository));
             _passwordHasher = new PasswordHasher<User>();
         }
         public static AuthService GetInstance(UserRepository userRepository)
@@ -70,7 +71,7 @@ namespace MTCG.BusinessLogic.Services
         #region Login
 
         // Login Http "POST /sessions"
-        public bool Login(string inputUsername, string inputPassword, out string authToken)
+        public bool Login(string inputUsername, string inputPassword, out string? authToken)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
             authToken = null;

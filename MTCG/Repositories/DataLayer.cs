@@ -5,15 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace MTCG.Repositories
 {
     public static class DataLayer
     {
-        public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
+        // Connection to the database
+        public static NpgsqlConnection GetConnection()
+        {
+            return new NpgsqlConnection(
+                "Server=localhost;Username=postgres;Password=postgres;Database=mtcgdb"
+                );
+        }
+        // Add a parameter to a command to prevent SQL injection
+        public static void AddParameterWithValue(NpgsqlCommand command, string parameterName, NpgsqlDbType type, object value)
         {
             var parameter = command.CreateParameter();
-            parameter.DbType = type;
+            parameter.NpgsqlDbType = type;
             parameter.ParameterName = parameterName;
             parameter.Value = value ?? DBNull.Value;
             command.Parameters.Add(parameter);
