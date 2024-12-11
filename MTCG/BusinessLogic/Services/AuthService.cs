@@ -82,7 +82,8 @@ namespace MTCG.BusinessLogic.Services
                 Console.WriteLine("Invalid username");
                 return false;
             }
-            if (user.IsLoggedIn)
+            // if already logged in
+            if (user.AuthToken != null)
             {
                 Console.WriteLine($"User {user.Username} is already logged in.");
                 return false;
@@ -97,9 +98,11 @@ namespace MTCG.BusinessLogic.Services
             }
         
             user.AuthToken = user.Username + "-mtcgToken";
-            authToken = user.AuthToken;
+            authToken = user.AuthToken; // for out parameter
 
-            user.IsLoggedIn = true;
+            // update user in db with new authToken
+            _userRepository.UpdateUser(user);
+
             Console.WriteLine($"Logging in... Welcome {user.Username}!");
 
             return true;

@@ -1,6 +1,7 @@
 ﻿using MTCG.Server;
 using MTCG.Repositories;
 using MTCG.BusinessLogic.Services;
+using MTCG.Server.DIConfig;
 
 namespace MTCG
 {
@@ -8,7 +9,10 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            ServerController serverController = new ServerController();
+            var serviceProvider = DependencyInjectionConfig.ConfigureServices();
+
+            var serverController = new ServerController(serviceProvider);
+
             serverController.Listen();
         }
     }

@@ -33,10 +33,11 @@ namespace MTCG.Models.Users
             IsLoggedIn = false;
         }
         // for db
-        public User(string username, string password, int coins, int elo)
+        public User(string username, string password, string? authToken, int coins, int elo)
         {
             Username = username;
             Password = password;
+            AuthToken = authToken;
             Coins = coins;
             Elo = elo;
             Stack = new();

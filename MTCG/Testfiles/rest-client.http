@@ -91,3 +91,32 @@ Content-Type: application/json
 "username": "kienboec",
 "password": "wrongpassword"
 }
+
+### Should return HTTP 201 - Package created
+POST http://localhost:10001/packages HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer admin-mtcgToken
+[
+    {
+        "id": "845f0dc7-37d0-426e-994e-43fc3ac83c08",
+        "name": "WaterGoblin",
+        "type": "Monster",
+        "element": "Water",
+        "damage": 10
+    },
+    {
+        "id": "99f8f8dc-e25e-4a95-aa2c-782823f36e2a",
+        "name": "Dragon",
+        "type": "Monster",
+        "element": "Neutral",
+        "damage": 50
+    },
+    {
+        "id": "e85e3976-7c86-4d06-9a80-641c2019a79f",
+        "name": "WaterSpell",
+        "type": "Spell",
+        "element": "Water",
+        "damage": 20
+    }
+]
+

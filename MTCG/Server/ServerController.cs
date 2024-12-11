@@ -1,37 +1,37 @@
-﻿using MTCG.BusinessLogic.Services;
-using MTCG.Models.ResponseObject;
-using MTCG.Repositories;
-using MTCG.Server.Endpoints;
-using MTCG.Utilities;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using MTCG.Server.Endpoints;
+using MTCG.Models.ResponseObject;
+using Microsoft.Extensions.DependencyInjection;
+using MTCG.Utilities;
 
 namespace MTCG.Server
 {
     public class ServerController
     {
-        private HttpRequestHandler _requestHandler;
-        private HttpParser _httpParser;
-        private static int _port = 10001;
+        private readonly IServiceProvider _serviceProvider; // DI-Container
+        private readonly HttpRequestHandler _requestHandler;
+        private readonly HttpParser _httpParser;
+        private static readonly int _port = Constants.ServerPort;
 
-        public ServerController()
+        public ServerController(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
             _requestHandler = new HttpRequestHandler();
             _httpParser = new HttpParser();
 
-            // Initialize UserRepository
-            var userRepository = new UserRepository();
+            InitializeEndpoints();
+        }
 
-            // Initialize AuthService singleton with UserRepository
-            var authService = AuthService.GetInstance(userRepository);
+        private void InitializeEndpoints()
+        {
+            // retrieve registered services from DI container
+            var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndPoint>();
+            var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
 
-
-            // Initialize your endpoints with the necessary services
-            var usersEndpoint = new UsersEndPoint(authService, userRepository);
-            var sessionsEndpoint = new SessionsEndpoint(authService, userRepository);
-
+            // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
             _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
         }
@@ -41,7 +41,7 @@ namespace MTCG.Server
             Console.WriteLine($"Server listening on http://localhost:{_port}/");
             var server = new TcpListener(IPAddress.Any, _port);
             server.Start();
-            
+
             while (true)
             {
                 var client = server.AcceptTcpClient();
@@ -94,7 +94,5 @@ namespace MTCG.Server
                 // Handle socket errors if necessary
             }
         }
-
-
     }
 }

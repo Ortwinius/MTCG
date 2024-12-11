@@ -30,10 +30,11 @@ namespace MTCG.Models.Card
     }
     public interface ICard
     {
-        Guid Id { get; }
+        Guid Id { get; } 
         int Damage { get; }
         string Name { get; }
         ElementType ElemType { get; }
+        //MonsterType? MonType { get; } // type is nullable -> spell
 
         void attack(ICard other);
     }

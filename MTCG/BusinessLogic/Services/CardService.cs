@@ -49,23 +49,26 @@ namespace MTCG.BusinessLogic.Services
             return cards;
         }
 
-        public ICard GetCardById(Guid id)
+        public ICard? GetCardById(Guid id)
         {
             return _cardRepository.GetCardById(id);
         }
-        public ICard GetRandomCard()
+        public ICard? GetRandomCard()
         { 
             return _cardRepository.GetRandomCard();
         }
-        public Guid GetRandomCardId()
+        public Guid? GetRandomCardId()
         {
-            return GetRandomCard().Id;
+            var card = GetRandomCard();
+            
+            return card != null ? card.Id : null;
         }
 
         // for debugging
-        public ICard GetRandomCardOfUser(User user)
+        public ICard? GetRandomCardOfUser(User user)
         {
-            return _cardRepository.GetRandomCardOfUser(user);
+            //return _cardRepository.GetRandomCardOfUser(user);
+            throw new NotImplementedException();
         }
     }
 }

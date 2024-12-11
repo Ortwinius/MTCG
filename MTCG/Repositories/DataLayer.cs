@@ -15,7 +15,10 @@ namespace MTCG.Repositories
         public static NpgsqlConnection GetConnection()
         {
             return new NpgsqlConnection(
-                "Server=localhost;Username=postgres;Password=postgres;Database=mtcgdb"
+                "Server=localhost;" +
+                "Username=postgres;" +
+                "Password=postgres;" +
+                "Database=mtcgdb"
                 );
         }
         // Add a parameter to a command to prevent SQL injection

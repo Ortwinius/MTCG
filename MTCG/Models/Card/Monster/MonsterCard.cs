@@ -7,7 +7,7 @@
         public string Name { get; private set; }
         public ElementType ElemType { get; private set; }
         
-        public MonsterType MonType { get; private set; }
+        public MonsterType? MonType { get; private set; }
         // base constructor
         public MonsterCard(string name)
         {
@@ -25,13 +25,16 @@
 
             Name = monsterType.ToString(); // disgusting
         }
-        //public MonsterCard(string name, ElementType elementType, int damage)
-        //{
-        //    Id = Guid.NewGuid();
-        //    Name = name;
-        //    ElemType = elementType;
-        //    Damage = damage;
-        //}        
+
+        // for db
+        public MonsterCard(Guid id, string name, ElementType elemType, int damage)
+        {
+            Id = id;
+            Name = name;
+            ElemType = elemType;
+            Damage = damage;
+            //MonType = monsterType;
+        }
 
         public void attack(ICard other)
         {
