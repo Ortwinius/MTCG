@@ -14,33 +14,14 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            var command = new NpgsqlCommand(
+            var cmd = new NpgsqlCommand(
                 "INSERT INTO users (username, password) " +
                 "VALUES (@username, @password)", connection);
 
-            DataLayer.AddParameterWithValue(command, "username", NpgsqlDbType.Varchar, user.Username);
-            DataLayer.AddParameterWithValue(command, "password", NpgsqlDbType.Varchar, user.Password);
-            
-            command.ExecuteNonQuery();
-        }
-        public string? GetAuthTokenByUsername(string username)
-        {
-            using var connection = DataLayer.GetConnection();
-            connection.Open();
+            DataLayer.AddParameter(cmd, "username", user.Username);
+            DataLayer.AddParameter(cmd, "password", user.Password);
 
-            var command = new NpgsqlCommand(
-                "SELECT auth_token FROM users " +
-                "WHERE username = @username", connection);
-
-            DataLayer.AddParameterWithValue(command, "username", NpgsqlDbType.Varchar, username);
-
-            using var reader = command.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetString(0);
-            }
-
-            return null;
+            cmd.ExecuteNonQuery();
         }
         public User? GetUserByUsername(string username)
         {
@@ -48,14 +29,15 @@ namespace MTCG.Repositories
             connection.Open();
 
 
-            var command = new NpgsqlCommand(
-                "SELECT username, password, auth_token, coin, elo FROM users " +
+            var cmd = new NpgsqlCommand(
+                "SELECT username, password, auth_token, coin, elo " +
+                "FROM users " +
                 "WHERE username = @username", connection);
 
             // TODO could be prone to error ? 
-            DataLayer.AddParameterWithValue(command, "username", NpgsqlDbType.Varchar, username);
+            DataLayer.AddParameter(cmd, "username", username);
 
-            using var reader = command.ExecuteReader();
+            using var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
                 return new User(
@@ -70,42 +52,65 @@ namespace MTCG.Repositories
             // return null if no user was found
             return null;
         }
-
         public void UpdateUser(User user)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            var command = new NpgsqlCommand(
+            var cmd = new NpgsqlCommand(
                 "UPDATE users " +
                 "SET password = @password, auth_token = @auth_token, coin = @coin, elo = @elo " +
                 "WHERE username = @username", connection);
 
-            DataLayer.AddParameterWithValue(command, "username", NpgsqlDbType.Varchar, user.Username);
-            DataLayer.AddParameterWithValue(command, "password", NpgsqlDbType.Varchar, user.Password);
-            DataLayer.AddParameterWithValue(command, "auth_token", NpgsqlDbType.Varchar, user.AuthToken ?? (object)DBNull.Value);
-            DataLayer.AddParameterWithValue(command, "coin", NpgsqlDbType.Integer, user.Coins);
-            DataLayer.AddParameterWithValue(command, "elo", NpgsqlDbType.Integer, user.Elo);
+            DataLayer.AddParameter(cmd, "username", user.Username);
+            DataLayer.AddParameter(cmd, "password", user.Password);
+            DataLayer.AddParameter(cmd, "auth_token", user.AuthToken ?? (object)DBNull.Value);
+            DataLayer.AddParameter(cmd, "coin", user.Coins);
+            DataLayer.AddParameter(cmd, "elo", user.Elo);
 
-            command.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();
         }
         public void DeleteUser(string username)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            var command = new NpgsqlCommand(
+            var cmd = new NpgsqlCommand(
                 "DELETE FROM users " +
                 "WHERE username = @username", connection);
 
-            command.Parameters.AddWithValue("username", username);
+            DataLayer.AddParameter(cmd, "username", username);
+            
+            cmd.ExecuteNonQuery();
+        }
+        public string? GetAuthTokenByUsername(string username)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
 
-            command.ExecuteNonQuery();
+            var cmd = new NpgsqlCommand(
+                "SELECT auth_token FROM users " +
+                "WHERE username = @username", connection);
+
+            DataLayer.AddParameter(cmd, "username", username);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return reader.GetString(0);
+            }
+
+            return null;
         }
 
         public bool UserExists(string username)
         {
             return GetUserByUsername(username) != null;
+        }
+        public bool IsAdmin(string username)
+        {
+            var user = GetUserByUsername(username);
+            return user != null && user.Username == "admin";
         }
 
         public bool IsCardInUserStack(User user, Guid cardId)

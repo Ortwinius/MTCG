@@ -14,19 +14,18 @@ namespace MTCG.BusinessLogic.Services
 {
     public class CardService
     {
-        private static CardService _instance;
+        private static CardService? _instance;
         private readonly CardRepository _cardRepository; // readonly to ensure Service always uses the same repos
-        private readonly UserRepository _userRepository;
-        private CardService(CardRepository cardRepository, UserRepository userRepository)
+        //private readonly UserRepository _userRepository;
+        private CardService(CardRepository cardRepository)
         {
             _cardRepository = cardRepository;
-            _userRepository = userRepository;
         }
-        public static CardService GetInstance(CardRepository cardRepository, UserRepository userRepository)
+        public static CardService GetInstance(CardRepository cardRepository)
         {
             if (_instance == null)
             {
-                _instance = new CardService(cardRepository, userRepository);
+                _instance = new CardService(cardRepository);
             }
             return _instance;
         }
@@ -64,11 +63,11 @@ namespace MTCG.BusinessLogic.Services
             return card != null ? card.Id : null;
         }
 
-        // for debugging
-        public ICard? GetRandomCardOfUser(User user)
-        {
-            //return _cardRepository.GetRandomCardOfUser(user);
-            throw new NotImplementedException();
-        }
+        // for debugging TO DELETE
+        //public ICard? GetRandomCardOfUser(User user)
+        //{
+        //    //return _cardRepository.GetRandomCardOfUser(user);
+        //    throw new NotImplementedException();
+        //}
     }
 }

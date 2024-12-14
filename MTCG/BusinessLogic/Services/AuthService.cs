@@ -10,7 +10,7 @@ namespace MTCG.BusinessLogic.Services
 {
     public class AuthService
     {
-        private static AuthService _instance;
+        private static AuthService? _instance;
 
         private readonly UserRepository _userRepository; 
         private readonly PasswordHasher<User> _passwordHasher;

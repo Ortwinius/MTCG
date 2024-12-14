@@ -30,10 +30,12 @@ namespace MTCG.Server
             // retrieve registered services from DI container
             var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndPoint>();
             var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
+            var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
             _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
+            _requestHandler.AddEndpoint("/packages", packagesEndpoint);
         }
 
         public void Listen()

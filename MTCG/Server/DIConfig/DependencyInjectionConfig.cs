@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Server.DIConfig
 {
+    // responsible for setting up the dependency injection container for the services
     public static class DependencyInjectionConfig
     {
         public static IServiceProvider ConfigureServices()
@@ -19,16 +20,23 @@ namespace MTCG.Server.DIConfig
             // Repositories (Transient)
             services.AddTransient<UserRepository>();
             services.AddTransient<PackageRepository>();
+            services.AddTransient<CardRepository>();
+            services.AddTransient<PackageRepository>();
 
             // Services (Singleton)
             services.AddSingleton<AuthService>(sp =>
                 AuthService.GetInstance(sp.GetRequiredService<UserRepository>()));
-            services.AddSingleton<PackageService>(sp =>
-                PackageService.GetInstance(sp.GetRequiredService<PackageRepository>()));
+            services.AddSingleton<PackageService>(sp => 
+                PackageService.GetInstance(sp.GetRequiredService<PackageRepository>(),
+                                           sp.GetRequiredService<UserRepository>()));
+            services.AddSingleton<CardService>(sp =>
+                CardService.GetInstance(sp.GetRequiredService<CardRepository>()));
 
             // Endpoints (Transient)
             services.AddTransient<UsersEndPoint>();
             services.AddTransient<SessionsEndpoint>();
+            services.AddTransient<CardsEndpoint>();
+            services.AddTransient<PackagesEndpoint>();
 
             return services.BuildServiceProvider();
         }

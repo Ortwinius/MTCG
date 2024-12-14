@@ -22,14 +22,34 @@ namespace MTCG.Repositories
                 );
         }
         // Add a parameter to a command to prevent SQL injection
-        public static void AddParameterWithValue(NpgsqlCommand command, string parameterName, NpgsqlDbType type, object value)
+        public static void AddParameter(NpgsqlCommand command, string parameterName, object value)
         {
             var parameter = command.CreateParameter();
-            parameter.NpgsqlDbType = type;
             parameter.ParameterName = parameterName;
             parameter.Value = value ?? DBNull.Value;
+
+            if (value != null)
+            {
+                parameter.NpgsqlDbType = GetDbType(value);
+            }
+
             command.Parameters.Add(parameter);
         }
-
+        // could be put in to helpers
+        private static NpgsqlDbType GetDbType(object value)
+        {
+            return value switch
+            {
+                int => NpgsqlDbType.Integer,
+                long => NpgsqlDbType.Bigint,
+                string => NpgsqlDbType.Text,
+                DateTime => NpgsqlDbType.Timestamp,
+                bool => NpgsqlDbType.Boolean,
+                Guid => NpgsqlDbType.Uuid,
+                float => NpgsqlDbType.Real,
+                double => NpgsqlDbType.Double,
+                _ => throw new InvalidOperationException($"Unsupported parameter type: {value.GetType()}")
+            };
+        }
     }
 }

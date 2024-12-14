@@ -99,24 +99,42 @@ Authorization: Bearer admin-mtcgToken
 [
     {
         "id": "845f0dc7-37d0-426e-994e-43fc3ac83c08",
-        "name": "WaterGoblin",
-        "type": "Monster",
-        "element": "Water",
-        "damage": 10
+        "name": "Goblin",
+        "type": "MonsterCard",
+        "element": "Normal",
+        "damage": 10,
+        "monType": "Goblin"
     },
     {
         "id": "99f8f8dc-e25e-4a95-aa2c-782823f36e2a",
         "name": "Dragon",
-        "type": "Monster",
-        "element": "Neutral",
-        "damage": 50
+        "type": "MonsterCard",
+        "element": "Fire",
+        "damage": 50,
+        "monType": "Dragon"
     },
     {
         "id": "e85e3976-7c86-4d06-9a80-641c2019a79f",
-        "name": "WaterSpell",
-        "type": "Spell",
+        "name": "FireSpell",
+        "type": "SpellCard",
+        "element": "Fire",
+        "damage": 20,
+        "spellType": "FireSpell"
+    },
+    {
+        "id": "c9b80d67-3dc5-4a90-9b9f-485c6b798b4e",  
+        "name": "Knight",
+        "type": "MonsterCard",
+        "element": "Normal",
+        "damage": 30,
+        "monType": "Knight"
+    },
+    {
+        "id": "1a3f5a6d-4a75-4e67-9a8e-2c5bfb239f00",  
+        "name": "RegularSpell",
+        "type": "SpellCard",
         "element": "Water",
-        "damage": 20
+        "damage": 15,
+        "spellType": "RegularSpell"
     }
 ]
-

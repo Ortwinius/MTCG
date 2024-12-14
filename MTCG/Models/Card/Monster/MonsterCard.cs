@@ -1,14 +1,27 @@
-﻿namespace MTCG.Models.Card.Monster
+﻿using System.Text.Json.Serialization;
+
+namespace MTCG.Models.Card.Monster
 {
     public class MonsterCard : ICard
     {
-        public Guid Id { get; private set; }
-        public int Damage { get; } // not modifiable because its constant
-        public string Name { get; private set; }
-        public ElementType ElemType { get; private set; }
-        
-        public MonsterType? MonType { get; private set; }
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("damage")]
+        public int Damage { get; set;  } 
+        [JsonPropertyName("element")]
+        public ElementType ElemType { get; set; }
+
+        [JsonPropertyName("monType")]
+        public MonsterType? MonType { get; set; } 
         // base constructor
+        public MonsterCard()
+        {
+            Id = Guid.NewGuid();
+            Name = "";
+            ElemType = ElementType.Normal;
+        }
         public MonsterCard(string name)
         {
             Id = Guid.NewGuid();
@@ -30,10 +43,9 @@
         public MonsterCard(Guid id, string name, ElementType elemType, int damage)
         {
             Id = id;
-            Name = name;
-            ElemType = elemType;
+            Name = name; // "Goblin"
+            ElemType = elemType; // ElementType.Normal
             Damage = damage;
-            //MonType = monsterType;
         }
 
         public void attack(ICard other)

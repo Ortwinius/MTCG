@@ -1,16 +1,30 @@
 ﻿using MTCG.Models.Card.Monster;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MTCG.Models.Card.Spell
 {
     public class SpellCard : ICard
     {
-        public Guid Id { get; private set; }
-        public int Damage { get; } // not modifiable because its constant
-        public string Name { get; private set; }
-        public ElementType ElemType { get; private set; }
-        public SpellType? SpellType { get; private set; }
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("damage")]
+        public int Damage { get; set; }
+        [JsonPropertyName("element")]
+        public ElementType ElemType { get; set; }
+        [JsonPropertyName("spellType")]
+        public SpellType? SpellType { get; set; }
 
+        public SpellCard()
+        {
+            Id = Guid.NewGuid();
+            Name = "";
+            ElemType = ElementType.Normal;
+            Damage = 0;
+        }
         public SpellCard(SpellType spellType, ElementType elementType, int damage)
         {
             Id = Guid.NewGuid();

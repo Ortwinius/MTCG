@@ -19,12 +19,12 @@ namespace MTCG.Repositories
                 "INSERT INTO cards (card_id, name, type, element_type, damage, owner_user_id) " +
                 "VALUES (@card_id, @name, @type, @element_type, @damage, @owner_user_id)", connection);
 
-            DataLayer.AddParameterWithValue(command, "card_id", NpgsqlDbType.Uuid, card.Id);
-            DataLayer.AddParameterWithValue(command, "name", NpgsqlDbType.Varchar, card.Name);
-            DataLayer.AddParameterWithValue(command, "type", NpgsqlDbType.Varchar, card is MonsterCard ? "Monster" : "Spell");
-            DataLayer.AddParameterWithValue(command, "element_type", NpgsqlDbType.Varchar, card.ElemType.ToString());
-            DataLayer.AddParameterWithValue(command, "damage", NpgsqlDbType.Integer, card.Damage);
-            DataLayer.AddParameterWithValue(command, "owner_user_id", NpgsqlDbType.Integer, ownerUserId ?? (object) DBNull.Value);
+            DataLayer.AddParameter(command, "card_id", card.Id);
+            DataLayer.AddParameter(command, "name", card.Name);
+            DataLayer.AddParameter(command, "type", card is MonsterCard ? "Monster" : "Spell");
+            DataLayer.AddParameter(command, "element_type", card.ElemType.ToString());
+            DataLayer.AddParameter(command, "damage", card.Damage);
+            DataLayer.AddParameter(command, "owner_user_id", ownerUserId ?? (object) DBNull.Value);
 
             command.ExecuteNonQuery();
         }
@@ -39,7 +39,7 @@ namespace MTCG.Repositories
                 "FROM cards " +
                 "WHERE card_id = @card_id", connection);
 
-            DataLayer.AddParameterWithValue(command, "card_id", NpgsqlDbType.Uuid, id);
+            DataLayer.AddParameter(command, "card_id", id);
 
             using var reader = command.ExecuteReader();
             if (reader.Read())
@@ -64,6 +64,19 @@ namespace MTCG.Repositories
             return null; // Card not found
         }
 
+        public void DeleteCard(Guid cardId)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var command = new NpgsqlCommand(
+                "DELETE FROM cards " +
+                "WHERE card_id = @card_id", connection);
+
+            DataLayer.AddParameter(command, "card_id", cardId);
+
+            command.ExecuteNonQuery();
+        }
         // maybe not needed?
         public List<ICard>? GetAllCards()
         {
@@ -99,29 +112,6 @@ namespace MTCG.Repositories
             return cards;
         }
 
-        public void DeleteCard(Guid cardId)
-        {
-            using var connection = DataLayer.GetConnection();
-            connection.Open();
-
-            var command = new NpgsqlCommand(
-                "DELETE FROM cards " +
-                "WHERE card_id = @card_id", connection);
-
-            DataLayer.AddParameterWithValue(command, "card_id", NpgsqlDbType.Uuid, cardId);
-
-            command.ExecuteNonQuery();
-        }
-
-        public ICard? GetRandomCard()
-        {
-            var allCards = GetAllCards();
-            if (allCards!.Count == 0) return null;
-
-            Random random = new Random();
-            return allCards[random.Next(allCards.Count)];
-        }
-
         public void UpdateCardOwnership(Guid cardId, int? newOwnerUserId)
         {
             using var connection = DataLayer.GetConnection();
@@ -132,10 +122,21 @@ namespace MTCG.Repositories
                 "SET owner_user_id = @new_owner_user_id " +
                 "WHERE card_id = @card_id", connection);
 
-            DataLayer.AddParameterWithValue(command, "card_id", NpgsqlDbType.Uuid, cardId);
-            DataLayer.AddParameterWithValue(command, "new_owner_user_id", NpgsqlDbType.Integer, newOwnerUserId ?? (object)DBNull.Value);
+            DataLayer.AddParameter(command, "card_id", cardId);
+            DataLayer.AddParameter(command, "new_owner_user_id", newOwnerUserId ?? (object)DBNull.Value);
 
             command.ExecuteNonQuery();
         }
+
+        // probably not needed
+        public ICard? GetRandomCard()
+        {
+            var allCards = GetAllCards();
+            if (allCards!.Count == 0) return null;
+
+            Random random = new Random();
+            return allCards[random.Next(allCards.Count)];
+        }
+
     }
 }

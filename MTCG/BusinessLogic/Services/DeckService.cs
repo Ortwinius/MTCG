@@ -7,7 +7,7 @@ namespace MTCG.BusinessLogic.Services
 {
     public class DeckService
     {
-        private static DeckService _instance;
+        private static DeckService? _instance;
 
         private DeckService() { }
 

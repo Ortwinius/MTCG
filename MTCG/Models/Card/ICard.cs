@@ -1,4 +1,6 @@
 ﻿// interface class for cards
+using System.Text.Json.Serialization;
+
 namespace MTCG.Models.Card
 {
     public enum ElementType
@@ -34,7 +36,6 @@ namespace MTCG.Models.Card
         int Damage { get; }
         string Name { get; }
         ElementType ElemType { get; }
-        //MonsterType? MonType { get; } // type is nullable -> spell
 
         void attack(ICard other);
     }

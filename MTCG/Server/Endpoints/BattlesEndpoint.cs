@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Models.ResponseObject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace MTCG.Server.Endpoints
 {
-    internal class BattlesEndpoint
+    public class BattlesEndpoint : IHttpEndpoint
     {
+        public ResponseObject HandleRequest(string method, string path, string body)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
