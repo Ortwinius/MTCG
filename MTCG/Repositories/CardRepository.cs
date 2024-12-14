@@ -10,6 +10,10 @@ namespace MTCG.Repositories
 {
     public class CardRepository
     {
+        public List<ICard>? GetUserCards(string username)
+        {
+            return null;
+        }
         public void AddCard(ICard card, int? ownerUserId = null)
         {
             using var connection = DataLayer.GetConnection();
@@ -129,14 +133,14 @@ namespace MTCG.Repositories
         }
 
         // probably not needed
-        public ICard? GetRandomCard()
-        {
-            var allCards = GetAllCards();
-            if (allCards!.Count == 0) return null;
+        //public ICard? GetRandomCard()
+        //{
+        //    var allCards = GetAllCards();
+        //    if (allCards!.Count == 0) return null;
 
-            Random random = new Random();
-            return allCards[random.Next(allCards.Count)];
-        }
+        //    Random random = new Random();
+        //    return allCards[random.Next(allCards.Count)];
+        //}
 
     }
 }

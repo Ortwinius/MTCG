@@ -21,6 +21,10 @@ namespace MTCG.BusinessLogic.Services
         {
             _cardRepository = cardRepository;
         }
+        public List<ICard>? GetUserCards(string username)
+        {
+            return _cardRepository.GetUserCards(username);
+        }
         public static CardService GetInstance(CardRepository cardRepository)
         {
             if (_instance == null)
@@ -52,22 +56,5 @@ namespace MTCG.BusinessLogic.Services
         {
             return _cardRepository.GetCardById(id);
         }
-        public ICard? GetRandomCard()
-        { 
-            return _cardRepository.GetRandomCard();
-        }
-        public Guid? GetRandomCardId()
-        {
-            var card = GetRandomCard();
-            
-            return card != null ? card.Id : null;
-        }
-
-        // for debugging TO DELETE
-        //public ICard? GetRandomCardOfUser(User user)
-        //{
-        //    //return _cardRepository.GetRandomCardOfUser(user);
-        //    throw new NotImplementedException();
-        //}
     }
 }

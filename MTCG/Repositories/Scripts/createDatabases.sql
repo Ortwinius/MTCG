@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS packages (
 -- Create Package_Cards (junction table)
 CREATE TABLE IF NOT EXISTS package_cards (
     package_id INT,
-    card_id INT,
+    card_id UUID,
     PRIMARY KEY (package_id, card_id),
     FOREIGN KEY (package_id) REFERENCES packages(package_id) ON DELETE CASCADE,
     FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE

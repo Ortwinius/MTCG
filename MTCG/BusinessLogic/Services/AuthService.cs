@@ -33,15 +33,15 @@ namespace MTCG.BusinessLogic.Services
         }
 
         // validate each action by checking if user is logged in and authToken is valid
-        public bool IsAuthenticated(User user)
-        {
-            if (!user.IsLoggedIn || string.IsNullOrEmpty(user.AuthToken))
-            {
-                Console.WriteLine("You cannot perform this action due to missing permission. Are you logged in?");
-                return false;
-            }
-            return true;
-        }
+        //public bool IsAuthenticated(User user)
+        //{
+        //    if (!user.IsLoggedIn || string.IsNullOrEmpty(user.AuthToken))
+        //    {
+        //        Console.WriteLine("You cannot perform this action due to missing permission. Are you logged in?");
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         #region Register
 
@@ -109,29 +109,9 @@ namespace MTCG.BusinessLogic.Services
         }
         #endregion
 
-        #region Logout
-
-        // Benutzer abmelden
-        public bool Logout(string inputUsername)
-        {
-            var user = _userRepository.GetUserByUsername(inputUsername);
-
-            if (user == null || !user.IsLoggedIn)
-            {
-                //throw new InvalidOperationException("User not logged in.");
-                Console.WriteLine("Error: User not logged in or user does not exist");
-                return false;
-            }
-
-            user.IsLoggedIn = false;
-            _userRepository.UpdateUser(user);
-            Console.WriteLine($"\nLogging out {user.Username}...");
-            return true;
-        }
-        #endregion
 
         // Get user by username
-        public User GetUserByUsername(string username)
+        public User? GetUserByUsername(string username)
         {
             return _userRepository.GetUserByUsername(username);
         }

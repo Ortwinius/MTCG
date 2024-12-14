@@ -28,14 +28,17 @@ namespace MTCG.Server
         private void InitializeEndpoints()
         {
             // retrieve registered services from DI container
-            var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndPoint>();
+            var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndpoint>();
             var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
             var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
+            var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
+            var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
             _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
             _requestHandler.AddEndpoint("/packages", packagesEndpoint);
+            _requestHandler.AddEndpoint("/cards", cardsEndpoint);
         }
 
         public void Listen()

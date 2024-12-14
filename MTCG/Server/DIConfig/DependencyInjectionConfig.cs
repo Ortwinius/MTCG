@@ -33,7 +33,7 @@ namespace MTCG.Server.DIConfig
                 CardService.GetInstance(sp.GetRequiredService<CardRepository>()));
 
             // Endpoints (Transient)
-            services.AddTransient<UsersEndPoint>();
+            services.AddTransient<UsersEndpoint>();
             services.AddTransient<SessionsEndpoint>();
             services.AddTransient<CardsEndpoint>();
             services.AddTransient<PackagesEndpoint>();

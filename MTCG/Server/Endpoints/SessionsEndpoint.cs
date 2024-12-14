@@ -11,12 +11,10 @@ namespace MTCG.Server.Endpoints
     public class SessionsEndpoint : IHttpEndpoint
     {
         private readonly AuthService _authService;
-        private readonly UserRepository _userRepository;
 
-        public SessionsEndpoint(AuthService authService, UserRepository userRepository)
+        public SessionsEndpoint(AuthService authService)
         {
             _authService = authService;
-            _userRepository = userRepository;
         }
 
         // This method now returns a ResponseObject

@@ -9,22 +9,27 @@ using System.Text.Json;
 
 namespace MTCG.Server.Endpoints
 {
-    public class UsersEndPoint : IHttpEndpoint
+    public class UsersEndpoint : IHttpEndpoint
     {
         private readonly AuthService _authService;
-        private readonly UserRepository _userRepository;
-        public UsersEndPoint(AuthService authService, UserRepository userRepository)
+        public UsersEndpoint(AuthService authService)
         {
             _authService = authService;
-            _userRepository = userRepository;
         }
 
+        /*
+        According to API:
+        POST /users
+        GET /users/{username}
+        */
         public ResponseObject HandleRequest(string method, string path, string body)
         {
             switch(method)
             {
                 case "POST":
                     return RegisterUser(body);
+                case "GET" when path.StartsWith("/users/"):
+                    return GetUserData(path);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }
@@ -43,6 +48,16 @@ namespace MTCG.Server.Endpoints
                 return new ResponseObject(201, "User successfully registered.");
             }
             return new ResponseObject(409, "User already exists.");
+        }
+        private ResponseObject GetUserData(string path)
+        {
+            var username = path.Split("/")[2];
+            var userData = _authService.GetUserByUsername(username);
+
+            // TODO: convert to string
+            return (userData != null)
+                ? new ResponseObject(200, "userData: SERIALIZE!")
+                : new ResponseObject(404, "User not found.");
         }
     }
 }
