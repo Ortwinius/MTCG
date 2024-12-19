@@ -4,7 +4,10 @@ namespace MTCG.Repositories
 {
     public interface IPackageRepository
     {
-        bool AcquirePackage();
-        void AddPackage(List<ICard> cards);
+        List<ICard>? AcquirePackage(string username);
+        bool AddPackage(List<ICard> cards);
+        bool CheckAllCardsUnique(List<ICard> cards);
+        void UpdatePackageOwnership(List<Guid> cardIds, string username);
+        void UpdateSingleCardOwnership(Guid cardId, string username);
     }
 }

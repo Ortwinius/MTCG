@@ -138,3 +138,9 @@ Authorization: Bearer admin-mtcgToken
         "spellType": "RegularSpell"
     }
 ]
+
+
+### Should return HTTP 200 - Package bought
+POST http://localhost:10001/transactions/packages HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer kienboec-mtcgToken

@@ -22,14 +22,14 @@ namespace MTCG.Server.Endpoints
         POST /users
         GET /users/{username}
         */
-        public ResponseObject HandleRequest(string method, string path, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
         {
             switch(method)
             {
                 case "POST":
                     return RegisterUser(body);
                 case "GET" when path.StartsWith("/users/"):
-                    return GetUserData(path);
+                    return GetUserData(path, headers);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }
@@ -49,14 +49,17 @@ namespace MTCG.Server.Endpoints
             }
             return new ResponseObject(409, "User already exists.");
         }
-        private ResponseObject GetUserData(string path)
+        private ResponseObject GetUserData(string path, Dictionary<string,string> headers)
         {
-            var username = path.Split("/")[2];
-            var userData = _authService.GetUserByUsername(username);
+            // get user by validating header auth token and find user by token
+            if(!_authService.IsAuthenticated(headers["Authorization"]))
+            {
+                return new ResponseObject(401, "Unauthorized.");
+            }
 
             // TODO: convert to string
-            return (userData != null)
-                ? new ResponseObject(200, "userData: SERIALIZE!")
+            return (true)
+                ? new ResponseObject(200, "authenticated, userData: SERIALIZE!")
                 : new ResponseObject(404, "User not found.");
         }
     }

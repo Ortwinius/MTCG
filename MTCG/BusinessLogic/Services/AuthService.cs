@@ -33,15 +33,21 @@ namespace MTCG.BusinessLogic.Services
         }
 
         // validate each action by checking if user is logged in and authToken is valid
-        //public bool IsAuthenticated(User user)
-        //{
-        //    if (!user.IsLoggedIn || string.IsNullOrEmpty(user.AuthToken))
-        //    {
-        //        Console.WriteLine("You cannot perform this action due to missing permission. Are you logged in?");
-        //        return false;
-        //    }
-        //    return true;
-        //}
+        // also checks if path matches authtoken eg users/{username} = {username}-mtcgToken but only if there is a path
+        public bool IsAuthenticated(string authToken, string? pathUsername = null)
+        {
+            if(pathUsername != null)
+            {
+                return _userRepository.GetUserByUsername(pathUsername)?.AuthToken == authToken;
+            }
+            return _userRepository.ValidateToken(authToken); 
+        }
+
+        // bad - what if admin has other username?
+        public bool IsAdmin(string authToken)
+        {
+            return authToken == "admin-mtcgToken";
+        }
 
         #region Register
 
@@ -114,6 +120,10 @@ namespace MTCG.BusinessLogic.Services
         public User? GetUserByUsername(string username)
         {
             return _userRepository.GetUserByUsername(username);
+        }
+        public User? GetUserByAuthtoken(string authtoken)
+        {
+            return _userRepository.GetUserByAuthtoken(authtoken);
         }
     }
 }

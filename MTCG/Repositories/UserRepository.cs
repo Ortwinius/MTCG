@@ -34,8 +34,35 @@ namespace MTCG.Repositories
                 "FROM users " +
                 "WHERE username = @username", connection);
 
-            // TODO could be prone to error ? 
             DataLayer.AddParameter(cmd, "username", username);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return new User(
+                    reader.GetString(0), // Username
+                    reader.GetString(1), // Password
+                    reader.IsDBNull(2) ? null : reader.GetString(2), // AuthToken
+                    reader.GetInt32(3),  // Coins
+                    reader.GetInt32(4)   // Elo
+                );
+            }
+
+            // return null if no user was found
+            return null;
+        }        
+        public User? GetUserByAuthtoken(string authtoken)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+
+            var cmd = new NpgsqlCommand(
+                "SELECT username, password, auth_token, coin, elo " +
+                "FROM users " +
+                "WHERE auth_token = @auth_token", connection);
+
+            DataLayer.AddParameter(cmd, "auth_token", authtoken);
 
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -83,24 +110,19 @@ namespace MTCG.Repositories
             
             cmd.ExecuteNonQuery();
         }
-        public string? GetAuthTokenByUsername(string username)
+        public bool ValidateToken(string token)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
             var cmd = new NpgsqlCommand(
-                "SELECT auth_token FROM users " +
-                "WHERE username = @username", connection);
+                "SELECT 1 FROM users WHERE auth_token = @auth_token LIMIT 1",
+                connection);
 
-            DataLayer.AddParameter(cmd, "username", username);
+            DataLayer.AddParameter(cmd, "auth_token", token);
 
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetString(0);
-            }
-
-            return null;
+            // If a row is found, the token is valid
+            return cmd.ExecuteScalar() != null;
         }
 
         public bool UserExists(string username)

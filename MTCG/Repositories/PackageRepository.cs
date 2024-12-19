@@ -1,6 +1,8 @@
 ﻿using MTCG.Models.Card;
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
+using MTCG.Models.Users;
+using MTCG.Utilities;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -9,11 +11,15 @@ namespace MTCG.Repositories
 {
     public class PackageRepository : IPackageRepository
     {
-        public void AddPackage(List<ICard> cards)
+        public bool AddPackage(List<ICard> cards)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
+            if(!CheckAllCardsUnique(cards))
+            {
+                return false;
+            }
             using var transaction = connection.BeginTransaction();
             try
             {
@@ -68,12 +74,156 @@ namespace MTCG.Repositories
             catch
             {
                 transaction.Rollback();
+                return false;
+            }
+            return true;
+        }
+
+        public List<ICard>? AcquirePackage(string username)
+        {
+            // get one package of packages
+            // if no package is available return null
+            // if package is available return the cards in the package and
+            // delete the package from packages, package_cards from package_cards and NOT FROM cards
+            // instead update the owner of the cards
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+
+            using var transaction = connection.BeginTransaction();
+            try
+            {
+                // Paket abrufen
+                using var packageCommand = new NpgsqlCommand(
+                    "SELECT package_id FROM packages LIMIT 1",
+                    connection, transaction);
+
+                var packageId = packageCommand.ExecuteScalar() as int?;
+                if (packageId == null)
+                {
+                    return null; // Keine Pakete verfügbar
+                }
+
+                // Karten aus dem Paket lesen
+                using var cardCommand = new NpgsqlCommand(
+                    "SELECT c.card_id, c.name, c.type, c.element, c.damage " +
+                    "FROM cards c " +
+                    "JOIN package_cards pc ON c.card_id = pc.card_id " +
+                    "WHERE pc.package_id = @package_id",
+                    connection, transaction);
+
+                DataLayer.AddParameter(cardCommand, "@package_id", packageId);
+
+                List<ICard> cards;
+                using (var cardReader = cardCommand.ExecuteReader())
+                {
+                    cards = Helpers.ParseCardsFromReader(cardReader);
+                }
+
+                // Kartenbesitz aktualisieren
+                var cardIds = cards.Select(card => card.Id).ToList();
+
+                // update ownership
+                UpdatePackageOwnership(cardIds, username);
+
+                // Paket löschen
+                using var deletePackageCommand = new NpgsqlCommand(
+                    "DELETE FROM packages WHERE package_id = @package_id",
+                    connection, transaction);
+
+                DataLayer.AddParameter(deletePackageCommand, "@package_id", packageId);
+                deletePackageCommand.ExecuteNonQuery();
+
+                transaction.Commit();
+                return cards;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return null;
+            }
+        }
+        // checks if any card to insert is already in a package
+        public bool CheckAllCardsUnique(List<ICard> cards)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            foreach (var card in cards)
+            {
+                using var cmd = new NpgsqlCommand(
+                    "SELECT COUNT(*) FROM cards WHERE card_id = @card_id",
+                    connection);
+
+                DataLayer.AddParameter(cmd, "card_id", card.Id);
+
+                if ((long)cmd.ExecuteScalar() != 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // updates ownership of 5 cards (in cards not packages !)
+        public void UpdatePackageOwnership(List<Guid> cardIds, string username)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+            try
+            { 
+                // get userid via username
+                int? userId = null;
+                using (var userCommand = new NpgsqlCommand(
+                    "SELECT user_id " +
+                    "FROM users " +
+                    "WHERE username = @username",
+                    connection, transaction))
+                {
+                    DataLayer.AddParameter(userCommand, "@username", username);
+                    userId = userCommand.ExecuteScalar() as int?;
+                }
+
+            // update ownership for all cards   
+            foreach (var cardId in cardIds)
+                {
+                    var command = new NpgsqlCommand(
+                        "UPDATE cards " +
+                        "SET owner_user_id = @new_owner_user_id " +
+                        "WHERE card_id = @card_id", connection, transaction);
+
+                    DataLayer.AddParameter(command, "card_id", cardId);
+                    DataLayer.AddParameter(command, "new_owner_user_id", username);
+
+                    command.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
                 throw;
             }
         }
-        public bool AcquirePackage()
+
+        public void UpdateSingleCardOwnership(Guid cardId, string username)
         {
-            return true;
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var command = new NpgsqlCommand(
+                "UPDATE cards " +
+                "SET owner_user_id = @new_owner_user_id " +
+                "WHERE card_id = @card_id", connection);
+
+            DataLayer.AddParameter(command, "card_id", cardId);
+            DataLayer.AddParameter(command, "new_owner_user_id", username ?? (object)DBNull.Value);
+
+            command.ExecuteNonQuery();
         }
     }
 }

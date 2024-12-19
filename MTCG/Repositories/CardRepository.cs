@@ -116,31 +116,10 @@ namespace MTCG.Repositories
             return cards;
         }
 
-        public void UpdateCardOwnership(Guid cardId, int? newOwnerUserId)
+        public List<ICard>? GetCardsOfUser(string username)
         {
-            using var connection = DataLayer.GetConnection();
-            connection.Open();
-
-            var command = new NpgsqlCommand(
-                "UPDATE cards " +
-                "SET owner_user_id = @new_owner_user_id " +
-                "WHERE card_id = @card_id", connection);
-
-            DataLayer.AddParameter(command, "card_id", cardId);
-            DataLayer.AddParameter(command, "new_owner_user_id", newOwnerUserId ?? (object)DBNull.Value);
-
-            command.ExecuteNonQuery();
+            throw new Exception("Not implemented");
         }
-
-        // probably not needed
-        //public ICard? GetRandomCard()
-        //{
-        //    var allCards = GetAllCards();
-        //    if (allCards!.Count == 0) return null;
-
-        //    Random random = new Random();
-        //    return allCards[random.Next(allCards.Count)];
-        //}
 
     }
 }

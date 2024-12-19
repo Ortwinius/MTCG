@@ -9,7 +9,7 @@ namespace MTCG.Server.Endpoints
 {
     public class BattlesEndpoint : IHttpEndpoint
     {
-        public ResponseObject HandleRequest(string method, string path, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string,string> headers, string body)
         {
             throw new NotImplementedException();
         }

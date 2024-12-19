@@ -1,6 +1,8 @@
 ﻿using MTCG.Models.Card;
 using MTCG.Models.Package;
+using MTCG.Models.Users;
 using MTCG.Repositories;
+using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Collections.Generic;
 
@@ -27,62 +29,34 @@ namespace MTCG.BusinessLogic.Services
             return _instance;
         }
 
-        public bool AddPackage(List<ICard> cards)
+        public void AddPackage(List<ICard> cards)
         {
-            try
+            if(!_packageRepository.AddPackage(cards))
             {
-                _packageRepository.AddPackage(cards);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error while adding package: {ex.Message}");
-                return false;
+                throw new PackageConflictException();
             }
         }
 
-        public bool AcquirePackage(string username)
+        public List<ICard>? AcquirePackage(User user)
         {
-            // Step 1: Check if user exists
-            var user = _userRepository.GetUserByUsername(username);
-            if (user == null)
+            Console.WriteLine("Checking balance of user");
+            if (user!.Coins < 5)
             {
-                Console.WriteLine("User not found.");
-                return false;
+                throw new NotEnoughCoinsException();
             }
+            Console.WriteLine("Trying to acquire cards");
+            var cards = _packageRepository.AcquirePackage(user.Username);
 
-            // Step 2: Check if the user has enough coins
-            if (user.Coins < 5)
+            if (cards == null)
             {
-                Console.WriteLine("Not enough coins to acquire a package.");
-                return false;
+                throw new NoPackageAvailableException();
             }
+            Console.WriteLine("Acquiring package successful - updating user balance = -5");
+            // Only subtract coins if there is a package available
+            user.Coins -= 5;
+            _userRepository.UpdateUser(user);
 
-            // Step 3: Retrieve the next available package
-            //var package = _packageRepository.GetNextAvailablePackage();
-            //if (package == null)
-            //{
-            //    Console.WriteLine("No packages available.");
-            //    return false;
-            //}
-
-            try
-            {
-                // Step 4: Deduct 5 coins from the user
-                user.Coins -= 5;
-                _userRepository.UpdateUser(user);
-
-                // Step 5: Assign the cards in the package to the user
-                //_packageRepository.AssignPackageToUser(package, user);
-
-                Console.WriteLine("Package successfully acquired.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error while acquiring package: {ex.Message}");
-                return false;
-            }
+            return cards;
         }
     }
 }

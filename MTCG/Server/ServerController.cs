@@ -32,13 +32,15 @@ namespace MTCG.Server
             var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
             var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
             var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
-            var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
+            //var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
             _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
             _requestHandler.AddEndpoint("/packages", packagesEndpoint);
             _requestHandler.AddEndpoint("/cards", cardsEndpoint);
+            _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
+            //_requestHandler.AddEndpoint("/decks", DeckEndpoint);
         }
 
         public void Listen()

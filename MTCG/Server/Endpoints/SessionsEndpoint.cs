@@ -18,14 +18,12 @@ namespace MTCG.Server.Endpoints
         }
 
         // This method now returns a ResponseObject
-        public ResponseObject HandleRequest(string method, string path, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
         {
             switch (method)
             {
                 case "POST":
                     return LoginUser(body);
-                case "DELETE":
-                    return LogoutUser(body);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }
@@ -70,12 +68,6 @@ namespace MTCG.Server.Endpoints
                 Console.WriteLine($"Unexpected error: {ex.Message}");
                 return new ResponseObject(500, "Internal server error");
             }
-        }
-
-        private ResponseObject LogoutUser(string body)
-        {
-            // TODO: Implement logout functionality
-            throw new NotImplementedException();
         }
     }
 }

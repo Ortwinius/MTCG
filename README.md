@@ -24,19 +24,33 @@ docker run -d --name postgresdb -e POSTGRES_USER=postgres -e
 POSTGRES_PASSWORD=postgres -p 5432:5432 -v pgdata:/var/lib/postgresql/data
 postgres
 
-To get into the docker container shell enter:
-docker exec -it postgresdb bash
+### Connect to (existing) database
+To get into the running docker container shell enter:
+docker exec -it postgresdb psql -U postgres
 
-To authenticate for PSQL:
-psql -U postgres
+Then connect to it via:
+\c mtcgdb
 
 Or to do both in one command:
-docker exec -it postgresdb psql -U postgres -h localhost -d postgres -P
+docker exec -it postgresdb psql -U postgres -d mtcgdb
 
-Then create database
-CREATE DATABASE postgresdb;
+### Create new database
+To create a database first authenticate in psql and then:
+CREATE DATABASE mtcgdb;
 Then connect to it via:
 \c mtcgdb
 
 Drop the database via
 DROP DATABASE mtcgdb;
+
+### Reset all tables via truncate
+DO
+$$
+BEGIN
+   EXECUTE (
+      SELECT string_agg('TRUNCATE TABLE ' || quote_ident(tablename) || ' CASCADE;', ' ')
+      FROM pg_tables
+      WHERE schemaname = 'public'
+   );
+END;
+$$;

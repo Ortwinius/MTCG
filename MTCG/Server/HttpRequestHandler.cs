@@ -25,7 +25,7 @@ namespace MTCG.Server
             // Look for the exact path in the endpoints
             if (_endpoints.ContainsKey(request.Path))
             {
-                return _endpoints[request.Path].HandleRequest(request.Method, request.Path, request.Body);
+                return _endpoints[request.Path].HandleRequest(request.Method, request.Path, request.Headers, request.Body);
             }
 
             // If no exact match, return 404

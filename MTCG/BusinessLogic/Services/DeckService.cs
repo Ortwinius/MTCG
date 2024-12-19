@@ -19,7 +19,16 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
-
+        public List<ICard>? GetDeckOfUser(string username)
+        {
+            // if empty return exception
+            var cards = _deckRepository.GetDeckOfUser();
+            if (cards == null)
+            {
+                throw new DeckIsNullException();
+            }
+            throw new NotImplementedException();
+        }
         public void ShowDeck(User user)
         {
             if (user == null || user.Deck == null)
