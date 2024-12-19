@@ -89,7 +89,7 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-
+            Console.WriteLine("Db transaction starting");
             using var transaction = connection.BeginTransaction();
             try
             {
@@ -169,6 +169,7 @@ namespace MTCG.Repositories
         // updates ownership of 5 cards (in cards not packages !)
         public void UpdatePackageOwnership(List<Guid> cardIds, string username)
         {
+            Console.WriteLine("Updating ownership");
             using var connection = DataLayer.GetConnection();
             connection.Open();
 

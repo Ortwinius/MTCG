@@ -2,6 +2,7 @@
 using MTCG.Models.Card;
 using MTCG.Models.Users;
 using System.Security.Cryptography;
+using MTCG.Utilities.CustomExceptions;
 
 namespace MTCG.BusinessLogic.Services
 {
@@ -22,11 +23,11 @@ namespace MTCG.BusinessLogic.Services
         public List<ICard>? GetDeckOfUser(string username)
         {
             // if empty return exception
-            var cards = _deckRepository.GetDeckOfUser();
-            if (cards == null)
-            {
-                throw new DeckIsNullException();
-            }
+            //var cards = _deckRepository.GetDeckOfUser();
+            //if (cards == null)
+            //{
+            //    throw new DeckIsNullException();
+            //}
             throw new NotImplementedException();
         }
         public void ShowDeck(User user)

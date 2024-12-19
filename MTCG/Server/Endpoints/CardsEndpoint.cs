@@ -11,9 +11,11 @@ namespace MTCG.Server.Endpoints
     public class CardsEndpoint : IHttpEndpoint
     {
         private readonly CardService _cardService;
-        public CardsEndpoint(CardService cardService)
+        private readonly AuthService _authService;
+        public CardsEndpoint(CardService cardService, AuthService authService)
         {
             _cardService = cardService;
+            _authService = authService;
         }
 
         public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
@@ -29,7 +31,8 @@ namespace MTCG.Server.Endpoints
         // Gets all cards of a user 
         public ResponseObject GetUserCards(string body)
         {
-            return new ResponseObject(200, "User cards shown.");
+            // authenticate first
+            throw new NotImplementedException();
         }
     }
 }
