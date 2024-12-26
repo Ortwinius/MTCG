@@ -49,10 +49,17 @@ namespace MTCG.Server.Endpoints
                 }
                 var user = _authService.GetUserByAuthtoken(headers["Authorization"]);
 
+                Console.WriteLine("[PackagesEndpoint] Authenticated user tries to buy a package -> [PackageService]");
+
                 var cards = _packageService.AcquirePackage(user!);
 
-                // return cards by serializing them in json format
-                return new ResponseObject(200, "User " + user!.Username + "acquired the package successfully");
+                var jsonCards = JsonSerializer.Serialize(cards, new JsonSerializerOptions
+                {
+                    Converters = { new CardJsonConverter() },
+                });
+
+                //return new ResponseObject(200, "User " + user!.Username + " acquired the package successfully with following cards:");
+                return new ResponseObject(200, jsonCards);
             }
             catch(UnauthorizedException)
             {

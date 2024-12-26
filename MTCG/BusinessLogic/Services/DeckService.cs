@@ -3,12 +3,15 @@ using MTCG.Models.Card;
 using MTCG.Models.Users;
 using System.Security.Cryptography;
 using MTCG.Utilities.CustomExceptions;
+using MTCG.Repositories;
 
 namespace MTCG.BusinessLogic.Services
 {
     public class DeckService
     {
         private static DeckService? _instance;
+        private readonly DeckRepository _deckRepository;
+
 
         private DeckService() { }
 

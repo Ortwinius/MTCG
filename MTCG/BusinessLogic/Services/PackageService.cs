@@ -39,19 +39,20 @@ namespace MTCG.BusinessLogic.Services
 
         public List<ICard>? AcquirePackage(User user)
         {
-            Console.WriteLine("Checking balance of user");
+            Console.WriteLine("[PackageService] Checking balance of user");
             if (user!.Coins < 5)
             {
                 throw new NotEnoughCoinsException();
             }
-            Console.WriteLine("Trying to acquire cards");
+            Console.WriteLine("[PackageService] Trying to acquire cards");
             var cards = _packageRepository.AcquirePackage(user.Username);
 
             if (cards == null)
             {
                 throw new NoPackageAvailableException();
             }
-            Console.WriteLine("Acquiring package successful - updating user balance = -5");
+
+            Console.WriteLine("[PackageService] Acquiring package successful - updating user balance = -5");
             // Only subtract coins if there is a package available
             user.Coins -= 5;
             _userRepository.UpdateUser(user);

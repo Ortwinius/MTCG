@@ -17,16 +17,16 @@ namespace MTCG.Utilities.CardJsonConverter
                 var root = jsonDocument.RootElement;
 
                 // Extract common properties
-                var id = root.GetProperty("id").GetGuid();
-                var name = root.GetProperty("name").GetString() ?? string.Empty;
-                var damage = root.GetProperty("damage").GetInt32();
-                var element = Enum.Parse<ElementType>(root.GetProperty("element").GetString() ?? "Normal");
+                var id = root.GetProperty("Id").GetGuid();
+                var name = root.GetProperty("Name").GetString() ?? string.Empty;
+                var damage = root.GetProperty("Damage").GetInt32();
+                var element = Enum.Parse<ElementType>(root.GetProperty("Element").GetString() ?? "Normal");
 
                 // Determine card type
-                var type = root.GetProperty("type").GetString();
+                var type = root.GetProperty("Type").GetString();
                 if (type == "MonsterCard")
                 {
-                    var monsterType = Enum.Parse<MonsterType>(root.GetProperty("monType").GetString() ?? "Goblin");
+                    var monsterType = Enum.Parse<MonsterType>(root.GetProperty("MonType").GetString() ?? "Goblin");
                     return new MonsterCard
                     {
                         Id = id,
@@ -38,7 +38,7 @@ namespace MTCG.Utilities.CardJsonConverter
                 }
                 else if (type == "SpellCard")
                 {
-                    var spellType = Enum.Parse<SpellType>(root.GetProperty("spellType").GetString() ?? "RegularSpell");
+                    var spellType = Enum.Parse<SpellType>(root.GetProperty("SpellType").GetString() ?? "RegularSpell");
                     return new SpellCard
                     {
                         Id = id,

@@ -28,8 +28,9 @@ namespace MTCG.Server
                 return _endpoints[request.Path].HandleRequest(request.Method, request.Path, request.Headers, request.Body);
             }
 
+            Console.WriteLine($"[Server] Error: Endpoint {request.Path} not found");
             // If no exact match, return 404
-            return new ResponseObject(404, "Not Found");
+            return new ResponseObject(404, "Endpoint not Found");
         }
     }
 }

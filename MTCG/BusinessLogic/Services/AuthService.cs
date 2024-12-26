@@ -54,6 +54,9 @@ namespace MTCG.BusinessLogic.Services
         // Register Http "POST /users"
         public bool Register(string inputUsername, string inputPassword)
         {
+            Console.WriteLine("[AuthService] Trying to execute register logic");
+            Console.WriteLine("[AuthService] InputUsername: " + inputUsername);
+            Console.WriteLine("[AuthService] InputPassword: " + inputPassword);
             // 409: check if user already exists
             if (_userRepository.UserExists(inputUsername))
             {

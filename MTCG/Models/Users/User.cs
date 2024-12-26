@@ -12,9 +12,9 @@ namespace MTCG.Models.Users
 
         #region Setup
 
-        [JsonPropertyName("username")]
+        [JsonPropertyName("Username")]
         public string Username { get; set; }
-        [JsonPropertyName("password")]
+        [JsonPropertyName("Password")]
         public string Password { get; set; }
         public string? AuthToken { get; set; }
         public bool IsLoggedIn { get; set; } = false;

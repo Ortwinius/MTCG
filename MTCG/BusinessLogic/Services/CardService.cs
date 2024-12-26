@@ -15,7 +15,7 @@ namespace MTCG.BusinessLogic.Services
     public class CardService
     {
         private static CardService? _instance;
-        private readonly CardRepository _cardRepository; // readonly to ensure Service always uses the same repos
+        private readonly CardRepository _cardRepository; 
         //private readonly UserRepository _userRepository;
         private CardService(CardRepository cardRepository)
         {

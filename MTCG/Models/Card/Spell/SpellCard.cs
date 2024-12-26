@@ -7,15 +7,15 @@ namespace MTCG.Models.Card.Spell
 {
     public class SpellCard : ICard
     {
-        [JsonPropertyName("id")]
+        [JsonPropertyName("Id")]
         public Guid Id { get; set; }
-        [JsonPropertyName("name")]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
-        [JsonPropertyName("damage")]
+        [JsonPropertyName("Damage")]
         public int Damage { get; set; }
-        [JsonPropertyName("element")]
+        [JsonPropertyName("Element")]
         public ElementType ElemType { get; set; }
-        [JsonPropertyName("spellType")]
+        [JsonPropertyName("SpellType")]
         public SpellType? SpellType { get; set; }
 
         public SpellCard()

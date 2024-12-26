@@ -13,11 +13,10 @@ namespace MTCG.Utilities
 {
     public class Helpers
     {
-        public static string CreateJsonResponse(string message)
+        public static string CreateStandardJsonResponse(string message)
         {
-            return JsonSerializer.Serialize(new { responseBody = message});
+            return JsonSerializer.Serialize(new { responseBody = message });
         }
-
         public static List<ICard> ParseCardsFromReader(NpgsqlDataReader cardReader)
         {
             var cards = new List<ICard>();
@@ -44,7 +43,5 @@ namespace MTCG.Utilities
 
             return cards;
         }
-        
-
     }
 }

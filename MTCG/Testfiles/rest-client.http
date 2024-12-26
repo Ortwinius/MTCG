@@ -6,16 +6,16 @@
 POST http://localhost:10001/users HTTP/1.1
 Content-Type: application/json 
 {
-  "username":"kienboec",
-  "password":"daniel"
+  "Username":"kienboec",
+  "Password":"daniel"
 }
 
 ### Should return HTTP 201
 POST http://localhost:10001/users HTTP/1.1
 Content-Type: application/json
 {
-  "username": "altenhof",
-  "password": "markus"
+  "Username": "altenhof",
+  "Password": "markus"
 }
 
 ### a POST request from the integration-test script
@@ -23,8 +23,8 @@ Content-Type: application/json
 POST http://localhost:10001/users HTTP/1.1
 Content-Type: application/json
 {
-  "username": "Ortwinius",
-  "password": "safepassword123"
+  "Username": "Ortwinius",
+  "Password": "safePassword123"
 }
 
 
@@ -32,8 +32,8 @@ Content-Type: application/json
 POST http://localhost:10001/users HTTP/1.1
 Content-Type: application/json
 {
-  "username": "admin",
-  "password": "istrator"
+  "Username": "admin",
+  "Password": "istrator"
 }
 
 ### Should return HTTP 4xx - User already exists
@@ -41,8 +41,8 @@ POST http://localhost:10001/users HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "kienboec",
-  "password": "daniel"
+  "Username": "kienboec",
+  "Password": "daniel"
 }
 
 ### Should return HTTP 4xx - User already exists
@@ -50,8 +50,8 @@ POST http://localhost:10001/users HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "kienboec",
-  "password": "different"
+  "Username": "kienboec",
+  "Password": "different"
 }
 
 
@@ -61,8 +61,8 @@ POST http://localhost:10001/sessions HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "kienboec",
-  "password": "daniel"
+  "Username": "kienboec",
+  "Password": "daniel"
 }
 
 ### Should return HTTP 200 with generated token for the user, here: altenhof-mtcgToken
@@ -70,8 +70,8 @@ POST http://localhost:10001/sessions HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "altenhof",
-  "password": "markus"
+  "Username": "altenhof",
+  "Password": "markus"
 }
 
 ### Should return HTTP 200 with generated token for the user, here: admin-mtcgToken
@@ -79,8 +79,8 @@ POST http://localhost:10001/sessions HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "istrator"
+  "Username": "admin",
+  "Password": "istrator"
 }
 
 ### Should return HTTP 4xx - Login failed
@@ -88,8 +88,8 @@ POST http://localhost:10001/sessions HTTP/1.1
 Content-Type: application/json
 
 {
-"username": "kienboec",
-"password": "wrongpassword"
+"Username": "kienboec",
+"Password": "wrongPassword"
 }
 
 ### Should return HTTP 201 - Package created
@@ -98,44 +98,44 @@ Content-Type: application/json
 Authorization: Bearer admin-mtcgToken
 [
     {
-        "id": "845f0dc7-37d0-426e-994e-43fc3ac83c08",
-        "name": "Goblin",
-        "type": "MonsterCard",
-        "element": "Normal",
-        "damage": 10,
-        "monType": "Goblin"
+        "Id": "845f0dc7-37d0-426e-994e-43fc3ac83c08",
+        "Name": "Goblin",
+        "Type": "MonsterCard",
+        "Element": "Normal",
+        "Damage": 10,
+        "MonType": "Goblin"
     },
     {
-        "id": "99f8f8dc-e25e-4a95-aa2c-782823f36e2a",
-        "name": "Dragon",
-        "type": "MonsterCard",
-        "element": "Fire",
-        "damage": 50,
-        "monType": "Dragon"
+        "Id": "99f8f8dc-e25e-4a95-aa2c-782823f36e2a",
+        "Name": "Dragon",
+        "Type": "MonsterCard",
+        "Element": "Fire",
+        "Damage": 50,
+        "MonType": "Dragon"
     },
     {
-        "id": "e85e3976-7c86-4d06-9a80-641c2019a79f",
-        "name": "FireSpell",
-        "type": "SpellCard",
-        "element": "Fire",
-        "damage": 20,
-        "spellType": "FireSpell"
+        "Id": "e85e3976-7c86-4d06-9a80-641c2019a79f",
+        "Name": "FireSpell",
+        "Type": "SpellCard",
+        "Element": "Fire",
+        "Damage": 20,
+        "SpellType": "FireSpell"
     },
     {
-        "id": "c9b80d67-3dc5-4a90-9b9f-485c6b798b4e",  
-        "name": "Knight",
-        "type": "MonsterCard",
-        "element": "Normal",
-        "damage": 30,
-        "monType": "Knight"
+        "Id": "c9b80d67-3dc5-4a90-9b9f-485c6b798b4e",  
+        "Name": "Knight",
+        "Type": "MonsterCard",
+        "Element": "Normal",
+        "Damage": 30,
+        "MonType": "Knight"
     },
     {
-        "id": "1a3f5a6d-4a75-4e67-9a8e-2c5bfb239f00",  
-        "name": "RegularSpell",
-        "type": "SpellCard",
-        "element": "Water",
-        "damage": 15,
-        "spellType": "RegularSpell"
+        "Id": "1a3f5a6d-4a75-4e67-9a8e-2c5bfb239f00",  
+        "Name": "RegularSpell",
+        "Type": "SpellCard",
+        "Element": "Water",
+        "Damage": 15,
+        "SpellType": "RegularSpell"
     }
 ]
 

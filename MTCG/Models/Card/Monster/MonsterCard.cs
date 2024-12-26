@@ -4,16 +4,16 @@ namespace MTCG.Models.Card.Monster
 {
     public class MonsterCard : ICard
     {
-        [JsonPropertyName("id")]
+        [JsonPropertyName("Id")]
         public Guid Id { get; set; }
-        [JsonPropertyName("name")]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
-        [JsonPropertyName("damage")]
+        [JsonPropertyName("Damage")]
         public int Damage { get; set;  } 
-        [JsonPropertyName("element")]
+        [JsonPropertyName("Element")]
         public ElementType ElemType { get; set; }
 
-        [JsonPropertyName("monType")]
+        [JsonPropertyName("MonType")]
         public MonsterType? MonType { get; set; } 
         // base constructor
         public MonsterCard()

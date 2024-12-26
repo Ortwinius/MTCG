@@ -3,6 +3,7 @@ using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
 using MTCG.Models.Users;
 using MTCG.Utilities;
+using MTCG.Utilities.CustomExceptions;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -188,16 +189,16 @@ namespace MTCG.Repositories
                     userId = userCommand.ExecuteScalar() as int?;
                 }
 
-            // update ownership for all cards   
-            foreach (var cardId in cardIds)
+                // update ownership for all cards   q
+                foreach (var cardId in cardIds)
                 {
                     var command = new NpgsqlCommand(
                         "UPDATE cards " +
-                        "SET owner_user_id = @new_owner_user_id " +
+                        "SET owned_by = @new_owner_user_id " +
                         "WHERE card_id = @card_id", connection, transaction);
 
                     DataLayer.AddParameter(command, "card_id", cardId);
-                    DataLayer.AddParameter(command, "new_owner_user_id", username);
+                    DataLayer.AddParameter(command, "new_owner_user_id", userId!);
 
                     command.ExecuteNonQuery();
                 }
@@ -207,7 +208,7 @@ namespace MTCG.Repositories
             catch
             {
                 transaction.Rollback();
-                throw;
+                throw new DbTransactionException($"Error while trying update card ownership for user {username}. Rollback executed");
             }
         }
 

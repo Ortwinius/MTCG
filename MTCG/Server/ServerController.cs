@@ -27,6 +27,7 @@ namespace MTCG.Server
 
         private void InitializeEndpoints()
         {
+            Console.WriteLine("[Server] Initializing endpoint mapping");
             // retrieve registered services from DI container
             var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndpoint>();
             var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
@@ -40,12 +41,12 @@ namespace MTCG.Server
             _requestHandler.AddEndpoint("/packages", packagesEndpoint);
             _requestHandler.AddEndpoint("/cards", cardsEndpoint);
             _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
-            //_requestHandler.AddEndpoint("/decks", DeckEndpoint);
+            //_requestHandler.AddEndpoint("/decks", deckEndpoint);
         }
 
         public void Listen()
         {
-            Console.WriteLine($"Server listening on http://localhost:{_port}/");
+            Console.WriteLine($"[Server] Server listening on http://localhost:{_port}/");
             var server = new TcpListener(IPAddress.Any, _port);
             server.Start();
 
@@ -58,6 +59,7 @@ namespace MTCG.Server
 
         private void HandleClient(TcpClient client)
         {
+            Console.WriteLine("[Server] Accepted client, executing request");
             using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
             using var reader = new StreamReader(client.GetStream());
 
@@ -66,39 +68,32 @@ namespace MTCG.Server
             // Handle Request and get response
             var response = _requestHandler.HandleRequest(request);
             // Send Response to client
+            Console.WriteLine("[Server] Request Body: " + request.Body);
             SendResponse(writer, response);
         }
 
         private void SendResponse(StreamWriter writer, ResponseObject response)
         {
+            Console.WriteLine("[Server] Sending HTTP response to client");
             try
             {
                 int statusCode = response.StatusCode;
-                string responseBody = Helpers.CreateJsonResponse(response.ResponseBody);
+                string responseBody = (response.ResponseBody is string) 
+                    ? response.ResponseBody 
+                    : Helpers.CreateStandardJsonResponse(response.ResponseBody);
 
-                // Write the HTTP status line correctly with status code and description
                 writer.WriteLine($"HTTP/1.1 {statusCode}");
-
-                // Write the headers
                 writer.WriteLine("Content-Type: application/json");
-                writer.WriteLine("Content-Length: " + responseBody.Length); // Length of the body
-                writer.WriteLine();  // End headers
-
-                // Write the response body
-                writer.WriteLine(responseBody);  // responseBody is the correct JSON body
+                writer.WriteLine("Content-Length: " + responseBody.Length); 
+                writer.WriteLine();
+                writer.WriteLine(responseBody);  
 
                 // Flush to ensure all data is sent to the client
                 writer.Flush();
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine("Error while copying content to a stream: " + ex.Message);
-                // Handle or log the error as needed
-            }
-            catch (SocketException ex)
-            {
-                Console.WriteLine("Socket error: " + ex.Message);
-                // Handle socket errors if necessary
+                Console.WriteLine("[Server] Error while trying to send the response: " + ex.Message);
             }
         }
     }
