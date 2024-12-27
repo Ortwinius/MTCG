@@ -2,6 +2,7 @@
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Users;
 using MTCG.Repositories;
+using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +24,12 @@ namespace MTCG.BusinessLogic.Services
         }
         public List<ICard>? GetUserCards(string username)
         {
-            return _cardRepository.GetUserCards(username);
+            var cards = _cardRepository.GetUserCards(username);
+            if (cards == null)
+            {
+                throw new UserStackIsEmptyException();
+            }
+            return cards;
         }
         public static CardService GetInstance(CardRepository cardRepository)
         {

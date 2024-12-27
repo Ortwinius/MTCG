@@ -51,7 +51,7 @@ namespace MTCG.Repositories
             // return null if no user was found
             return null;
         }        
-        public User? GetUserByAuthtoken(string authtoken)
+        public User? GetUserByValidToken(string authtoken)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();

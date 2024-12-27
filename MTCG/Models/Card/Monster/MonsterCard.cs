@@ -40,12 +40,13 @@ namespace MTCG.Models.Card.Monster
         }
 
         // for db
-        public MonsterCard(Guid id, string name, ElementType elemType, int damage)
+        public MonsterCard(Guid id, string name, ElementType elemType, int damage, MonsterType monType)
         {
             Id = id;
-            Name = name; // "Goblin"
-            ElemType = elemType; // ElementType.Normal
+            Name = name; 
+            ElemType = elemType; 
             Damage = damage;
+            MonType = monType;
         }
 
         public void attack(ICard other)

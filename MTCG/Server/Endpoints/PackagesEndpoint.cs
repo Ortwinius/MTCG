@@ -32,22 +32,11 @@ namespace MTCG.Server.Endpoints
             }
         }
 
-        /*
-        Gets first package which doesnt belong to a user 
-        200: success
-        401: unauthorized
-        404: no package available
-        403: Not enough money
-        */
         private ResponseObject BuyPackage(Dictionary<string,string> headers)
         {
             try
             {
-                if (!_authService.IsAuthenticated(headers["Authorization"]))
-                {
-                    throw new UnauthorizedException();
-                }
-                var user = _authService.GetUserByAuthtoken(headers["Authorization"]);
+                var user = _authService.GetUserByValidToken(headers["Authorization"]);
 
                 Console.WriteLine("[PackagesEndpoint] Authenticated user tries to buy a package -> [PackageService]");
 
@@ -58,7 +47,6 @@ namespace MTCG.Server.Endpoints
                     Converters = { new CardJsonConverter() },
                 });
 
-                //return new ResponseObject(200, "User " + user!.Username + " acquired the package successfully with following cards:");
                 return new ResponseObject(200, jsonCards);
             }
             catch(UnauthorizedException)
@@ -115,10 +103,6 @@ namespace MTCG.Server.Endpoints
             catch (InvalidPackageException ex)
             {
                 return new ResponseObject(400, ex.Message);
-            }
-            catch (JsonException)
-            {
-                return new ResponseObject(400, "Invalid JSON format.");
             }
             catch (PackageConflictException)
             {

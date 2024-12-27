@@ -12,8 +12,36 @@ namespace MTCG.Repositories
     {
         public List<ICard>? GetUserCards(string username)
         {
-            return null;
-        }
+            //using var connection = DataLayer.GetConnection();
+            //connection.Open();
+
+            //var command = new NpgsqlCommand(
+            //    "SELECT card_id, name, type, element_type, damage, owner_user_id " +
+            //    "FROM cards " +
+            //    "WHERE card_id = @card_id", connection);
+
+            //DataLayer.AddParameter(command, "card_id", id);
+
+            //using var reader = command.ExecuteReader();
+            //if (reader.Read())
+            //{
+            //    var cardId = reader.GetGuid(0);
+            //    var name = reader.GetString(1);
+            //    var type = reader.GetString(2);
+            //    var elementType = Enum.Parse<ElementType>(reader.GetString(3));
+            //    var damage = reader.GetInt32(4);
+            //    var ownerUserId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5); // can be null
+
+            //    ICard? card = type switch
+            //    {
+            //        "Monster" => new MonsterCard(cardId, name, elementType, damage, Enum.Parse<MonsterType>(name)),
+            //        "Spell" => new SpellCard(cardId, name, elementType, damage, Enum.Parse<SpellType>(name)),
+            //        _ => throw new InvalidOperationException($"Unknown card type: {type}")
+            //    };
+
+            //    return card;
+                return null;
+            }
         public void AddCard(ICard card, int? ownerUserId = null)
         {
             using var connection = DataLayer.GetConnection();
@@ -57,8 +85,8 @@ namespace MTCG.Repositories
 
                 ICard? card = type switch
                 {
-                    "Monster" => new MonsterCard(cardId, name, elementType, damage),
-                    "Spell" => new SpellCard(cardId, name, elementType, damage),
+                    "Monster" => new MonsterCard(cardId, name, elementType, damage, Enum.Parse<MonsterType>(name)),
+                    "Spell" => new SpellCard(cardId, name, elementType, damage, Enum.Parse<SpellType>(name)),
                     _ => throw new InvalidOperationException($"Unknown card type: {type}")
                 };
 
@@ -105,8 +133,8 @@ namespace MTCG.Repositories
 
                 ICard? card = type switch
                 {
-                    "Monster" => new MonsterCard(cardId, name, elementType, damage),
-                    "Spell" => new SpellCard(cardId, name, elementType, damage),
+                    "Monster" => new MonsterCard(cardId, name, elementType, damage, Enum.Parse<MonsterType>(name)),
+                    "Spell" => new SpellCard(cardId, name, elementType, damage, Enum.Parse<SpellType>(name)),
                     _ => throw new InvalidOperationException($"Unknown card type: {type}")
                 };
 

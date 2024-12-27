@@ -22,7 +22,7 @@ namespace MTCG.Models.Card
         Dragon,
         Ork,
         Kraken,
-        Wizzard
+        Wizzard,
     }
     public enum SpellType
     {

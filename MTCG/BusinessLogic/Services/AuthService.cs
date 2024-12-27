@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using MTCG.Models.Users;
 using MTCG.Repositories;
+using MTCG.Utilities.CustomExceptions;
 
 /*
 Singleton Service for User-related authentication logic 
@@ -124,9 +125,14 @@ namespace MTCG.BusinessLogic.Services
         {
             return _userRepository.GetUserByUsername(username);
         }
-        public User? GetUserByAuthtoken(string authtoken)
+        public User? GetUserByValidToken(string authtoken)
         {
-            return _userRepository.GetUserByAuthtoken(authtoken);
+            var user = _userRepository.GetUserByValidToken(authtoken);
+            if(user == null)
+            {
+                throw new UnauthorizedException();
+            }
+            return user;
         }
     }
 }

@@ -31,13 +31,13 @@ namespace MTCG.Utilities
 
                 if (type == "MonsterCard")
                 {
-                    var monsterType = Enum.Parse<MonsterType>(name);
-                    cards.Add(new MonsterCard(cardId, name, element, damage));
+                    var monType = Enum.Parse<MonsterType>(name);
+                    cards.Add(new MonsterCard(cardId, name, element, damage, monType));
                 }
                 else if (type == "SpellCard")
                 {
                     var spellType = Enum.Parse<SpellType>(name);
-                    cards.Add(new SpellCard(cardId, name, element, damage));
+                    cards.Add(new SpellCard(cardId, name, element, damage, spellType));
                 }
             }
 

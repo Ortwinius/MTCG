@@ -61,7 +61,30 @@ namespace MTCG.Utilities.CardJsonConverter
 
         public override void Write(Utf8JsonWriter writer, ICard value, JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
+            writer.WriteStartObject();
+
+            writer.WriteString("Id", value.Id.ToString());
+            writer.WriteString("Name", value.Name);
+            writer.WriteNumber("Damage", value.Damage);
+            writer.WriteString("Element", value.ElemType.ToString());
+
+            if (value is MonsterCard monsterCard)
+            {
+                writer.WriteString("Type", "MonsterCard");
+                writer.WriteString("MonType", monsterCard.MonType.ToString());
+            }
+            else if (value is SpellCard spellCard)
+            {
+                writer.WriteString("Type", "SpellCard");
+                writer.WriteString("SpellType", spellCard.SpellType.ToString());
+            }
+            else
+            {
+                throw new JsonException($"Unsupported card type: {value.GetType().Name}");
+            }
+
+            writer.WriteEndObject();
         }
+
     }
 }

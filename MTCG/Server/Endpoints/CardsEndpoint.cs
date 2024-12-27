@@ -1,9 +1,13 @@
 ﻿using MTCG.BusinessLogic.Services;
+using MTCG.Models.Card;
 using MTCG.Models.ResponseObject;
+using MTCG.Utilities.CardJsonConverter;
+using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MTCG.Server.Endpoints
@@ -23,16 +27,37 @@ namespace MTCG.Server.Endpoints
             switch (method)
             {
                 case "GET":
-                    return GetUserCards(body);
+                    return GetUserCards(body, headers);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }
         }
         // Gets all cards of a user 
-        public ResponseObject GetUserCards(string body)
+        public ResponseObject GetUserCards(string body, Dictionary<string, string> headers)
         {
-            // authenticate first
-            throw new NotImplementedException();
+            try
+            {
+                if (!_authService.IsAuthenticated(headers["Authorization"]))
+                {
+                    throw new UnauthorizedException();
+                }
+                var userCards = _cardService.GetUserCards(body);
+
+                var jsonUserCards = JsonSerializer.Serialize(userCards, new JsonSerializerOptions
+                {
+                    Converters = { new CardJsonConverter() },
+                });
+
+                return new ResponseObject(200, jsonUserCards);
+            }
+            catch(UnauthorizedException)
+            {
+                return new ResponseObject(401, "Unauthorized");
+            }
+            catch(UserStackIsEmptyException)
+            {
+                return new ResponseObject(204, "The request was fine, but the user doesn't have any cards.");
+            }
         }
     }
 }

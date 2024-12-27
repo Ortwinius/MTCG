@@ -36,12 +36,13 @@ namespace MTCG.Models.Card.Spell
         }
 
         // for db
-        public SpellCard(Guid id, string name, ElementType elemType, int damage)
+        public SpellCard(Guid id, string name, ElementType elemType, int damage, SpellType spellType)
         {
             Id = id;
             Name = name;
             ElemType = elemType;
             Damage = damage;
+            SpellType = spellType;
         }
         public void attack(ICard other)
         {
