@@ -45,7 +45,7 @@ namespace MTCG.BusinessLogic.Services
                 throw new NotEnoughCoinsException();
             }
             Console.WriteLine("[PackageService] Trying to acquire cards");
-            var cards = _packageRepository.AcquirePackage(user.Username);
+            var cards = _packageRepository.AcquirePackage(user.UserId);
 
             if (cards == null)
             {

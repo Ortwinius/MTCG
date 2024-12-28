@@ -11,7 +11,8 @@ namespace MTCG.Models.Users
     {
 
         #region Setup
-
+        //[JsonPropertyName("Id")]
+        public int UserId { get; set; }
         [JsonPropertyName("Username")]
         public string Username { get; set; }
         [JsonPropertyName("Password")]
@@ -35,6 +36,17 @@ namespace MTCG.Models.Users
         // for db
         public User(string username, string password, string? authToken, int coins, int elo)
         {
+            Username = username;
+            Password = password;
+            AuthToken = authToken;
+            Coins = coins;
+            Elo = elo;
+            Stack = new();
+            Deck = new();
+        }        
+        public User(int userId, string username, string password, string? authToken, int coins, int elo)
+        {
+            UserId = userId;
             Username = username;
             Password = password;
             AuthToken = authToken;

@@ -80,13 +80,16 @@ namespace MTCG.Repositories
             return true;
         }
 
-        public List<ICard>? AcquirePackage(string username)
+        /*
+         * AcquirePackage
+        get one package of packages
+        if no package is available return null
+        if package is available return the cards in the package and
+        delete the package from packages, package_cards from package_cards and NOT FROM cards
+        instead update the owner of the cards
+        */
+        public List<ICard>? AcquirePackage(int userId)
         {
-            // get one package of packages
-            // if no package is available return null
-            // if package is available return the cards in the package and
-            // delete the package from packages, package_cards from package_cards and NOT FROM cards
-            // instead update the owner of the cards
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
@@ -118,14 +121,14 @@ namespace MTCG.Repositories
                 List<ICard> cards;
                 using (var cardReader = cardCommand.ExecuteReader())
                 {
-                    cards = Helpers.ParseCardsFromReader(cardReader);
+                    cards = DataLayer.ParseCardsFromReader(cardReader);
                 }
 
                 // Kartenbesitz aktualisieren
                 var cardIds = cards.Select(card => card.Id).ToList();
 
                 // update ownership
-                UpdatePackageOwnership(cardIds, username);
+                UpdatePackageOwnership(cardIds, userId);
 
                 // Paket löschen
                 using var deletePackageCommand = new NpgsqlCommand(
@@ -168,7 +171,7 @@ namespace MTCG.Repositories
         }
 
         // updates ownership of 5 cards (in cards not packages !)
-        public void UpdatePackageOwnership(List<Guid> cardIds, string username)
+        public void UpdatePackageOwnership(List<Guid> cardIds, int userId)
         {
             Console.WriteLine("Updating ownership");
             using var connection = DataLayer.GetConnection();
@@ -177,28 +180,16 @@ namespace MTCG.Repositories
             using var transaction = connection.BeginTransaction();
             try
             { 
-                // get userid via username
-                int? userId = null;
-                using (var userCommand = new NpgsqlCommand(
-                    "SELECT user_id " +
-                    "FROM users " +
-                    "WHERE username = @username",
-                    connection, transaction))
-                {
-                    DataLayer.AddParameter(userCommand, "@username", username);
-                    userId = userCommand.ExecuteScalar() as int?;
-                }
-
-                // update ownership for all cards   q
+                // update ownership for all cards   
                 foreach (var cardId in cardIds)
                 {
                     var command = new NpgsqlCommand(
                         "UPDATE cards " +
-                        "SET owned_by = @new_owner_user_id " +
+                        "SET owned_by = @owned_by " +
                         "WHERE card_id = @card_id", connection, transaction);
 
                     DataLayer.AddParameter(command, "card_id", cardId);
-                    DataLayer.AddParameter(command, "new_owner_user_id", userId!);
+                    DataLayer.AddParameter(command, "owned_by", userId);
 
                     command.ExecuteNonQuery();
                 }
@@ -208,22 +199,22 @@ namespace MTCG.Repositories
             catch
             {
                 transaction.Rollback();
-                throw new DbTransactionException($"Error while trying update card ownership for user {username}. Rollback executed");
+                throw new DbTransactionException($"Error while trying update card ownership for user {userId}. Rollback executed");
             }
         }
 
-        public void UpdateSingleCardOwnership(Guid cardId, string username)
+        public void UpdateSingleCardOwnership(Guid cardId, int userId)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
             var command = new NpgsqlCommand(
                 "UPDATE cards " +
-                "SET owner_user_id = @new_owner_user_id " +
+                "SET owned_by = @owned_by" +
                 "WHERE card_id = @card_id", connection);
 
             DataLayer.AddParameter(command, "card_id", cardId);
-            DataLayer.AddParameter(command, "new_owner_user_id", username ?? (object)DBNull.Value);
+            DataLayer.AddParameter(command, "owned_by", userId);
 
             command.ExecuteNonQuery();
         }

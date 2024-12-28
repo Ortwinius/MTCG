@@ -271,6 +271,9 @@ echo.
 
 if %pauseFlag%==1 pause
 
+REM TODO 
+REM NEED TO UPDATE USERT OBJ IN DB
+
 echo should fail:
 curl -i -X GET http://localhost:10001/users/altenhof --header "Authorization: Bearer kienboec-mtcgToken"
 echo "Should return HTTP 4xx"
@@ -343,7 +346,26 @@ echo.
 
 if %pauseFlag%==1 pause
 
+
+
+
+
+
+
+
+
 REM --------------------------------------------------
+REM ITS WRONG FROM HERE ON OUT
+REM NEED TO UPDATE THE CARD OBJECTS
+REM --------------------------------------------------
+
+
+
+
+
+
+
+
 echo 20) trade
 echo check trading deals
 curl -i -X GET http://localhost:10001/tradings --header "Authorization: Bearer kienboec-mtcgToken"

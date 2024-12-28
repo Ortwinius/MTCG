@@ -134,5 +134,14 @@ namespace MTCG.BusinessLogic.Services
             }
             return user;
         }
+        public string GetValidAuthToken(Dictionary<string, string> headers)
+        {
+            if (!headers.TryGetValue("Authorization", out var authToken) || string.IsNullOrWhiteSpace(authToken))
+            {
+                throw new UnauthorizedException(); 
+            }
+
+            return authToken;
+        }
     }
 }

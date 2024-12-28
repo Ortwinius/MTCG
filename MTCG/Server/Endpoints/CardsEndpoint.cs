@@ -37,15 +37,15 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                if (!_authService.IsAuthenticated(headers["Authorization"]))
-                {
-                    throw new UnauthorizedException();
-                }
-                var userCards = _cardService.GetUserCards(body);
+                var authToken = _authService.GetValidAuthToken(headers);
+                var user = _authService.GetUserByValidToken(authToken);
+
+                var userCards = _cardService.GetUserCards(user!.UserId);
 
                 var jsonUserCards = JsonSerializer.Serialize(userCards, new JsonSerializerOptions
                 {
                     Converters = { new CardJsonConverter() },
+                    WriteIndented = true 
                 });
 
                 return new ResponseObject(200, jsonUserCards);

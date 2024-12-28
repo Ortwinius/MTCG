@@ -45,6 +45,7 @@ namespace MTCG.Server.Endpoints
                 var jsonCards = JsonSerializer.Serialize(cards, new JsonSerializerOptions
                 {
                     Converters = { new CardJsonConverter() },
+                    WriteIndented = true
                 });
 
                 return new ResponseObject(200, jsonCards);

@@ -17,31 +17,5 @@ namespace MTCG.Utilities
         {
             return JsonSerializer.Serialize(new { responseBody = message });
         }
-        public static List<ICard> ParseCardsFromReader(NpgsqlDataReader cardReader)
-        {
-            var cards = new List<ICard>();
-
-            while (cardReader.Read())
-            {
-                var cardId = cardReader.GetGuid(0);
-                var name = cardReader.GetString(1);
-                var type = cardReader.GetString(2);
-                var element = Enum.Parse<ElementType>(cardReader.GetString(3));
-                var damage = cardReader.GetInt32(4);
-
-                if (type == "MonsterCard")
-                {
-                    var monType = Enum.Parse<MonsterType>(name);
-                    cards.Add(new MonsterCard(cardId, name, element, damage, monType));
-                }
-                else if (type == "SpellCard")
-                {
-                    var spellType = Enum.Parse<SpellType>(name);
-                    cards.Add(new SpellCard(cardId, name, element, damage, spellType));
-                }
-            }
-
-            return cards;
-        }
     }
 }

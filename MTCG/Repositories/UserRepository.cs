@@ -30,7 +30,7 @@ namespace MTCG.Repositories
 
 
             var cmd = new NpgsqlCommand(
-                "SELECT username, password, auth_token, coin, elo " +
+                "SELECT user_id, username, password, auth_token, coin, elo " +
                 "FROM users " +
                 "WHERE username = @username", connection);
 
@@ -40,11 +40,12 @@ namespace MTCG.Repositories
             if (reader.Read())
             {
                 return new User(
-                    reader.GetString(0), // Username
-                    reader.GetString(1), // Password
-                    reader.IsDBNull(2) ? null : reader.GetString(2), // AuthToken
-                    reader.GetInt32(3),  // Coins
-                    reader.GetInt32(4)   // Elo
+                    reader.GetInt32(0), // UserId
+                    reader.GetString(1), // Username
+                    reader.GetString(2), // Password
+                    reader.IsDBNull(3) ? null : reader.GetString(3), // AuthToken
+                    reader.GetInt32(4),  // Coins
+                    reader.GetInt32(5)   // Elo
                 );
             }
 
@@ -58,7 +59,7 @@ namespace MTCG.Repositories
 
 
             var cmd = new NpgsqlCommand(
-                "SELECT username, password, auth_token, coin, elo " +
+                "SELECT user_id, username, password, auth_token, coin, elo " +
                 "FROM users " +
                 "WHERE auth_token = @auth_token", connection);
 
@@ -68,11 +69,12 @@ namespace MTCG.Repositories
             if (reader.Read())
             {
                 return new User(
-                    reader.GetString(0), // Username
-                    reader.GetString(1), // Password
-                    reader.IsDBNull(2) ? null : reader.GetString(2), // AuthToken
-                    reader.GetInt32(3),  // Coins
-                    reader.GetInt32(4)   // Elo
+                    reader.GetInt32(0), // UserId
+                    reader.GetString(1), // Username
+                    reader.GetString(2), // Password
+                    reader.GetString(3), // AuthToken
+                    reader.GetInt32(4),  // Coins
+                    reader.GetInt32(5)   // Elo
                 );
             }
 

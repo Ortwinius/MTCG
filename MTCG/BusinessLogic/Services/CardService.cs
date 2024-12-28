@@ -22,9 +22,9 @@ namespace MTCG.BusinessLogic.Services
         {
             _cardRepository = cardRepository;
         }
-        public List<ICard>? GetUserCards(string username)
+        public List<ICard>? GetUserCards(int userId)
         {
-            var cards = _cardRepository.GetUserCards(username);
+            var cards = _cardRepository.GetUserCards(userId);
             if (cards == null)
             {
                 throw new UserStackIsEmptyException();
