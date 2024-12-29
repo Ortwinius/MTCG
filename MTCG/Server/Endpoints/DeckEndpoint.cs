@@ -28,14 +28,14 @@ namespace MTCG.Server.Endpoints
             switch (method)
             {
                 case "GET":
-                    return GetUserDeck(headers);
+                    return GetUserDeck(path, headers);
                 case "PUT":
                     return ConfigureUserDeck(body, headers);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }
         }
-        private ResponseObject GetUserDeck(Dictionary<string,string> headers)
+        private ResponseObject GetUserDeck(string path, Dictionary<string,string> headers)
         {
             try
             {
@@ -43,13 +43,23 @@ namespace MTCG.Server.Endpoints
                 var user = _authService.GetUserByValidToken(token);
                 var deckCards = _deckService.GetDeckOfUser(user!.UserId);
 
-                var jsonCards = JsonSerializer.Serialize(deckCards, new JsonSerializerOptions
+                // check if format should be plain
+                if(path.Contains("?format=plain"))
                 {
-                    Converters = { new CardJsonConverter() },
-                    WriteIndented = true
-                });
+                    var plainDeck = deckCards!.Select(c => c.Name).ToList();
+                    var plainDeckString = string.Join(", ", plainDeck);
+                    return new ResponseObject(200, plainDeckString);
+                }
+                else
+                {
+                    var jsonDeck = JsonSerializer.Serialize(deckCards, new JsonSerializerOptions
+                    {
+                        Converters = { new CardJsonConverter() },
+                        WriteIndented = true
+                    });
 
-                return new ResponseObject(200, jsonCards);
+                    return new ResponseObject(200, jsonDeck);
+                }
             }
             catch (UnauthorizedException)
             {

@@ -17,5 +17,11 @@ namespace MTCG.Utilities
         {
             return JsonSerializer.Serialize(new { responseBody = message });
         }
+
+        public static string ExtractUsernameFromPath(string path)
+        {
+            var segments = path.Split('/');
+            return segments.Length > 2 ? segments[2] : throw new ArgumentException("Invalid path");
+        }
     }
 }

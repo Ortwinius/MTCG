@@ -5,7 +5,9 @@ using System.Net.Sockets;
 using MTCG.Server.Endpoints;
 using MTCG.Models.ResponseObject;
 using Microsoft.Extensions.DependencyInjection;
+using MTCG.Server.Parser;
 using MTCG.Utilities;
+using MTCG.Server.RequestHandler;
 
 namespace MTCG.Server
 {
@@ -37,11 +39,13 @@ namespace MTCG.Server
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
+            _requestHandler.AddEndpoint("/users/{username}", usersEndpoint);
             _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
             _requestHandler.AddEndpoint("/packages", packagesEndpoint);
             _requestHandler.AddEndpoint("/cards", cardsEndpoint);
             _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
             _requestHandler.AddEndpoint("/deck", deckEndpoint);
+            _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
         }
 
         public void Listen()
@@ -86,7 +90,7 @@ namespace MTCG.Server
                 writer.WriteLine("Content-Type: application/json");
                 writer.WriteLine("Content-Length: " + responseBody.Length); 
                 writer.WriteLine();
-                writer.WriteLine(responseBody);  
+                writer.WriteLine(responseBody);
 
                 // Flush to ensure all data is sent to the client
                 writer.Flush();

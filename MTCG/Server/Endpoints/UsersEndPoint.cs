@@ -30,28 +30,12 @@ namespace MTCG.Server.Endpoints
             {
                 case "POST":
                     return RegisterUser(body);
-                case "GET":
-                    if (path.StartsWith("/users/"))
-                    {
-                        var match = Regex.Match(path, @"^/users/(?<username>[^/]+)$");
-                        if (match.Success)
-                        {
-                            var username = match.Groups["username"].Value;
-                            return GetUserData(username, headers);
-                        }
-                    }
-                    break;
-                case "PUT":
-                    if (path.StartsWith("/users/"))
-                    {
-                        var match = Regex.Match(path, @"^/users/(?<username>[^/]+)$");
-                        if (match.Success)
-                        {
-                            var username = match.Groups["username"].Value;
-                            //return UpdateUserData(username, body, headers);
-                            throw new NotImplementedException();
-                        }
-                    }
+                case "GET" when path.StartsWith("/users/"):                 
+                    string username = Helpers.ExtractUsernameFromPath(path);
+                    return GetUserData(username, headers);
+                case "PUT" when path.StartsWith("/users/"):
+                    //string username = Helpers.ExtractUsernameFromPath(path);
+                    //return GetUserData(username, headers);
                     break;
             }
 

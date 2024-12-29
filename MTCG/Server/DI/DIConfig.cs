@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace MTCG.Server.DIConfig
 {
     // responsible for setting up the dependency injection container for the services
-    public static class DependencyInjectionConfig
+    public static class DIConfig
     {
         public static IServiceProvider ConfigureServices()
         {

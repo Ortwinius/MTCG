@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Server
+namespace MTCG.Server.Parser
 {
     public class HttpParser
     {
@@ -30,8 +30,8 @@ namespace MTCG.Server
             {
                 if (line.Length == 0) break; // End of headers
 
-                var headerParts = line.Split(':',2);
-                if(headerParts.Length == 2)
+                var headerParts = line.Split(':', 2);
+                if (headerParts.Length == 2)
                 {
                     var key = headerParts[0].Trim();
                     var value = headerParts[1].Trim();
@@ -46,7 +46,7 @@ namespace MTCG.Server
                 int contentLength = int.Parse(request.Headers["Content-Length"]);
                 char[] buffer = new char[contentLength];
                 int readLength = reader.Read(buffer, 0, contentLength);
-                request.Body = new string(buffer, 0, readLength); 
+                request.Body = new string(buffer, 0, readLength);
             }
 
             return request;

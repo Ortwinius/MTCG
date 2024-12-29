@@ -9,7 +9,7 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            var serviceProvider = DependencyInjectionConfig.ConfigureServices();
+            var serviceProvider = DIConfig.ConfigureServices();
 
             var serverController = new ServerController(serviceProvider);
 
