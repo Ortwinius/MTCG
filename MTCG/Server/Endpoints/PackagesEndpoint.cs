@@ -36,7 +36,8 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                var user = _authService.GetUserByValidToken(headers["Authorization"]);
+                var token = _authService.GetAuthToken(headers);
+                var user = _authService.GetUserByValidToken(token);
 
                 Console.WriteLine("[PackagesEndpoint] Authenticated user tries to buy a package -> [PackageService]");
 
@@ -71,7 +72,7 @@ namespace MTCG.Server.Endpoints
                 Console.WriteLine("Authorization header: " + headers["Authorization"]);
 
                 // Authentication and admin validation
-                var token = headers["Authorization"];
+                var token = _authService.GetAuthToken(headers);
 
                 if (!_authService.IsAuthenticated(token))
                     throw new UnauthorizedException();
@@ -84,16 +85,13 @@ namespace MTCG.Server.Endpoints
                 {
                     Converters = { new CardJsonConverter() }
                 });
-
-                if (cards == null || cards.Count != 5)
-                    throw new InvalidPackageException("A package must contain exactly 5 cards.");
                 
                 // if everything is fine add package
                 _packageService.AddPackage(cards);
 
                 return new ResponseObject(201, "Package successfully created.");
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedException)
             {
                 return new ResponseObject(401, "Unauthorized.");
             }

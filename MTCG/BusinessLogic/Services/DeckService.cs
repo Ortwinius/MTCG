@@ -12,80 +12,58 @@ namespace MTCG.BusinessLogic.Services
         private static DeckService? _instance;
         private readonly DeckRepository _deckRepository;
 
+        private DeckService(DeckRepository deckRepository) 
+        { 
+            _deckRepository = deckRepository;
+        }
 
-        private DeckService() { }
-
-        public static DeckService GetInstance()
+        public static DeckService GetInstance(DeckRepository deckRepository)
         {
             if (_instance == null)
             {
-                _instance = new DeckService();
+                _instance = new DeckService(deckRepository);
             }
             return _instance;
         }
-        public List<ICard>? GetDeckOfUser(string username)
+        public List<ICard>? GetDeckOfUser(int userId)
         {
-            // if empty return exception
-            //var cards = _deckRepository.GetDeckOfUser();
-            //if (cards == null)
-            //{
-            //    throw new DeckIsNullException();
-            //}
-            throw new NotImplementedException();
-        }
-        public void ShowDeck(User user)
-        {
-            if (user == null || user.Deck == null)
+            var cards = _deckRepository.GetDeckOfUser(userId);
+
+            if (cards == null)
             {
-                Console.WriteLine("User not found.");
-                return;
+                throw new DeckIsNullException();
             }
 
-            Console.WriteLine($"\nDeck of User: {user.Username}:");
-
-            if (user.Deck.Count < 1)
-            {
-                Console.WriteLine("[Empty]");
-                return;
-            }
-
-            int i = 1;
-            foreach (var cardEntry in user.Deck)
-            {
-                string cardType = cardEntry.Value is MonsterCard ? "Monster" : "Spell";
-                Console.WriteLine($"{i}. Key: {cardEntry.Key} -> {cardType}: \"{cardEntry.Value.Name}\" ({cardEntry.Value.ElemType}) {cardEntry.Value.Damage} Damage");
-                i++;
-            }
+            return cards;
         }
 
-        public bool ConfigureDeck(User user, Dictionary<string, ICard> cards)
+        public void ConfigureUserDeck(int userId, List<ICard>? userCards, List<Guid>? cardIdsToAdd)
         {
-            if (user == null)
+            if (cardIdsToAdd == null || cardIdsToAdd.Count != 4)
             {
-                Console.WriteLine("Failed to configure deck: User was null");
-                return false;
+                throw new InvalidDeckSizeException();
             }
 
-            if(user.Deck == null)
+            if(cardIdsToAdd.Distinct().Count() != cardIdsToAdd.Count)
             {
-                user.Deck = new Dictionary<string, ICard>();
+                throw new InvalidDeckSizeException();
             }
 
-            user.Deck.Clear();
+            //Console.WriteLine($"[DEBUG] User Cards: {string.Join(", ", userCards?.Select(c => c.Id) ?? new List<Guid>())}");
+            //Console.WriteLine($"[DEBUG] Cards to Add: {string.Join(", ", cardIdsToAdd)}");
 
-            foreach (var card in cards)
+            // checks if the user owns the cards
+            var cardIdsUserOwns = userCards?.Select(card => card.Id).ToList() ?? new List<Guid>();
+            var invalidCardIds = cardIdsToAdd.Except(cardIdsUserOwns).ToList();
+
+            if (invalidCardIds.Any())
             {
-                user.Deck.Add(card.Key, card.Value);
+                Console.WriteLine($"[DEBUG] Invalid Card IDs: {string.Join(", ", invalidCardIds)}");
+                throw new CardNotOwnedByUserException();
             }
 
-            if (!ValidateDeck(user))
-            {
-                Console.WriteLine($"Deck for {user.Username} is invalid. It must contain exactly 4 cards.");
-                return false;
-            }
-
-            Console.WriteLine($"Deck for {user.Username} configured successfully.");
-            return true;
+            Console.WriteLine("[DeckService] -> Entering deckRepository");
+            _deckRepository.ConfigureDeck(userId, cardIdsToAdd);
         }
 
         public ICard? DrawCardFromDeck(User user)
@@ -117,6 +95,30 @@ namespace MTCG.BusinessLogic.Services
             }
         }
 
+        public void ShowDeck(User user)
+        {
+            if (user == null || user.Deck == null)
+            {
+                Console.WriteLine("User not found.");
+                return;
+            }
+
+            Console.WriteLine($"\nDeck of User: {user.Username}:");
+
+            if (user.Deck.Count < 1)
+            {
+                Console.WriteLine("[Empty]");
+                return;
+            }
+
+            int i = 1;
+            foreach (var cardEntry in user.Deck)
+            {
+                string cardType = cardEntry.Value is MonsterCard ? "Monster" : "Spell";
+                Console.WriteLine($"{i}. Key: {cardEntry.Key} -> {cardType}: \"{cardEntry.Value.Name}\" ({cardEntry.Value.ElemType}) {cardEntry.Value.Damage} Damage");
+                i++;
+            }
+        }
         public void AddCardToDeck(User user, string cardKey, ICard card)
         {
             if (user.Deck.Count >= 4)

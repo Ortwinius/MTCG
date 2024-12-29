@@ -33,17 +33,6 @@ namespace MTCG.BusinessLogic.Services
             return _instance;
         }
 
-        // validate each action by checking if user is logged in and authToken is valid
-        // also checks if path matches authtoken eg users/{username} = {username}-mtcgToken but only if there is a path
-        public bool IsAuthenticated(string authToken, string? pathUsername = null)
-        {
-            if(pathUsername != null)
-            {
-                return _userRepository.GetUserByUsername(pathUsername)?.AuthToken == authToken;
-            }
-            return _userRepository.ValidateToken(authToken); 
-        }
-
         // bad - what if admin has other username?
         public bool IsAdmin(string authToken)
         {
@@ -55,9 +44,6 @@ namespace MTCG.BusinessLogic.Services
         // Register Http "POST /users"
         public bool Register(string inputUsername, string inputPassword)
         {
-            Console.WriteLine("[AuthService] Trying to execute register logic");
-            Console.WriteLine("[AuthService] InputUsername: " + inputUsername);
-            Console.WriteLine("[AuthService] InputPassword: " + inputPassword);
             // 409: check if user already exists
             if (_userRepository.UserExists(inputUsername))
             {
@@ -134,7 +120,7 @@ namespace MTCG.BusinessLogic.Services
             }
             return user;
         }
-        public string GetValidAuthToken(Dictionary<string, string> headers)
+        public string GetAuthToken(Dictionary<string, string> headers)
         {
             if (!headers.TryGetValue("Authorization", out var authToken) || string.IsNullOrWhiteSpace(authToken))
             {
@@ -142,6 +128,16 @@ namespace MTCG.BusinessLogic.Services
             }
 
             return authToken;
+        }
+        // validate each action by checking if user is logged in and authToken is valid
+        // also checks if path matches authtoken eg users/{username} = {username}-mtcgToken but only if there is a path
+        public bool IsAuthenticated(string authToken, string? username = null)
+        {
+            if (username != null)
+            {
+                return _userRepository.GetUserByUsername(username)?.AuthToken == authToken;
+            }
+            return _userRepository.ValidateToken(authToken);
         }
     }
 }

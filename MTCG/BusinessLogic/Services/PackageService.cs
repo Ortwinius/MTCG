@@ -29,9 +29,18 @@ namespace MTCG.BusinessLogic.Services
             return _instance;
         }
 
-        public void AddPackage(List<ICard> cards)
+        public void AddPackage(List<ICard>? cards)
         {
-            if(!_packageRepository.AddPackage(cards))
+            if (cards == null || cards.Count != 5)
+                throw new InvalidPackageException("A package must contain exactly 5 cards.");
+
+            Console.WriteLine("[DEBUG] Creating package with cards:");
+            foreach (var card in cards)
+            {
+                Console.WriteLine($"[DEBUG] Card ID: {card.Id}, Name: {card.Name}");
+            }
+
+            if (!_packageRepository.AddPackage(cards))
             {
                 throw new PackageConflictException();
             }
@@ -39,12 +48,10 @@ namespace MTCG.BusinessLogic.Services
 
         public List<ICard>? AcquirePackage(User user)
         {
-            Console.WriteLine("[PackageService] Checking balance of user");
             if (user!.Coins < 5)
             {
                 throw new NotEnoughCoinsException();
             }
-            Console.WriteLine("[PackageService] Trying to acquire cards");
             var cards = _packageRepository.AcquirePackage(user.UserId);
 
             if (cards == null)
@@ -52,8 +59,12 @@ namespace MTCG.BusinessLogic.Services
                 throw new NoPackageAvailableException();
             }
 
-            Console.WriteLine("[PackageService] Acquiring package successful - updating user balance = -5");
-            // Only subtract coins if there is a package available
+            Console.WriteLine($"[DEBUG] User {user.Username} is acquiring a package...");
+            foreach (var card in cards)
+            {
+                Console.WriteLine($"[DEBUG] Acquired Card ID: {card.Id}, Name: {card.Name}");
+            }
+
             user.Coins -= 5;
             _userRepository.UpdateUser(user);
 

@@ -113,12 +113,6 @@ curl -i -X POST http://localhost:10001/transactions/packages --header "Content-T
 echo "Should return HTTP 201"
 echo.
 
-REM --------------------------------------------------
-REM add new packages is next
-REM --------------------------------------------------
-
-REM THIS PART IS WRONG --------------------------------------------------
-REM --------------------------------------------------
 if %pauseFlag%==1 pause
 
 REM --------------------------------------------------
@@ -172,6 +166,11 @@ echo "Should return HTTP 200 - and a list of all cards"
 echo.
 echo.
 
+
+REM --------------------------------------------------
+REM WRONG
+REM --------------------------------------------------
+
 if %pauseFlag%==1 pause
 
 REM --------------------------------------------------
@@ -188,13 +187,13 @@ if %pauseFlag%==1 pause
 
 REM --------------------------------------------------
 echo 11) configure deck
-curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "[\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"171f6076-4eb5-4a7d-b3f2-2d650cc3d237\"]"
+curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "[\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"4ec8b269-0dfa-4f97-809a-2c63fe2a0025\"]"
 echo "Should return HTTP 2xx"
 echo.
 curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer kienboec-mtcgToken"
 echo "Should return HTTP 200 - and a list of all cards"
 echo.
-curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"aa9999a0-734c-49c6-8f4a-651864b14e62\", \"d6e9c720-9b5a-40c7-a6b2-bc34752e3463\", \"d60e23cf-2238-4d49-844f-c7589ee5342e\", \"02a9c76e-b17d-427f-9240-2dd49b0d3bfd\"]"
+curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"171f6076-4eb5-4a7d-b3f2-2d650cc3d237\", \"1d3f175b-c067-4359-989d-96562bfa382c\", \"88221cfe-1f84-41b9-8152-8e36c6a354de\", \"b017ee50-1c14-44e2-bfd6-2c0c5653a37c\"]"
 echo "Should return HTTP 2xx"
 echo.
 curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer altenhof-mtcgToken"
@@ -204,7 +203,7 @@ echo.
 
 if %pauseFlag%==1 pause
 echo should fail and show original from before:
-curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"171f6076-4eb5-4a7d-b3f2-2d650cc3d237\"]"
+curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"4ec8b269-0dfa-4f97-809a-2c63fe2a0025\"]"
 echo "Should return HTTP 4xx"
 echo.
 curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer altenhof-mtcgToken"
@@ -212,7 +211,7 @@ echo "Should return HTTP 200 - and a list of all cards"
 echo.
 echo.
 echo should fail ... only 3 cards set
-curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"aa9999a0-734c-49c6-8f4a-651864b14e62\", \"d6e9c720-9b5a-40c7-a6b2-bc34752e3463\", \"d60e23cf-2238-4d49-844f-c7589ee5342e\"]"
+curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"171f6076-4eb5-4a7d-b3f2-2d650cc3d237\", \"1d3f175b-c067-4359-989d-96562bfa382c\", \"88221cfe-1f84-41b9-8152-8e36c6a354de\"]"
 echo "Should return HTTP 4xx - Bad request"
 echo.
 
@@ -270,9 +269,6 @@ echo.
 echo.
 
 if %pauseFlag%==1 pause
-
-REM TODO 
-REM NEED TO UPDATE USERT OBJ IN DB
 
 echo should fail:
 curl -i -X GET http://localhost:10001/users/altenhof --header "Authorization: Bearer kienboec-mtcgToken"

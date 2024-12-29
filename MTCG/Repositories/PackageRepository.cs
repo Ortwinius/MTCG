@@ -17,7 +17,7 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            if(!CheckAllCardsUnique(cards))
+            if(!CheckCardAlreadyExists(cards))
             {
                 return false;
             }
@@ -26,7 +26,8 @@ namespace MTCG.Repositories
             {
                 // Insert a new package and get its ID
                 using var packageCommand = new NpgsqlCommand(
-                    "INSERT INTO packages (price) VALUES (5) RETURNING package_id",
+                    "INSERT INTO packages (price) " +
+                    "VALUES (5) RETURNING package_id",
                     connection, transaction);
 
                 int packageId = (int)packageCommand.ExecuteScalar()!;
@@ -49,19 +50,20 @@ namespace MTCG.Repositories
                     if (card is MonsterCard monsterCard)
                     {
                         DataLayer.AddParameter(cardCommand, "@type", "MonsterCard");
-                        DataLayer.AddParameter(cardCommand, "@name", monsterCard.MonType?.ToString() ?? "Unknown");
+                        DataLayer.AddParameter(cardCommand, "@name", monsterCard.MonType.ToString()!);
                     }
                     else if (card is SpellCard spellCard)
                     {
                         DataLayer.AddParameter(cardCommand, "@type", "SpellCard");
-                        DataLayer.AddParameter(cardCommand, "@name", spellCard.SpellType?.ToString() ?? "Unknown");
+                        DataLayer.AddParameter(cardCommand, "@name", spellCard.SpellType?.ToString()!);
                     }
 
                     cardCommand.ExecuteNonQuery();
 
                     // Link the card to the package in the `package_cards` table
                     using var packageCardCommand = new NpgsqlCommand(
-                        "INSERT INTO package_cards (package_id, card_id) VALUES (@package_id, @card_id)",
+                        "INSERT INTO package_cards (package_id, card_id) " +
+                        "VALUES (@package_id, @card_id)",
                         connection, transaction);
 
                     DataLayer.AddParameter(packageCardCommand, "@package_id", packageId);
@@ -77,6 +79,16 @@ namespace MTCG.Repositories
                 transaction.Rollback();
                 return false;
             }
+
+            using var debugCommand = new NpgsqlCommand("SELECT package_id FROM packages ORDER BY package_id ASC", connection);
+            using var reader = debugCommand.ExecuteReader();
+            Console.WriteLine("[DEBUG] Current package order in the database:");
+            while (reader.Read())
+            {
+                Console.WriteLine($"[DEBUG] Package ID: {reader["package_id"]}");
+            }
+
+
             return true;
         }
 
@@ -93,13 +105,14 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            Console.WriteLine("Db transaction starting");
+            //Console.WriteLine("Db transaction starting");
             using var transaction = connection.BeginTransaction();
             try
             {
                 // Paket abrufen
+                // "SELECT package_id FROM packages ORDER BY package_id ASC LIMIT 1"
                 using var packageCommand = new NpgsqlCommand(
-                    "SELECT package_id FROM packages LIMIT 1",
+                    "SELECT package_id FROM packages ORDER BY package_id ASC LIMIT 1 FOR UPDATE",
                     connection, transaction);
 
                 var packageId = packageCommand.ExecuteScalar() as int?;
@@ -148,7 +161,7 @@ namespace MTCG.Repositories
             }
         }
         // checks if any card to insert is already in a package
-        public bool CheckAllCardsUnique(List<ICard> cards)
+        public bool CheckCardAlreadyExists(List<ICard> cards)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
@@ -173,7 +186,7 @@ namespace MTCG.Repositories
         // updates ownership of 5 cards (in cards not packages !)
         public void UpdatePackageOwnership(List<Guid> cardIds, int userId)
         {
-            Console.WriteLine("Updating ownership");
+            //Console.WriteLine("Updating ownership");
             using var connection = DataLayer.GetConnection();
             connection.Open();
 

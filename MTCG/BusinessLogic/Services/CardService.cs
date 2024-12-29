@@ -29,6 +29,13 @@ namespace MTCG.BusinessLogic.Services
             {
                 throw new UserStackIsEmptyException();
             }
+
+            Console.WriteLine($"[DEBUG] Retrieving cards for user ID: {userId}");
+            foreach (var card in cards)
+            {
+                Console.WriteLine($"[DEBUG] User Card ID: {card.Id}, Name: {card.Name}");
+            }
+
             return cards;
         }
         public static CardService GetInstance(CardRepository cardRepository)

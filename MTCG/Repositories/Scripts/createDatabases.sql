@@ -1,5 +1,9 @@
 DROP TABLE IF EXISTS cards;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF exists packages;
+DROP TABLE IF exists package_cards;
+DROP TABLE IF exists decks;
+DROP TABLE IF exists deck_cards;
 
 -- Create Users table WITHOUT STATS
 CREATE TABLE IF NOT EXISTS users (
@@ -22,10 +26,9 @@ CREATE TABLE IF NOT EXISTS users (
     wins INT DEFAULT 0,
     losses INT DEFAULT 0,
     bio VARCHAR(255),
-    img VARCHAR(255),
+    img VARCHAR(255)
 );
 
--- Create Cards table
 CREATE TABLE IF NOT EXISTS cards (
     card_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
@@ -36,13 +39,11 @@ CREATE TABLE IF NOT EXISTS cards (
     FOREIGN KEY (owned_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
--- Create Packages table
 CREATE TABLE IF NOT EXISTS packages (
 	package_id SERIAL PRIMARY KEY,
 	price INT DEFAULT 5 NOT NULL
 );
 
--- Create Package_Cards (junction table)
 CREATE TABLE IF NOT EXISTS package_cards (
     package_id INT,
     card_id UUID,
@@ -51,21 +52,15 @@ CREATE TABLE IF NOT EXISTS package_cards (
     FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
 
--- userDecks -> every user has exactly one deck
--- the users deck must consist of 4 cards and all of them 
--- have to be from his stack
--- ON DELETE CASCADE NECESSARY? 
--- -> does a user delete his decK? no he only UPDATES IT
 CREATE TABLE IF NOT EXISTS decks (
-    deck_id INT,
-    PRIMARY KEY (deck_id),
+    deck_id INT PRIMARY KEY, 
     FOREIGN KEY (deck_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS deck_cards(
-    deck_id INT,
+    deck_id INT, 
     card_id UUID,
-    PRIMARY KEY (deck_id, card_id),
-    FOREIGN KEY (deck_id) references decks(deck_id) ON DELETE CASCADE,
-    FOREIGN KEY (card_id) references cards(card_id) ON DELETE CASCADE,
+    PRIMARY KEY (deck_id, card_id), 
+    FOREIGN KEY (deck_id) REFERENCES decks(deck_id) ON DELETE CASCADE,
+    FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );

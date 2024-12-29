@@ -33,7 +33,7 @@ namespace MTCG.Server
             var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
             var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
             var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
-            //var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
+            var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
@@ -41,7 +41,7 @@ namespace MTCG.Server
             _requestHandler.AddEndpoint("/packages", packagesEndpoint);
             _requestHandler.AddEndpoint("/cards", cardsEndpoint);
             _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
-            //_requestHandler.AddEndpoint("/decks", deckEndpoint);
+            _requestHandler.AddEndpoint("/deck", deckEndpoint);
         }
 
         public void Listen()
@@ -68,7 +68,7 @@ namespace MTCG.Server
             // Handle Request and get response
             var response = _requestHandler.HandleRequest(request);
             // Send Response to client
-            Console.WriteLine("[Server] Request Body: " + request.Body);
+            //Console.WriteLine("[Server] Request Body: " + request.Body);
             SendResponse(writer, response);
         }
 

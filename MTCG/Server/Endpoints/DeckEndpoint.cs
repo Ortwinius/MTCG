@@ -1,10 +1,13 @@
 ﻿using MTCG.BusinessLogic.Services;
+using MTCG.Models.Card;
 using MTCG.Models.ResponseObject;
+using MTCG.Utilities.CardJsonConverter;
 using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MTCG.Server.Endpoints
@@ -13,10 +16,12 @@ namespace MTCG.Server.Endpoints
     {
         private readonly DeckService _deckService;
         private readonly AuthService _authService;
-        public DeckEndpoint(DeckService deckService, AuthService authService) 
+        private readonly CardService _cardService;
+        public DeckEndpoint(DeckService deckService, AuthService authService, CardService cardService) 
         {
             _deckService = deckService;
             _authService = authService;
+            _cardService = cardService;
         }
         public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
         {
@@ -25,7 +30,7 @@ namespace MTCG.Server.Endpoints
                 case "GET":
                     return GetUserDeck(headers);
                 case "PUT":
-                    return UpdateUserDeck(body, headers);
+                    return ConfigureUserDeck(body, headers);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }
@@ -34,9 +39,17 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                var user = _authService.GetUserByValidToken(headers["Authorization"]);
+                var token = _authService.GetAuthToken(headers);
+                var user = _authService.GetUserByValidToken(token);
+                var deckCards = _deckService.GetDeckOfUser(user!.UserId);
 
-                var deck = _deckService.GetDeckOfUser(user!.Username);
+                var jsonCards = JsonSerializer.Serialize(deckCards, new JsonSerializerOptions
+                {
+                    Converters = { new CardJsonConverter() },
+                    WriteIndented = true
+                });
+
+                return new ResponseObject(200, jsonCards);
             }
             catch (UnauthorizedException)
             {
@@ -44,13 +57,40 @@ namespace MTCG.Server.Endpoints
             }
             catch(DeckIsNullException)
             {
-                return new ResponseObject(204, "Request was fine, but the deck doesnt have any cards.");
+                return new ResponseObject(204, "The request was fine, but the deck doesnt have any cards.");
             }
-            return null;
         }
-        private ResponseObject UpdateUserDeck(string body, Dictionary<string,string> headers)
+        private ResponseObject ConfigureUserDeck(string body, Dictionary<string,string> headers)
         {
-            return null;
+            try
+            {
+                Console.WriteLine("[DeckEndpoint] Authenticating and retrieving user object");
+                var token = _authService.GetAuthToken(headers);
+                var user = _authService.GetUserByValidToken(token);
+
+                Console.WriteLine("[DeckEndpoint] Authentication successful -> Deserializing card ids");
+                var cardIdsToAdd = JsonSerializer.Deserialize<List<Guid>>(body);
+
+                Console.WriteLine("[DeckEndpoint] Deserialization successful - entering cardService to get user cards");
+                var userCards = _cardService.GetUserCards(user!.UserId);
+
+                Console.WriteLine("[DeckEndpoint] Entering deckService to configure deck -> [DeckService]");
+                _deckService.ConfigureUserDeck(user!.UserId, userCards, cardIdsToAdd);
+
+                return new ResponseObject(200, "Deck successfully configured.");
+            }
+            catch(UnauthorizedException)
+            {
+                return new ResponseObject(401, "Unauthorized");
+            }
+            catch(InvalidDeckSizeException)
+            {
+                return new ResponseObject(400, "The provided deck did not include the required amount of 4 unique cards.");
+            }
+            catch(CardNotOwnedByUserException)
+            {
+                return new ResponseObject(403, "At least one of the provided cards does not belong to the user or is not available.");
+            }
         }
     }
 }

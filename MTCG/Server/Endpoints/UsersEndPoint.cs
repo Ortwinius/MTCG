@@ -4,8 +4,10 @@ using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
 using MTCG.Repositories;
 using MTCG.Utilities;
+using MTCG.Utilities.CustomExceptions;
 using System.ComponentModel.Design;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace MTCG.Server.Endpoints
 {
@@ -28,11 +30,32 @@ namespace MTCG.Server.Endpoints
             {
                 case "POST":
                     return RegisterUser(body);
-                case "GET" when path.StartsWith("/users/"):
-                    return GetUserData(path, headers);
-                default:
-                    return new ResponseObject(405, "Method not allowed.");
+                case "GET":
+                    if (path.StartsWith("/users/"))
+                    {
+                        var match = Regex.Match(path, @"^/users/(?<username>[^/]+)$");
+                        if (match.Success)
+                        {
+                            var username = match.Groups["username"].Value;
+                            return GetUserData(username, headers);
+                        }
+                    }
+                    break;
+                case "PUT":
+                    if (path.StartsWith("/users/"))
+                    {
+                        var match = Regex.Match(path, @"^/users/(?<username>[^/]+)$");
+                        if (match.Success)
+                        {
+                            var username = match.Groups["username"].Value;
+                            //return UpdateUserData(username, body, headers);
+                            throw new NotImplementedException();
+                        }
+                    }
+                    break;
             }
+
+            return new ResponseObject(405, "Method not allowed.");
         }
         private ResponseObject RegisterUser(string body)
         {
@@ -49,18 +72,43 @@ namespace MTCG.Server.Endpoints
             }
             return new ResponseObject(409, "User already exists.");
         }
-        private ResponseObject GetUserData(string path, Dictionary<string,string> headers)
-        {
-            // get user by validating header auth token and find user by token
-            if(!_authService.IsAuthenticated(headers["Authorization"]))
+        /*
+         * Returns Name, Bio and image of user
+        TODO : throw user not found exception in getUserByValidToken ? or somewhere else 
+        */
+        private ResponseObject GetUserData(string username, Dictionary<string,string> headers)
+        {   
+            try
             {
-                return new ResponseObject(401, "Unauthorized.");
-            }
+                var token = _authService.GetAuthToken(headers);
 
-            // TODO: convert to string
-            return (true)
-                ? new ResponseObject(200, "authenticated, userData: SERIALIZE!")
-                : new ResponseObject(404, "User not found.");
+                if(!_authService.IsAuthenticated(token))
+                {
+                    throw new UnauthorizedException();
+                }
+
+                var user = _authService.GetUserByValidToken(token);
+
+                var jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                return new ResponseObject(200, jsonUser);
+
+            }
+            catch(UnauthorizedException)
+            {
+                return new ResponseObject(401, "Unauthorized");
+            }
+            catch(UserNotFoundException)
+            {
+                return new ResponseObject(404, "User not found.");
+            }
+        }
+        private ResponseObject UpdateUserData()
+        {
+            throw new NotImplementedException();
         }
     }
 }
