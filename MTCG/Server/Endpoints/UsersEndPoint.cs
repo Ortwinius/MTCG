@@ -2,6 +2,7 @@
 using MTCG.BusinessLogic.Services;
 using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
+using MTCG.Models.Users.DTOs;
 using MTCG.Repositories;
 using MTCG.Utilities;
 using MTCG.Utilities.CustomExceptions;
@@ -31,68 +32,92 @@ namespace MTCG.Server.Endpoints
                 case "POST":
                     return RegisterUser(body);
                 case "GET" when path.StartsWith("/users/"):                 
-                    string username = Helpers.ExtractUsernameFromPath(path);
-                    return GetUserData(username, headers);
+                    return GetUserData(Helpers.ExtractUsernameFromPath(path), headers);
                 case "PUT" when path.StartsWith("/users/"):
-                    //string username = Helpers.ExtractUsernameFromPath(path);
-                    //return GetUserData(username, headers);
-                    break;
+                    return UpdateUserData(Helpers.ExtractUsernameFromPath(path), body, headers);
             }
 
             return new ResponseObject(405, "Method not allowed.");
         }
         private ResponseObject RegisterUser(string body)
         {
-            User? user = JsonSerializer.Deserialize<User>(body);
-
-            if (user == null)
+            try
             {
-                return new ResponseObject(400, "Invalid user data.");
-            }
+                User? user = JsonSerializer.Deserialize<User>(body);
 
-            if (_authService.Register(user.Username, user.Password))
-            {
+                if (user == null)
+                {
+                    return new ResponseObject(400, "Invalid user data.");
+                }
+
+                _authService.Register(user.Username, user.Password);
+
                 return new ResponseObject(201, "User successfully registered.");
             }
-            return new ResponseObject(409, "User already exists.");
+            catch (UserAlreadyExistsException)
+            {
+                return new ResponseObject(409, "User with same username already registered.");
+            }
         }
         /*
          * Returns Name, Bio and image of user
         TODO : throw user not found exception in getUserByValidToken ? or somewhere else 
         */
-        private ResponseObject GetUserData(string username, Dictionary<string,string> headers)
-        {   
+        private ResponseObject GetUserData(string username, Dictionary<string, string> headers)
+        {
             try
             {
                 var token = _authService.GetAuthToken(headers);
 
-                if(!_authService.IsAuthenticated(token))
+                if (!_authService.IsAuthenticated(token, username))
                 {
                     throw new UnauthorizedException();
                 }
 
-                var user = _authService.GetUserByValidToken(token);
+                var userData = _authService.GetUserDataByToken(token);
 
-                var jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions
+                var jsonUserData = JsonSerializer.Serialize(userData, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
 
-                return new ResponseObject(200, jsonUser);
+                return new ResponseObject(200, jsonUserData);
+            }
+            catch (UnauthorizedException)
+            {
+                return new ResponseObject(401, "Unauthorized");
+            }
+            catch (UserNotFoundException)
+            {
+                return new ResponseObject(404, "User not found.");
+            }
+        }
 
+        private ResponseObject UpdateUserData(string username, string body, Dictionary<string,string> headers)
+        {
+            try
+            {
+                var token = _authService.GetAuthToken(headers);
+                if (!_authService.IsAuthenticated(token, username))
+                {
+                    throw new UnauthorizedException();
+                }
+                // parse UserDataDTO from body
+                var userData = JsonSerializer.Deserialize<UserDataDTO>(body);
+                // print it:
+                Console.WriteLine($"[UsersEndpoint] Updating user data: {userData!.Name}, {userData.Bio}, {userData.Image}");
+
+                _authService.UpdateUserData(username, userData!);
+                return new ResponseObject(200, "User data updated.");
             }
             catch(UnauthorizedException)
             {
                 return new ResponseObject(401, "Unauthorized");
             }
-            catch(UserNotFoundException)
+            catch (UserNotFoundException)
             {
                 return new ResponseObject(404, "User not found.");
             }
-        }
-        private ResponseObject UpdateUserData()
-        {
-            throw new NotImplementedException();
         }
     }
 }

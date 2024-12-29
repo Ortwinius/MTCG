@@ -39,101 +39,101 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
-        public void TryBattle(User playerA)
-        {
-            // get second user from lobby
+        //public void TryBattle(User playerA)
+        //{
+        //    // get second user from lobby
 
-            User playerB = SearchForOpponent(playerA);
-            if (playerB == null)
-            {
-                Console.WriteLine("Error: No opponent found.");
-                return;
-            }
+        //    User playerB = SearchForOpponent(playerA);
+        //    if (playerB == null)
+        //    {
+        //        Console.WriteLine("Error: No opponent found.");
+        //        return;
+        //    }
 
-            RemovePlayerFromLobby(playerA);
-            RemovePlayerFromLobby(playerB);
+        //    RemovePlayerFromLobby(playerA);
+        //    RemovePlayerFromLobby(playerB);
 
-            Console.WriteLine($"Battle between {playerA.Username} and {playerB.Username} started.");
+        //    Console.WriteLine($"Battle between {playerA.Username} and {playerB.Username} started.");
 
-            for (int round = 1; round <= MaxBattleRounds; round++)
-            {
-                Console.WriteLine($"Starting Round {round}...");
+        //    for (int round = 1; round <= MaxBattleRounds; round++)
+        //    {
+        //        Console.WriteLine($"Starting Round {round}...");
 
-                // Ziehe die Karten aus den Decks beider Spieler
-                ICard cardA = _deckService.DrawCardFromDeck(playerA);
-                ICard cardB = _deckService.DrawCardFromDeck(playerB);
+        //        // Ziehe die Karten aus den Decks beider Spieler
+        //        ICard cardA = _deckService.DrawCardFromDeck(playerA);
+        //        ICard cardB = _deckService.DrawCardFromDeck(playerB);
 
-                if (cardA == null || cardB == null)
-                {
-                    Console.WriteLine("One of the players has run out of cards.");
-                    // player won TODO
-                    break;
-                }
+        //        if (cardA == null || cardB == null)
+        //        {
+        //            Console.WriteLine("One of the players has run out of cards.");
+        //            // player won TODO
+        //            break;
+        //        }
 
-                // Führe die eigentliche Kampfrunde durch
-                ExecuteBattleRound(cardA, cardB, playerA, playerB);
-            }
-        }
-        private void ExecuteBattleRound(ICard cardA, ICard cardB, User playerA, User playerB)
-        {
-            // retrieve damage from cards
-            int damageA = cardA.Damage;
-            int damageB = cardB.Damage;
+        //        // Führe die eigentliche Kampfrunde durch
+        //        ExecuteBattleRound(cardA, cardB, playerA, playerB);
+        //    }
+        //}
+        //private void ExecuteBattleRound(ICard cardA, ICard cardB, User playerA, User playerB)
+        //{
+        //    // retrieve damage from cards
+        //    int damageA = cardA.Damage;
+        //    int damageB = cardB.Damage;
 
-            // spell card vs monster
-            // TODO
+        //    // spell card vs monster
+        //    // TODO
 
-            // check absolute damage difference (to be changed for check if its monster vs monster)
-            if (damageA > damageB)
-            {
-                Console.WriteLine($"{playerA.Username}'s card {cardA.Name} wins this round.");
-                // Karte von playerB zu playerA transferieren
-                _deckService.TransferCard(playerB, playerA, cardB.Id.ToString());
-            }
-            else if (damageB > damageA)
-            {
-                Console.WriteLine($"{playerB.Username}'s card {cardB.Name} wins this round.");
-                // Karte von playerA zu playerB transferieren
-                _deckService.TransferCard(playerA, playerB, cardA.Id.ToString());
-            }
-            else
-            {
-                Console.WriteLine("It's a draw. No cards are transferred.");
-            }
-        }
+        //    // check absolute damage difference (to be changed for check if its monster vs monster)
+        //    if (damageA > damageB)
+        //    {
+        //        Console.WriteLine($"{playerA.Username}'s card {cardA.Name} wins this round.");
+        //        // Karte von playerB zu playerA transferieren
+        //        _deckService.TransferCard(playerB, playerA, cardB.Id.ToString());
+        //    }
+        //    else if (damageB > damageA)
+        //    {
+        //        Console.WriteLine($"{playerB.Username}'s card {cardB.Name} wins this round.");
+        //        // Karte von playerA zu playerB transferieren
+        //        _deckService.TransferCard(playerA, playerB, cardA.Id.ToString());
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("It's a draw. No cards are transferred.");
+        //    }
+        //}
 
-        public void AddPlayerToLobby(User user)
-        {
-            // if user is already in lobby, do not add
-            if (playerLobby.Contains(user))
-            {
-                Console.WriteLine("Error: User was already in the lobby");
-                return;
-            }
-            Console.WriteLine($"User {user.Username} added to battle lobby");
-            playerLobby.Add(user);
-        }
-        public bool IsInLobby(User user)
-        {
-            return playerLobby.Contains(user);
-        }
-        public void RemovePlayerFromLobby(User user)
-        {
-            playerLobby.Remove(user);
-        }
-        // look for other player in lobby
-        public User SearchForOpponent(User playerA)
-        {
-            foreach (var playerB in playerLobby)
-            {
-                if (playerB != playerA)
-                {
-                    Console.WriteLine($"Opponent found: {playerB.Username}");
-                    return playerB;
-                }
-            }
-            Console.WriteLine("Error: No opponent could be found");
-            return null;
-        }
+        //public void AddPlayerToLobby(User user)
+        //{
+        //    // if user is already in lobby, do not add
+        //    if (playerLobby.Contains(user))
+        //    {
+        //        Console.WriteLine("Error: User was already in the lobby");
+        //        return;
+        //    }
+        //    Console.WriteLine($"User {user.Username} added to battle lobby");
+        //    playerLobby.Add(user);
+        //}
+        //public bool IsInLobby(User user)
+        //{
+        //    return playerLobby.Contains(user);
+        //}
+        //public void RemovePlayerFromLobby(User user)
+        //{
+        //    playerLobby.Remove(user);
+        //}
+        //// look for other player in lobby
+        //public User SearchForOpponent(User playerA)
+        //{
+        //    foreach (var playerB in playerLobby)
+        //    {
+        //        if (playerB != playerA)
+        //        {
+        //            Console.WriteLine($"Opponent found: {playerB.Username}");
+        //            return playerB;
+        //        }
+        //    }
+        //    Console.WriteLine("Error: No opponent could be found");
+        //    return null;
+        //}
     }
 }

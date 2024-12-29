@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     auth_token VARCHAR(255),
-    coin INT DEFAULT 20 NOT NULL,
-    elo INT DEFAULT 100 NOT NULL
 );
 
 -- Create Users table WITH stats
@@ -21,10 +19,11 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     auth_token VARCHAR(255),
-    coin INT DEFAULT 20 NOT NULL,
+    coins INT DEFAULT 20 NOT NULL,
     elo INT DEFAULT 100 NOT NULL,
     wins INT DEFAULT 0,
     losses INT DEFAULT 0,
+    name VARCHAR(50),
     bio VARCHAR(255),
     img VARCHAR(255)
 );

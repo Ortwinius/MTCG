@@ -2,6 +2,7 @@
 using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
 using MTCG.Repositories;
+using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Text.Json;
 
@@ -46,16 +47,12 @@ namespace MTCG.Server.Endpoints
                 }
 
                 string authToken = "";
-                bool isLoginSuccessful = _authService.Login(user.Username, user.Password, out authToken);
-
-                if (isLoginSuccessful)
-                {
-                    return new ResponseObject(200, $"Login successful. AuthToken: {authToken}");
-                }
-                else
-                {
-                    return new ResponseObject(409, "Authentication failed");
-                }
+                _authService.Login(user.Username, user.Password, out authToken);
+                return new ResponseObject(200, $"Login successful. AuthToken: {authToken}");
+            }
+            catch (UnauthorizedException)
+            {
+                return new ResponseObject(401, "Unauthorized");
             }
             catch (JsonException ex)
             {

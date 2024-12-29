@@ -37,7 +37,7 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var token = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByValidToken(token);
+                var user = _authService.GetUserByToken(token);
 
                 Console.WriteLine("[PackagesEndpoint] Authenticated user tries to buy a package -> [PackageService]");
 

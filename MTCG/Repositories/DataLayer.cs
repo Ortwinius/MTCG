@@ -25,19 +25,20 @@ namespace MTCG.Repositories
                 );
         }
         // Add a parameter to a command to prevent SQL injection
-        public static void AddParameter(NpgsqlCommand command, string parameterName, object value)
+        public static void AddParameter(NpgsqlCommand command, string parameterName, object? value)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value;
+            parameter.Value = value ?? DBNull.Value; 
 
             if (value != null)
             {
-                parameter.NpgsqlDbType = GetDbType(value);
+                parameter.NpgsqlDbType = GetDbType(value); 
             }
 
             command.Parameters.Add(parameter);
         }
+
         public static List<ICard> ParseCardsFromReader(NpgsqlDataReader cardReader)
         {
             var cards = new List<ICard>();

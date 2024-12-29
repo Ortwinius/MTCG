@@ -38,7 +38,7 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var authToken = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByValidToken(authToken);
+                var user = _authService.GetUserByToken(authToken);
 
                 var userCards = _cardService.GetUserCards(user!.UserId);
 

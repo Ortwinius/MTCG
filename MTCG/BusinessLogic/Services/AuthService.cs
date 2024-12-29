@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
 using MTCG.Models.Users;
+using MTCG.Models.Users.DTOs;
 using MTCG.Repositories;
 using MTCG.Utilities.CustomExceptions;
 
@@ -42,13 +43,13 @@ namespace MTCG.BusinessLogic.Services
         #region Register
 
         // Register Http "POST /users"
-        public bool Register(string inputUsername, string inputPassword)
+        public void Register(string inputUsername, string inputPassword)
         {
             // 409: check if user already exists
             if (_userRepository.UserExists(inputUsername))
             {
                 Console.WriteLine("Error: Username already exists");
-                return false;
+                throw new UserAlreadyExistsException();
             }
 
             string HashedPassword = _passwordHasher.HashPassword(null, inputPassword);
@@ -59,15 +60,13 @@ namespace MTCG.BusinessLogic.Services
             // 201: succesfully created -> save user in database
             _userRepository.AddUser(user);
             Console.WriteLine($"Registration successful");
-
-            return true;
         }
         #endregion
 
         #region Login
 
         // Login Http "POST /sessions"
-        public bool Login(string inputUsername, string inputPassword, out string? authToken)
+        public void Login(string inputUsername, string inputPassword, out string? authToken)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
             authToken = null;
@@ -76,13 +75,7 @@ namespace MTCG.BusinessLogic.Services
             if (user == null)
             {
                 Console.WriteLine("Invalid username");
-                return false;
-            }
-            // if already logged in
-            if (user.AuthToken != null)
-            {
-                Console.WriteLine($"User {user.Username} is already logged in.");
-                return false;
+                throw new UserNotFoundException();
             }
             // verify password
             var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.Password, inputPassword);
@@ -90,7 +83,7 @@ namespace MTCG.BusinessLogic.Services
             if (verificationResult != PasswordVerificationResult.Success)
             {
                 Console.WriteLine("Invalid password");
-                return false;
+                throw new UnauthorizedException();
             }
         
             user.AuthToken = user.Username + "-mtcgToken";
@@ -100,8 +93,6 @@ namespace MTCG.BusinessLogic.Services
             _userRepository.UpdateUser(user);
 
             Console.WriteLine($"Logging in... Welcome {user.Username}!");
-
-            return true;
         }
         #endregion
 
@@ -111,15 +102,31 @@ namespace MTCG.BusinessLogic.Services
         {
             return _userRepository.GetUserByUsername(username);
         }
-        public User? GetUserByValidToken(string authtoken)
+        public User? GetUserByToken(string authtoken)
         {
-            var user = _userRepository.GetUserByValidToken(authtoken);
+            var user = _userRepository.GetUserByToken(authtoken);
             if(user == null)
             {
                 throw new UnauthorizedException();
             }
             return user;
         }
+        // Get user data by token
+        public UserDataDTO? GetUserDataByToken(string authToken)
+        {
+            var userData = _userRepository.GetUserDataByToken(authToken);
+            if (userData == null)
+            {
+                throw new UnauthorizedException();
+            }
+            return userData;
+        }
+        public void UpdateUserData(string username, UserDataDTO userData)
+        {
+            _userRepository.UpdateUserData(username, userData);
+        }
+        // get user stats by token
+
         public string GetAuthToken(Dictionary<string, string> headers)
         {
             if (!headers.TryGetValue("Authorization", out var authToken) || string.IsNullOrWhiteSpace(authToken))
@@ -133,11 +140,32 @@ namespace MTCG.BusinessLogic.Services
         // also checks if path matches authtoken eg users/{username} = {username}-mtcgToken but only if there is a path
         public bool IsAuthenticated(string authToken, string? username = null)
         {
-            if (username != null)
+            try
             {
-                return _userRepository.GetUserByUsername(username)?.AuthToken == authToken;
+                if (username != null)
+                {
+                    var user = _userRepository.GetUserByUsername(username);
+
+                    if (user == null)
+                        throw new UserNotFoundException(); 
+
+                    return user.AuthToken == authToken;
+                }
+
+                if (_userRepository.ValidateToken(authToken))
+                    return true; 
+
+                throw new UnauthorizedException(); 
             }
-            return _userRepository.ValidateToken(authToken);
+            catch (UserNotFoundException)
+            {
+                throw; 
+            }
+            catch (Exception)
+            {
+                throw new UnauthorizedException("Authentication failed."); 
+            }
         }
+
     }
 }

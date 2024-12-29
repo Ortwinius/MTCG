@@ -40,7 +40,7 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var token = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByValidToken(token);
+                var user = _authService.GetUserByToken(token);
                 var deckCards = _deckService.GetDeckOfUser(user!.UserId);
 
                 // check if format should be plain
@@ -76,7 +76,7 @@ namespace MTCG.Server.Endpoints
             {
                 Console.WriteLine("[DeckEndpoint] Authenticating and retrieving user object");
                 var token = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByValidToken(token);
+                var user = _authService.GetUserByToken(token);
 
                 Console.WriteLine("[DeckEndpoint] Authentication successful -> Deserializing card ids");
                 var cardIdsToAdd = JsonSerializer.Deserialize<List<Guid>>(body);
