@@ -17,7 +17,7 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            if(!CheckCardAlreadyExists(cards))
+            if(!CheckPackageAlreadyExists(cards))
             {
                 return false;
             }
@@ -74,10 +74,10 @@ namespace MTCG.Repositories
 
                 transaction.Commit();
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
-                return false;
+                throw new DbTransactionException($"Error while trying to add package: {ex.Message}\n Rollback executed");
             }
 
             using var debugCommand = new NpgsqlCommand("SELECT package_id FROM packages ORDER BY package_id ASC", connection);
@@ -154,33 +154,36 @@ namespace MTCG.Repositories
                 transaction.Commit();
                 return cards;
             }
-            catch
+            catch(Exception ex) 
             {
                 transaction.Rollback();
-                return null;
+                //return null;
+                throw new DbTransactionException($"Db Error while trying to buy package: " + ex.Message);
             }
         }
-        // checks if any card to insert is already in a package
-        public bool CheckCardAlreadyExists(List<ICard> cards)
+        /*
+        Used to check if package cards are already present int db. 
+        Placeholders are used to parse ids into the query but not in hardcoded length
+         */
+        public bool CheckPackageAlreadyExists(List<ICard> cards)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            foreach (var card in cards)
+            var ids = cards.Select(card => card.Id).ToList();
+            
+            var placeholders = string.Join(", ", ids.Select((_, i) => $"@id{i}"));
+            var query = $"SELECT COUNT(*) FROM cards WHERE card_id IN ({placeholders});";
+
+            using var cmd = new NpgsqlCommand(query, connection);
+
+            // Parameter dynamisch hinzufügen
+            for (int i = 0; i < ids.Count; i++)
             {
-                using var cmd = new NpgsqlCommand(
-                    "SELECT COUNT(*) FROM cards WHERE card_id = @card_id",
-                    connection);
-
-                DataLayer.AddParameter(cmd, "card_id", card.Id);
-
-                if ((long)cmd.ExecuteScalar() != 0)
-                {
-                    return false;
-                }
+                DataLayer.AddParameter(cmd, $"@id{i}", ids[i]);
             }
 
-            return true;
+            return (long)cmd.ExecuteScalar()! == 0;
         }
 
         // updates ownership of 5 cards (in cards not packages !)
@@ -209,10 +212,10 @@ namespace MTCG.Repositories
 
                 transaction.Commit();
             }
-            catch
+            catch(Exception ex) 
             {
                 transaction.Rollback();
-                throw new DbTransactionException($"Error while trying update card ownership for user {userId}. Rollback executed");
+                throw new DbTransactionException($"Error while trying update card ownership for user {userId}: {ex.Message}\n Rollback executed");
             }
         }
 

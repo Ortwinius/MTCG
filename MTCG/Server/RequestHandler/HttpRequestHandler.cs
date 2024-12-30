@@ -39,7 +39,15 @@ namespace MTCG.Server.RequestHandler
         }
 
 
-        public ResponseObject HandleRequest(HttpRequest request)
+        public ResponseObject HandleRequestAsync(HttpRequest request)
+        {
+            return Task.Run(() => ProcessRequestAsync(request)).Result;
+        }
+
+        /*
+         Differentiating between static endpoints and dynamic ones like users/{username}
+         */
+        private ResponseObject ProcessRequestAsync(HttpRequest request)
         {
             if (_staticEndpoints.ContainsKey(request.Path))
             {

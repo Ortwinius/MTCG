@@ -20,9 +20,7 @@ namespace MTCG.BusinessLogic.Services
         // Dependency Injection über Konstruktor
         private AuthService(UserRepository userRepository)
         {
-            // may not be null :
-            _userRepository = userRepository 
-                ?? throw new ArgumentNullException(nameof(userRepository));
+            _userRepository = userRepository;
             _passwordHasher = new PasswordHasher<User>();
         }
         public static AuthService GetInstance(UserRepository userRepository)
@@ -89,38 +87,8 @@ namespace MTCG.BusinessLogic.Services
             Console.WriteLine($"Logging in... Welcome {user.Username}!");
         }
         #endregion
-
-
-        // Get user by username
-        public User? GetUserByUsername(string username)
-        {
-            return _userRepository.GetUserByUsername(username);
-        }
-        public User? GetUserByToken(string authtoken)
-        {
-            var user = _userRepository.GetUserByToken(authtoken);
-            if(user == null)
-            {
-                throw new UnauthorizedException();
-            }
-            return user;
-        }
-        // Get user data by token
-        public UserDataDTO? GetUserDataByToken(string authToken)
-        {
-            var userData = _userRepository.GetUserDataByToken(authToken);
-            if (userData == null)
-            {
-                throw new UnauthorizedException();
-            }
-            return userData;
-        }
-        public void UpdateUserData(string username, UserDataDTO userData)
-        {
-            _userRepository.UpdateUserData(username, userData);
-        }
-        // get user stats by token
-
+        
+        #region SessionValidation
         public string GetAuthToken(Dictionary<string, string> headers)
         {
             if (!headers.TryGetValue("Authorization", out var authToken) || string.IsNullOrWhiteSpace(authToken))
@@ -138,7 +106,7 @@ namespace MTCG.BusinessLogic.Services
             // Überprüfen, ob der Benutzer ein Admin ist, wenn Adminrechte erlaubt sind
             if (allowAdmin && IsAdmin(authToken))
             {
-                return; // Admin ist authentifiziert
+                return; 
             }
 
             // Überprüfen, ob der Benutzername vorhanden ist und das Token übereinstimmt
@@ -168,6 +136,6 @@ namespace MTCG.BusinessLogic.Services
             var user = _userRepository.GetUserByToken(authToken);
             return user != null && user.Username == "admin"; 
         }
-
+        #endregion
     }
 }

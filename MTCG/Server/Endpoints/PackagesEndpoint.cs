@@ -12,11 +12,13 @@ namespace MTCG.Server.Endpoints
     {
         private readonly PackageService _packageService;
         private readonly AuthService _authService;
+        private readonly UserService _userService;
 
-        public PackagesEndpoint(PackageService packageService, AuthService authService)
+        public PackagesEndpoint(PackageService packageService, AuthService authService, UserService userService)
         {
             _packageService = packageService;
             _authService = authService;
+            _userService = userService;
         }
 
         public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
@@ -37,7 +39,7 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var token = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByToken(token);
+                var user = _userService.GetUserByToken(token);
 
                 Console.WriteLine("[PackagesEndpoint] Authenticated user tries to buy a package -> [PackageService]");
 

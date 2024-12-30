@@ -10,6 +10,7 @@ namespace MTCG.Repositories
 {
     public class UserRepository
     {
+        private static readonly object _lock = new object();
         public void AddUser(User user)
         {
             using var connection = DataLayer.GetConnection();

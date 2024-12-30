@@ -15,9 +15,11 @@ namespace MTCG.Server.Endpoints
     public class UsersEndpoint : IHttpEndpoint
     {
         private readonly AuthService _authService;
-        public UsersEndpoint(AuthService authService)
+        private readonly UserService _userService;
+        public UsersEndpoint(AuthService authService, UserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
         /*
@@ -71,7 +73,7 @@ namespace MTCG.Server.Endpoints
 
                 _authService.EnsureAuthenticated(token, username, allowAdmin: true);
 
-                var userData = _authService.GetUserDataByToken(token);
+                var userData = _userService.GetUserDataByToken(token);
 
                 var jsonUserData = JsonSerializer.Serialize(userData, new JsonSerializerOptions
                 {
@@ -103,7 +105,7 @@ namespace MTCG.Server.Endpoints
                 // print it:
                 Console.WriteLine($"[UsersEndpoint] Updating user data: {userData!.Name}, {userData.Bio}, {userData.Image}");
 
-                _authService.UpdateUserData(username, userData!);
+                _userService.UpdateUserData(username, userData!);
                 return new ResponseObject(200, "User data successfully updated.");
             }
             catch(UnauthorizedException)

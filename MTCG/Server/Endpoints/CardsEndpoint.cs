@@ -16,10 +16,12 @@ namespace MTCG.Server.Endpoints
     {
         private readonly CardService _cardService;
         private readonly AuthService _authService;
-        public CardsEndpoint(CardService cardService, AuthService authService)
+        private readonly UserService _userService;
+        public CardsEndpoint(CardService cardService, AuthService authService, UserService userService)
         {
             _cardService = cardService;
             _authService = authService;
+            _userService = userService;
         }
 
         public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
@@ -38,7 +40,7 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var authToken = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByToken(authToken);
+                var user = _userService.GetUserByToken(authToken);
 
                 var userCards = _cardService.GetUserCards(user!.UserId);
 

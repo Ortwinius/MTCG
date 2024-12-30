@@ -16,12 +16,14 @@ namespace MTCG.Server.Endpoints
     {
         private readonly DeckService _deckService;
         private readonly AuthService _authService;
+        private readonly UserService _userService;
         private readonly CardService _cardService;
-        public DeckEndpoint(DeckService deckService, AuthService authService, CardService cardService) 
+        public DeckEndpoint(DeckService deckService, AuthService authService, UserService userService, CardService cardService) 
         {
             _deckService = deckService;
             _authService = authService;
             _cardService = cardService;
+            _userService = userService;
         }
         public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
         {
@@ -40,7 +42,7 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var token = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByToken(token);
+                var user = _userService.GetUserByToken(token);
                 var deckCards = _deckService.GetDeckOfUser(user!.UserId);
 
                 // check if format should be plain
@@ -76,7 +78,7 @@ namespace MTCG.Server.Endpoints
             {
                 Console.WriteLine("[DeckEndpoint] Authenticating and retrieving user object");
                 var token = _authService.GetAuthToken(headers);
-                var user = _authService.GetUserByToken(token);
+                var user = _userService.GetUserByToken(token);
 
                 Console.WriteLine("[DeckEndpoint] Authentication successful -> Deserializing card ids");
                 var cardIdsToAdd = JsonSerializer.Deserialize<List<Guid>>(body);

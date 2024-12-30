@@ -36,6 +36,8 @@ namespace MTCG.Server
             var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
             var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
             var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
+            var statsEndpoint = _serviceProvider.GetRequiredService<StatsEndpoint>();
+            var scoreboardEndpoint = _serviceProvider.GetRequiredService<ScoreboardEndpoint>();
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
@@ -46,6 +48,8 @@ namespace MTCG.Server
             _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
             _requestHandler.AddEndpoint("/deck", deckEndpoint);
             _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
+            _requestHandler.AddEndpoint("/stats", statsEndpoint);
+            _requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
         }
 
         public void Listen()
@@ -61,18 +65,18 @@ namespace MTCG.Server
             }
         }
 
+        /*
+        Client requests are handled in parallel by using Tasks, see HandleRequestAsync
+        */
         private void HandleClient(TcpClient client)
         {
             Console.WriteLine("[Server] Accepted client, executing request");
             using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
             using var reader = new StreamReader(client.GetStream());
 
-            // Parse HTTP Request
             var request = _httpParser.Parse(reader);
-            // Handle Request and get response
-            var response = _requestHandler.HandleRequest(request);
-            // Send Response to client
-            //Console.WriteLine("[Server] Request Body: " + request.Body);
+            var response = _requestHandler.HandleRequestAsync(request);
+
             SendResponse(writer, response);
         }
 
