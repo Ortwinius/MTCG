@@ -69,10 +69,7 @@ namespace MTCG.Server.Endpoints
             {
                 var token = _authService.GetAuthToken(headers);
 
-                if (!_authService.IsAuthenticated(token, username))
-                {
-                    throw new UnauthorizedException();
-                }
+                _authService.EnsureAuthenticated(token, username, allowAdmin: true);
 
                 var userData = _authService.GetUserDataByToken(token);
 
@@ -98,17 +95,16 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var token = _authService.GetAuthToken(headers);
-                if (!_authService.IsAuthenticated(token, username))
-                {
-                    throw new UnauthorizedException();
-                }
+
+                _authService.EnsureAuthenticated(token, username, allowAdmin: true);
+
                 // parse UserDataDTO from body
                 var userData = JsonSerializer.Deserialize<UserDataDTO>(body);
                 // print it:
                 Console.WriteLine($"[UsersEndpoint] Updating user data: {userData!.Name}, {userData.Bio}, {userData.Image}");
 
                 _authService.UpdateUserData(username, userData!);
-                return new ResponseObject(200, "User data updated.");
+                return new ResponseObject(200, "User data successfully updated.");
             }
             catch(UnauthorizedException)
             {

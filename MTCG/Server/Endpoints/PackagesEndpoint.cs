@@ -73,12 +73,8 @@ namespace MTCG.Server.Endpoints
 
                 // Authentication and admin validation
                 var token = _authService.GetAuthToken(headers);
-
-                if (!_authService.IsAuthenticated(token))
-                    throw new UnauthorizedException();
-
-                if (!_authService.IsAdmin(token))
-                    throw new NotAdminException();
+                
+                _authService.EnsureAuthenticated(token, allowAdmin: true);
 
                 // Call business logic in PackageService
                 var cards = JsonSerializer.Deserialize<List<ICard>>(body, new JsonSerializerOptions

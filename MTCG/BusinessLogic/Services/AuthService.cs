@@ -34,12 +34,6 @@ namespace MTCG.BusinessLogic.Services
             return _instance;
         }
 
-        // bad - what if admin has other username?
-        public bool IsAdmin(string authToken)
-        {
-            return authToken == "admin-mtcgToken";
-        }
-
         #region Register
 
         // Register Http "POST /users"
@@ -137,34 +131,42 @@ namespace MTCG.BusinessLogic.Services
             return authToken;
         }
         // validate each action by checking if user is logged in and authToken is valid
-        // also checks if path matches authtoken eg users/{username} = {username}-mtcgToken but only if there is a path
-        public bool IsAuthenticated(string authToken, string? username = null)
+        // Optionally: also checks if path matches authtoken eg users/{username} = {username}-mtcgToken but only if there is a path
+        // Optionally: also checks if user is admin and validates token
+        public void EnsureAuthenticated(string authToken, string? username = null, bool allowAdmin = false)
         {
-            try
+            // Überprüfen, ob der Benutzer ein Admin ist, wenn Adminrechte erlaubt sind
+            if (allowAdmin && IsAdmin(authToken))
             {
-                if (username != null)
+                return; // Admin ist authentifiziert
+            }
+
+            // Überprüfen, ob der Benutzername vorhanden ist und das Token übereinstimmt
+            if (username != null)
+            {
+                var user = _userRepository.GetUserByUsername(username);
+                if (user == null)
                 {
-                    var user = _userRepository.GetUserByUsername(username);
-
-                    if (user == null)
-                        throw new UserNotFoundException(); 
-
-                    return user.AuthToken == authToken;
+                    throw new UserNotFoundException();
                 }
 
-                if (_userRepository.ValidateToken(authToken))
-                    return true; 
+                if (user.AuthToken != authToken)
+                {
+                    throw new UnauthorizedException("Authentication token does not match.");
+                }
+                return;
+            }
 
-                throw new UnauthorizedException(); 
-            }
-            catch (UserNotFoundException)
+            // Token-Validierung ohne spezifischen Benutzernamen
+            if (!_userRepository.ValidateToken(authToken))
             {
-                throw; 
+                throw new UnauthorizedException("Authentication token is invalid.");
             }
-            catch (Exception)
-            {
-                throw new UnauthorizedException("Authentication failed."); 
-            }
+        }
+        public bool IsAdmin(string authToken)
+        {
+            var user = _userRepository.GetUserByToken(authToken);
+            return user != null && user.Username == "admin"; 
         }
 
     }
