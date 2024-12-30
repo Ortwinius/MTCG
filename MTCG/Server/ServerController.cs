@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MTCG.Server.Parser;
 using MTCG.Utilities;
 using MTCG.Server.RequestHandler;
+using MTCG.Server.ResponseHandler;
 
 namespace MTCG.Server
 {
@@ -15,6 +16,7 @@ namespace MTCG.Server
     {
         private readonly IServiceProvider _serviceProvider; // DI-Container
         private readonly HttpRequestHandler _requestHandler;
+        private readonly HttpResponseHandler _responseHandler;
         private readonly HttpParser _httpParser;
         private static readonly int _port = Constants.ServerPort;
 
@@ -23,8 +25,44 @@ namespace MTCG.Server
             _serviceProvider = serviceProvider;
             _requestHandler = new HttpRequestHandler();
             _httpParser = new HttpParser();
+            _responseHandler = new HttpResponseHandler();
 
             InitializeEndpoints();
+        }
+
+        public void Listen()
+        {
+            Console.WriteLine($"[Server] Server listening on http://localhost:{_port}/");
+            var server = new TcpListener(IPAddress.Any, _port);
+            server.Start();
+
+            while (true)
+            {
+                var client = server.AcceptTcpClient();
+                HandleClient(client);
+            }
+        }
+
+        /*
+        Client requests are handled in parallel by using Tasks, see HandleRequestAsync
+        */
+        private void HandleClient(TcpClient client)
+        {
+            try
+            {
+                Console.WriteLine("[Server] Accepted client, executing request");
+                using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
+                using var reader = new StreamReader(client.GetStream());
+
+                var request = _httpParser.Parse(reader);
+                var response = _requestHandler.HandleRequestAsync(request);
+
+                _responseHandler.SendResponse(writer, response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Server] Error while trying to handle client requests: " + ex.Message);
+            }
         }
 
         private void InitializeEndpoints()
@@ -50,59 +88,6 @@ namespace MTCG.Server
             _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
             _requestHandler.AddEndpoint("/stats", statsEndpoint);
             _requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
-        }
-
-        public void Listen()
-        {
-            Console.WriteLine($"[Server] Server listening on http://localhost:{_port}/");
-            var server = new TcpListener(IPAddress.Any, _port);
-            server.Start();
-
-            while (true)
-            {
-                var client = server.AcceptTcpClient();
-                HandleClient(client);
-            }
-        }
-
-        /*
-        Client requests are handled in parallel by using Tasks, see HandleRequestAsync
-        */
-        private void HandleClient(TcpClient client)
-        {
-            Console.WriteLine("[Server] Accepted client, executing request");
-            using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
-            using var reader = new StreamReader(client.GetStream());
-
-            var request = _httpParser.Parse(reader);
-            var response = _requestHandler.HandleRequestAsync(request);
-
-            SendResponse(writer, response);
-        }
-
-        private void SendResponse(StreamWriter writer, ResponseObject response)
-        {
-            Console.WriteLine("[Server] Sending HTTP response to client");
-            try
-            {
-                int statusCode = response.StatusCode;
-                string responseBody = (response.ResponseBody is string) 
-                    ? response.ResponseBody 
-                    : Helpers.CreateStandardJsonResponse(response.ResponseBody);
-
-                writer.WriteLine($"HTTP/1.1 {statusCode}");
-                writer.WriteLine("Content-Type: application/json");
-                writer.WriteLine("Content-Length: " + responseBody.Length); 
-                writer.WriteLine();
-                writer.WriteLine(responseBody);
-
-                // Flush to ensure all data is sent to the client
-                writer.Flush();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[Server] Error while trying to send the response: " + ex.Message);
-            }
         }
     }
 }

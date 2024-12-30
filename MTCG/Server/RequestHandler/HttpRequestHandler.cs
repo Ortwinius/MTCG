@@ -28,8 +28,6 @@ namespace MTCG.Server.RequestHandler
                     .Replace("{", "(?<")  // Begin a named group
                     .Replace("}", ">[^/]+)") + "$"; // End the named group and specify allowed characters
 
-                //Console.WriteLine($"Generated Regex Path: {pattern}");
-
                 _dynamicEndpoints.Add((pattern, endpoint));
             }
             else

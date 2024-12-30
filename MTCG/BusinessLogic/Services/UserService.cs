@@ -62,5 +62,10 @@ namespace MTCG.BusinessLogic.Services
             }
             return userStats;
         }
+        public List<UserStatsDTO>? GetAllUserStats(string authToken)
+        {
+            var scoreboard = _userRepository.GetAllUserStats(authToken);
+            return scoreboard;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MTCG.BusinessLogic.Services;
 using MTCG.Models.ResponseObject;
 using MTCG.Utilities;
+using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,18 +35,19 @@ namespace MTCG.Server.Endpoints
             try
             {
                 var token = _authService.GetAuthToken(headers);
-                var userStats = _userService.GetUserStatsByToken(token);
+                _authService.EnsureAuthenticated(token);
+                var scoreboard = _userService.GetAllUserStats(token);
                 // JSON serialize
-                var jsonUserStats = JsonSerializer.Serialize(userStats, new JsonSerializerOptions
+                var jsonScoreboard = JsonSerializer.Serialize(scoreboard, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
 
-                return new ResponseObject(200, jsonUserStats);
+                return new ResponseObject(200, jsonScoreboard);
             }
-            catch (Exception e)
+            catch (UnauthorizedException)
             {
-                return new ResponseObject(400, Helpers.CreateStandardJsonResponse(e.Message));
+                return new ResponseObject(401, "Unauthorized");
             }
         }
     }

@@ -10,18 +10,18 @@ namespace MTCG.Repositories
 {
     public class UserRepository
     {
-        private static readonly object _lock = new object();
         public void AddUser(User user)
         {
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
             var cmd = new NpgsqlCommand(
-                "INSERT INTO users (username, password) " +
-                "VALUES (@username, @password)", connection);
+                "INSERT INTO users (username, password, name) " +
+                "VALUES (@username, @password, @name)", connection);
 
             DataLayer.AddParameter(cmd, "username", user.Username);
             DataLayer.AddParameter(cmd, "password", user.Password);
+            DataLayer.AddParameter(cmd, "name", user.Username);
 
             cmd.ExecuteNonQuery();
         }
@@ -128,7 +128,30 @@ namespace MTCG.Repositories
 
             return null;
         }
+        public List<UserStatsDTO> GetAllUserStats(string token)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
 
+            var cmd = new NpgsqlCommand(
+                "SELECT name, elo, wins, losses " +
+                "FROM users " +
+                "ORDER BY elo DESC", connection);
+
+            using var reader = cmd.ExecuteReader();
+            var userStats = new List<UserStatsDTO>();
+            while (reader.Read())
+            {
+                userStats.Add(new UserStatsDTO(
+                    reader.IsDBNull(0) ? "" : reader.GetString(0), // Name
+                    reader.GetInt32(1), // Elo
+                    reader.GetInt32(2), // Wins
+                    reader.GetInt32(3)  // Losses
+                ));
+            }
+
+            return userStats;
+        }
         public void UpdateUser(User user)
         {
             using var connection = DataLayer.GetConnection();
