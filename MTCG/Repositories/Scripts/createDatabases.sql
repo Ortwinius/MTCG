@@ -63,3 +63,13 @@ CREATE TABLE IF NOT EXISTS deck_cards(
     FOREIGN KEY (deck_id) REFERENCES decks(deck_id) ON DELETE CASCADE,
     FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS battles(
+    battle_id SERIAL PRIMARY KEY,
+    player1_id INT,
+    player2_id INT,
+    winner_id INT,
+    FOREIGN KEY (player1_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (player2_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (winner_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

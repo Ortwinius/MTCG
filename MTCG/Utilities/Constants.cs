@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Utilities
 {
-    public class Constants
+    public static class Constants
     {
         public const string ServerUrl = "http://localhost:8000/";
         public const int ServerPort = 10001;

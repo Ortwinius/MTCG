@@ -76,6 +76,7 @@ namespace MTCG.Server
             var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
             var statsEndpoint = _serviceProvider.GetRequiredService<StatsEndpoint>();
             var scoreboardEndpoint = _serviceProvider.GetRequiredService<ScoreboardEndpoint>();
+            var battlesEndpoint = _serviceProvider.GetRequiredService<BattlesEndpoint>();
 
             // add endpoints to requestHandler
             _requestHandler.AddEndpoint("/users", usersEndpoint);
@@ -88,6 +89,7 @@ namespace MTCG.Server
             _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
             _requestHandler.AddEndpoint("/stats", statsEndpoint);
             _requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
+            _requestHandler.AddEndpoint("/battles", battlesEndpoint);
         }
     }
 }

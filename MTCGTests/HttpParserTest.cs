@@ -1,4 +1,4 @@
-﻿using MTCG.Server.HttpParser;
+﻿using MTCG.Server.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;

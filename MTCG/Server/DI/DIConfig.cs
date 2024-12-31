@@ -23,7 +23,7 @@ namespace MTCG.Server.DIConfig
             services.AddTransient<CardRepository>();
             services.AddTransient<PackageRepository>();
             services.AddTransient<DeckRepository>();
-        
+            services.AddTransient<BattleRepository>();
 
             // Services (Singleton)
             services.AddSingleton<AuthService>(sp =>
@@ -37,7 +37,9 @@ namespace MTCG.Server.DIConfig
                 CardService.GetInstance(sp.GetRequiredService<CardRepository>()));
             services.AddSingleton<DeckService>(sp =>
                 DeckService.GetInstance(sp.GetRequiredService<DeckRepository>()));
-
+            services.AddSingleton<BattleService>(sp =>
+                BattleService.GetInstance(sp.GetRequiredService<BattleRepository>(),
+                                          sp.GetRequiredService<DeckRepository>()));
             // Endpoints (Transient)
             services.AddTransient<UsersEndpoint>();
             services.AddTransient<SessionsEndpoint>();
@@ -46,6 +48,7 @@ namespace MTCG.Server.DIConfig
             services.AddTransient<DeckEndpoint>();
             services.AddTransient<StatsEndpoint>();
             services.AddTransient<ScoreboardEndpoint>();
+            services.AddTransient<BattlesEndpoint>();
 
             return services.BuildServiceProvider();
         }
