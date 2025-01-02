@@ -1,7 +1,7 @@
 using MTCG.Models.Card;
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
-using MTCG.Repositories;
+using MTCG.Repositories.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
 using System;

@@ -1,5 +1,7 @@
 ﻿using MTCG.Models.Users;
 using MTCG.Models.Users.DTOs;
+using MTCG.Repositories.DL;
+using MTCG.Repositories.Interfaces;
 using Npgsql;
 using NpgsqlTypes;
 using System;
@@ -8,7 +10,7 @@ using System.Data;
 
 namespace MTCG.Repositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         public void AddUser(User user)
         {
@@ -51,7 +53,7 @@ namespace MTCG.Repositories
             }
 
             return null;
-        }      
+        }
         public User? GetUserByToken(string token)
         {
             using var connection = DataLayer.GetConnection();
@@ -181,7 +183,7 @@ namespace MTCG.Repositories
                 "WHERE username = @username", connection);
 
             DataLayer.AddParameter(cmd, "username", username);
-            
+
             cmd.ExecuteNonQuery();
         }
         public void UpdateUserData(string username, UserDataDTO userData)

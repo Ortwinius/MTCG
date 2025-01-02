@@ -2,6 +2,8 @@
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
 using MTCG.Models.Users;
+using MTCG.Repositories.DL;
+using MTCG.Repositories.Interfaces;
 using MTCG.Utilities;
 using MTCG.Utilities.CustomExceptions;
 using Npgsql;

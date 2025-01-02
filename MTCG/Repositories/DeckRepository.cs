@@ -1,4 +1,6 @@
 ﻿using MTCG.Models.Card;
+using MTCG.Repositories.DL;
+using MTCG.Repositories.Interfaces;
 using MTCG.Utilities;
 using MTCG.Utilities.CustomExceptions;
 using Npgsql;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Repositories
 {
-    public class DeckRepository
+    public class DeckRepository : IDeckRepository
     {
         // Configure Deck
         public List<ICard>? GetDeckOfUser(int userId)
@@ -21,8 +23,8 @@ namespace MTCG.Repositories
             var cmd = new NpgsqlCommand(
                 "SELECT c.card_id, c.name, c.type, c.element, c.damage " +
                 "FROM cards c " +
-                "JOIN deck_cards dc ON c.card_id = dc.card_id " + 
-                "WHERE dc.deck_id = @deck_id", connection);       
+                "JOIN deck_cards dc ON c.card_id = dc.card_id " +
+                "WHERE dc.deck_id = @deck_id", connection);
 
             DataLayer.AddParameter(cmd, "deck_id", userId);
 

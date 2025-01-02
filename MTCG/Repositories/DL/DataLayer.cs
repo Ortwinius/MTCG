@@ -10,7 +10,7 @@ using MTCG.Models.Card;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace MTCG.Repositories
+namespace MTCG.Repositories.DL
 {
     public static class DataLayer
     {
@@ -29,11 +29,11 @@ namespace MTCG.Repositories
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value; 
+            parameter.Value = value ?? DBNull.Value;
 
             if (value != null)
             {
-                parameter.NpgsqlDbType = GetDbType(value); 
+                parameter.NpgsqlDbType = GetDbType(value);
             }
 
             command.Parameters.Add(parameter);

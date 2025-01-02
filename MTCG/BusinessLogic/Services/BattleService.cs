@@ -26,21 +26,19 @@ namespace MTCG.BusinessLogic.Services
     public class BattleService
     {
         private static BattleService? _instance;
-        private readonly DeckRepository _deckRepository;
-        private readonly BattleRepository _battleRepository;
         private readonly UserRepository _userRepository;
+        private readonly DeckRepository _deckRepository;
 
-        public BattleService(BattleRepository battleRespository, DeckRepository deckRepository, UserRepository userRepository)
+        public BattleService(DeckRepository deckRepository, UserRepository userRepository)
         {
-            _battleRepository = battleRespository;
             _deckRepository = deckRepository;
             _userRepository = userRepository;
         }
-        public static BattleService GetInstance(BattleRepository battleRespository, DeckRepository deckRepository, UserRepository userRepository)
+        public static BattleService GetInstance(DeckRepository deckRepository, UserRepository userRepository)
         {
             if(_instance == null)
             {
-                _instance = new BattleService(battleRespository, deckRepository, userRepository);
+                _instance = new BattleService(deckRepository, userRepository);
             }
             return _instance;
         }

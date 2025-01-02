@@ -1,6 +1,6 @@
 ﻿using MTCG.Models.Card;
 
-namespace MTCG.Repositories
+namespace MTCG.Repositories.Interfaces
 {
     public interface ICardRepository
     {
