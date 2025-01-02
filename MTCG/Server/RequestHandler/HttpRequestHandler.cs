@@ -40,11 +40,17 @@ namespace MTCG.Server.RequestHandler
         /*
         Differentiating between static endpoints and dynamic ones like users/{username}
         */
-        public ResponseObject HandleRequest(HttpRequest request)
+        public ResponseObject? HandleRequest(HttpRequest request)
         {
+            if (request.Path == null)
+            {
+                Console.WriteLine("[Server] Error: Request path is null");
+                return new ResponseObject(400, "Bad Request");
+            }
+
             if (_staticEndpoints.ContainsKey(request.Path))
             {
-                return _staticEndpoints[request.Path].HandleRequest(request.Method, request.Path, request.Headers, request.Body);
+                return _staticEndpoints[request.Path].HandleRequest(request.Method!, request.Path, request.Headers, request.Body);
             }
 
             foreach (var (pattern, endpoint) in _dynamicEndpoints)
@@ -61,7 +67,7 @@ namespace MTCG.Server.RequestHandler
                         }
                     }
 
-                    return endpoint.HandleRequest(request.Method, request.Path, request.Headers, request.Body);
+                    return endpoint.HandleRequest(request.Method!, request.Path, request.Headers, request.Body);
                 }
             }
 

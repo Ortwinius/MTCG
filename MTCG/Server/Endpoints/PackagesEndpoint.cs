@@ -2,7 +2,6 @@
 using MTCG.Models.ResponseObject;
 using MTCG.BusinessLogic.Services;
 using System.Text.Json;
-using MTCG.Models.Package;
 using MTCG.Utilities.CardJsonConverter;
 using MTCG.Utilities.CustomExceptions;
 
@@ -21,12 +20,12 @@ namespace MTCG.Server.Endpoints
             _userService = userService;
         }
 
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
         {
             switch (method)
             {
                 case "POST" when path == "/packages":
-                    return AddPackage(body, headers);
+                    return AddPackage(body!, headers);
                 case "POST" when path == "/transactions/packages":
                     return BuyPackage(headers);
                 default:

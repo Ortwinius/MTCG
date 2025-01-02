@@ -3,6 +3,7 @@ using MTCG.Models.Users;
 using MTCG.Repositories;
 using MTCG.Utilities.CustomExceptions;
 using Microsoft.AspNetCore.Identity;
+using MTCG.Repositories.Interfaces;
 
 namespace MTCG.BusinessLogic.Services
 {
@@ -10,13 +11,13 @@ namespace MTCG.BusinessLogic.Services
     public class UserService
     {
         private static UserService? _instance;
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        private UserService(UserRepository userRepository)
+        private UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
-        public static UserService GetInstance(UserRepository userRepository)
+        public static UserService GetInstance(IUserRepository userRepository)
         {
             if (_instance == null)
             {

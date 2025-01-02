@@ -25,14 +25,14 @@ namespace MTCG.Server.Endpoints
             _cardService = cardService;
             _userService = userService;
         }
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
         {
             switch (method)
             {
                 case "GET":
                     return GetUserDeck(path, headers);
                 case "PUT":
-                    return ConfigureUserDeck(body, headers);
+                    return ConfigureUserDeck(body!, headers);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }

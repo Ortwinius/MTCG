@@ -6,7 +6,6 @@ namespace MTCG.Repositories.Interfaces
     public interface IUserRepository
     {
         void AddUser(User user);
-        void DeleteUser(string username);
         User? GetUserByUsername(string username);
         User? GetUserByToken(string token);
         UserDataDTO? GetUserDataByToken(string token);

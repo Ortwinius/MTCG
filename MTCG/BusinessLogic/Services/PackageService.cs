@@ -1,7 +1,7 @@
 ﻿using MTCG.Models.Card;
-using MTCG.Models.Package;
 using MTCG.Models.Users;
 using MTCG.Repositories;
+using MTCG.Repositories.Interfaces;
 using MTCG.Utilities.CustomExceptions;
 using System;
 using System.Collections.Generic;
@@ -11,16 +11,16 @@ namespace MTCG.BusinessLogic.Services
     public class PackageService
     {
         private static PackageService? _instance;
-        private readonly PackageRepository _packageRepository;
-        private readonly UserRepository _userRepository;
+        private readonly IPackageRepository _packageRepository;
+        private readonly IUserRepository _userRepository;
 
-        private PackageService(PackageRepository packageRepository, UserRepository userRepository)
+        private PackageService(IPackageRepository packageRepository, IUserRepository userRepository)
         {
             _packageRepository = packageRepository;
             _userRepository = userRepository;
         }
 
-        public static PackageService GetInstance(PackageRepository packageRepository, UserRepository userRepository)
+        public static PackageService GetInstance(IPackageRepository packageRepository, IUserRepository userRepository)
         {
             if (_instance == null)
             {

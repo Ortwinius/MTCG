@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using MTCG.Models.Users;
 using MTCG.Models.Users.DTOs;
 using MTCG.Repositories;
+using MTCG.Repositories.Interfaces;
 using MTCG.Utilities.CustomExceptions;
 
 /*
@@ -14,16 +15,16 @@ namespace MTCG.BusinessLogic.Services
     {
         private static AuthService? _instance;
 
-        private readonly UserRepository _userRepository; 
+        private readonly IUserRepository _userRepository; 
         private readonly PasswordHasher<User> _passwordHasher;
 
         // Dependency Injection über Konstruktor
-        private AuthService(UserRepository userRepository)
+        private AuthService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _passwordHasher = new PasswordHasher<User>();
         }
-        public static AuthService GetInstance(UserRepository userRepository)
+        public static AuthService GetInstance(IUserRepository userRepository)
         {
             if(_instance == null)
             {
@@ -31,6 +32,7 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
+        public static void ResetInstance() => _instance = null;
 
         #region Register
 
@@ -44,9 +46,10 @@ namespace MTCG.BusinessLogic.Services
                 throw new UserAlreadyExistsException();
             }
 
-            string HashedPassword = _passwordHasher.HashPassword(null, inputPassword);
+            var user = new User(inputUsername, inputPassword);
+            string HashedPassword = _passwordHasher.HashPassword(user, inputPassword);
+            user.Password = HashedPassword;
             string authToken = Guid.NewGuid().ToString();
-            var user = new User(inputUsername,HashedPassword);
             user.AuthToken = authToken;
 
             // 201: succesfully created -> save user in database
@@ -113,6 +116,7 @@ namespace MTCG.BusinessLogic.Services
             if (username != null)
             {
                 var user = _userRepository.GetUserByUsername(username);
+
                 if (user == null)
                 {
                     throw new UserNotFoundException();

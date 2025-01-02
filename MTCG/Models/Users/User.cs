@@ -33,6 +33,24 @@ namespace MTCG.Models.Users
         public int Losses { get; set; } = 0;
         #endregion
 
+        /*
+        Default Constructor 
+        */
+        public User()
+        {
+            UserId = 0;
+            Username = string.Empty;
+            Password = string.Empty;
+            AuthToken = string.Empty;
+            Name = string.Empty;
+            Bio = string.Empty;
+            Image = string.Empty;
+            Coins = 20;
+            Elo = 100;
+            Wins = 0;
+            Losses = 0;
+        }
+
         [JsonConstructor]
         public User(string username, string password)
         {
@@ -42,8 +60,8 @@ namespace MTCG.Models.Users
         }
 
         /*
-         Constructor for whole User object with credentials, data and stats
-         */
+        Constructor for whole User object with credentials, data and stats
+        */
         public User(int userId, string username, string password, string? authToken, string? name, string? bio, string? image, int coins, int elo, int wins, int losses)
         {
             UserId = userId;

@@ -3,6 +3,7 @@ using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
 using MTCG.BusinessLogic.Services;
 using MTCG.Utilities.CustomExceptions;
+using System.Diagnostics;
 
 namespace MTCG.Server.Endpoints
 {
@@ -20,7 +21,7 @@ namespace MTCG.Server.Endpoints
             _userService = userService;
         }
 
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
         {
             switch(method)
             {
@@ -33,40 +34,39 @@ namespace MTCG.Server.Endpoints
 
         private ResponseObject EnterLobby(Dictionary<string, string> headers)
         {
+            Console.WriteLine("[Timer] EnterLobby: Start processing lobby logic");
+            var timer = Stopwatch.StartNew();
             try
             {
+
                 // Authenticate user
                 var token = _authService.GetAuthToken(headers);
                 var user = _userService.GetUserByToken(token);
 
                 Console.WriteLine($"[Lobby] {user!.Username} entered the lobby.");
 
-                lock (LobbyLock)
+                User? opponent = null;
+
+                // Versuche, einen Gegner zu finden
+                if (Lobby.TryDequeue(out opponent) && opponent != user)
                 {
+                    Console.WriteLine($"[Lobby] Match found: {user.Username} vs {opponent.Username}");
+
+                    // Starte den Kampf
+                    var battleLog = _battleService.TryBattle(user, opponent);
+                    Console.WriteLine($"[Timer] After battle logic: {timer.ElapsedMilliseconds} ms");
+
+                    // Gib den Battle-Log zurück
+                    var jsonLog = string.Join("\n", battleLog);
+                    Console.WriteLine($"[Timer] Lobby logic complete. Total Time: {timer.ElapsedMilliseconds} ms");
+                    return new ResponseObject(200, $"Battle Request successful. Log: \n{jsonLog}");
+                }
+                else
+                {
+                    // Kein Gegner gefunden, füge Benutzer zur Queue hinzu
                     Lobby.Enqueue(user);
-
-                    while (true)
-                    {
-                        // Check if there are at least 2 users in the lobby
-                        if (Lobby.Count > 1)
-                        {
-                            // Try to dequeue two users for a battle
-                            if (Lobby.TryDequeue(out var opponent) && opponent != user)
-                            {
-                                Console.WriteLine($"[Lobby] Match found: {user.Username} vs {opponent.Username}");
-                                var battleLog = _battleService.StartBattle(user, opponent);
-
-                                // Serialize the battle log into JSON response
-                                var jsonLog = string.Join("\n", battleLog);
-                                return new ResponseObject(200, $"Battle Request successful. Log: \n{jsonLog}");
-                            }
-                        }
-
-                        // If not enough users, wait
-                        Console.WriteLine($"[Lobby] {user.Username} is waiting for an opponent...");
-                        Monitor.Wait(LobbyLock);
-                    }
-
+                    Console.WriteLine($"[Lobby] {user.Username} is waiting for an opponent...");
+                    return new ResponseObject(202, "Waiting for an opponent...");
                 }
             }
             catch(DeckIsNullException)

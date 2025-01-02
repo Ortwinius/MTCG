@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCGTests
+namespace MTCGTests.ConversionTests
 {
     [TestFixture]
     public class HttpParserTests
@@ -28,7 +28,7 @@ namespace MTCGTests
                 "Authorization: Bearer kienboec-mtcgToken\r\n" +
                 "Content-Length: 29\r\n" +
                 "\r\n" +
-                "{ \"username\": \"kienboec\" }";
+                "{ \"Username\": \"kienboec\" }";
 
             using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(httpRequest)));
 
@@ -43,7 +43,7 @@ namespace MTCGTests
             Assert.AreEqual(3, result.Headers.Count);
             Assert.AreEqual("application/json", result.Headers["Content-Type"]);
             Assert.AreEqual("kienboec-mtcgToken", result.Headers["Authorization"]);
-            Assert.AreEqual("{ \"username\": \"kienboec\" }", result.Body);
+            Assert.AreEqual("{ \"Username\": \"kienboec\" }", result.Body);
         }
 
         [Test]

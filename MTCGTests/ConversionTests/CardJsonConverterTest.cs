@@ -6,7 +6,7 @@ using NSubstitute;
 using NUnit.Framework;
 using MTCG.Utilities.CardJsonConverter;
 
-namespace MTCGTests
+namespace MTCGTests.CardConversionTests
 {
 
     [TestFixture]
@@ -29,12 +29,12 @@ namespace MTCGTests
             // Arrange
             string json = @"
             {
-                ""id"": ""845f0dc7-37d0-426e-994e-43fc3ac83c08"",
-                ""name"": ""Goblin"",
-                ""type"": ""MonsterCard"",
-                ""element"": ""Normal"",
-                ""damage"": 10,
-                ""monType"": ""Goblin""
+                ""Id"": ""845f0dc7-37d0-426e-994e-43fc3ac83c08"",
+                ""Name"": ""Goblin"",
+                ""Type"": ""MonsterCard"",
+                ""Element"": ""Normal"",
+                ""Damage"": 10,
+                ""MonType"": ""Goblin""
             }";
 
             // Act
@@ -55,12 +55,12 @@ namespace MTCGTests
             // Arrange
             string json = @"
             {
-                ""id"": ""e85e3976-7c86-4d06-9a80-641c2019a79f"",
-                ""name"": ""FireSpell"",
-                ""type"": ""SpellCard"",
-                ""element"": ""Fire"",
-                ""damage"": 30,
-                ""spellType"": ""FireSpell""
+                ""Id"": ""e85e3976-7c86-4d06-9a80-641c2019a79f"",
+                ""Name"": ""FireSpell"",
+                ""Type"": ""SpellCard"",
+                ""Element"": ""Fire"",
+                ""Damage"": 30,
+                ""SpellType"": ""FireSpell""
             }";
 
             // Act

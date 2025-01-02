@@ -19,12 +19,12 @@ namespace MTCG.Server.Endpoints
         }
 
         // This method now returns a ResponseObject
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
         {
             switch (method)
             {
                 case "POST":
-                    return LoginUser(body);
+                    return LoginUser(body!);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }

@@ -7,8 +7,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace MTCGTests
+namespace MTCGTests.PackageTests
 {
+    [TestFixture]
     public class PackageRepositoryTests
     {
         private IPackageRepository _mockPackageRepository;

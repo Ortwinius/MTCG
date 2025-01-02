@@ -4,20 +4,21 @@ using MTCG.Models.Users;
 using System.Security.Cryptography;
 using MTCG.Utilities.CustomExceptions;
 using MTCG.Repositories;
+using MTCG.Repositories.Interfaces;
 
 namespace MTCG.BusinessLogic.Services
 {
     public class DeckService
     {
         private static DeckService? _instance;
-        private readonly DeckRepository _deckRepository;
+        private readonly IDeckRepository _deckRepository;
 
-        private DeckService(DeckRepository deckRepository) 
+        private DeckService(IDeckRepository deckRepository) 
         { 
             _deckRepository = deckRepository;
         }
 
-        public static DeckService GetInstance(DeckRepository deckRepository)
+        public static DeckService GetInstance(IDeckRepository deckRepository)
         {
             if (_instance == null)
             {

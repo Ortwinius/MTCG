@@ -24,12 +24,12 @@ namespace MTCG.Server.Endpoints
             _userService = userService;
         }
 
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
         {
             switch (method)
             {
                 case "GET":
-                    return GetUserCards(body, headers);
+                    return GetUserCards(body!, headers);
                 default:
                     return new ResponseObject(405, "Method not allowed.");
             }

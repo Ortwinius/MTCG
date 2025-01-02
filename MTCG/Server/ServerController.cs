@@ -9,6 +9,7 @@ using MTCG.Server.Parser;
 using MTCG.Utilities;
 using MTCG.Server.RequestHandler;
 using MTCG.Server.ResponseHandler;
+using System.Diagnostics;
 
 namespace MTCG.Server
 {
@@ -52,20 +53,39 @@ namespace MTCG.Server
         */
         private void HandleClient(TcpClient client)
         {
+            var timer = Stopwatch.StartNew();
+            Console.WriteLine("[Server] Accepted client, executing request");
+
             try
             {
-                Console.WriteLine("[Server] Accepted client, executing request");
                 using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
                 using var reader = new StreamReader(client.GetStream());
 
-                var request = _httpParser.Parse(reader);
-                var response = _requestHandler.HandleRequest(request);
+                Console.WriteLine($"[Timer] Stream setup complete: {timer.ElapsedMilliseconds} ms");
 
-                _responseHandler.SendResponse(writer, response);
+                // Parse the HTTP request
+                timer.Restart();
+                var request = _httpParser.Parse(reader);
+                Console.WriteLine($"[Timer] Request parsed: {timer.ElapsedMilliseconds} ms");
+
+                // Handle the parsed request
+                timer.Restart();
+                var response = _requestHandler.HandleRequest(request);
+                Console.WriteLine($"[Timer] Request handled: {timer.ElapsedMilliseconds} ms");
+
+                // Send the HTTP response back to the client
+                timer.Restart();
+                _responseHandler.SendResponse(writer, response!);
+                Console.WriteLine($"[Timer] Response sent: {timer.ElapsedMilliseconds} ms");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Server] Error while trying to handle client requests: " + ex.Message);
+                Console.WriteLine($"[Server] Error while trying to handle client requests: {ex.Message}");
+            }
+            finally
+            {
+                timer.Stop();
+                Console.WriteLine($"[Timer] Total time to handle client request: {timer.ElapsedMilliseconds} ms");
             }
         }
 

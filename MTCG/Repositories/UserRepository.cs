@@ -173,19 +173,6 @@ namespace MTCG.Repositories
             // Execute query
             cmd.ExecuteNonQuery();
         }
-        public void DeleteUser(string username)
-        {
-            using var connection = DataLayer.GetConnection();
-            connection.Open();
-
-            var cmd = new NpgsqlCommand(
-                "DELETE FROM users " +
-                "WHERE username = @username", connection);
-
-            DataLayer.AddParameter(cmd, "username", username);
-
-            cmd.ExecuteNonQuery();
-        }
         public void UpdateUserData(string username, UserDataDTO userData)
         {
             using var connection = DataLayer.GetConnection();
