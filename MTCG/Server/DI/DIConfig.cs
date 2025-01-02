@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Server.DIConfig
+namespace MTCG.Server.DI
 {
     // responsible for setting up the dependency injection container for the services
     public static class DIConfig

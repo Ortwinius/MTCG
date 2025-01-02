@@ -26,6 +26,7 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
+        public static void ResetInstance() => _instance = null;
         public List<ICard>? GetDeckOfUser(int userId)
         {
             var cards = _deckRepository.GetDeckOfUser(userId);
@@ -50,20 +51,15 @@ namespace MTCG.BusinessLogic.Services
                 throw new InvalidDeckSizeException();
             }
 
-            //Console.WriteLine($"[DEBUG] User Cards: {string.Join(", ", userCards?.Select(c => c.Id) ?? new List<Guid>())}");
-            //Console.WriteLine($"[DEBUG] Cards to Add: {string.Join(", ", cardIdsToAdd)}");
-
             // checks if the user owns the cards
             var cardIdsUserOwns = userCards?.Select(card => card.Id).ToList() ?? new List<Guid>();
             var invalidCardIds = cardIdsToAdd.Except(cardIdsUserOwns).ToList();
 
-            if (invalidCardIds.Any())
+            if (invalidCardIds.Count > 0)
             {
-                Console.WriteLine($"[DEBUG] Invalid Card IDs: {string.Join(", ", invalidCardIds)}");
-                throw new CardNotOwnedByUserException();
+                throw new InvalidDeckSizeException();
             }
 
-            Console.WriteLine("[DeckService] -> Entering deckRepository");
             _deckRepository.ConfigureDeck(userId, cardIdsToAdd);
         }
     }

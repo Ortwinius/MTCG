@@ -1,7 +1,7 @@
 ﻿using MTCG.Server;
 using MTCG.Repositories;
 using MTCG.BusinessLogic.Services;
-using MTCG.Server.DIConfig;
+using MTCG.Server.DI;
 
 namespace MTCG
 {

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace MTCGTests.UserTests
 {
     [TestFixture]
-    public class RegistrationAndLoginTests
+    public class RegistrationAndLoginTest
     {
         private AuthService _authService;
         private IUserRepository _userRepository;

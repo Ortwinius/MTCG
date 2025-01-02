@@ -25,6 +25,7 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
+        public static void ResetInstance() => _instance = null;
         // Get user by username
         public User? GetUserByUsername(string username)
         {

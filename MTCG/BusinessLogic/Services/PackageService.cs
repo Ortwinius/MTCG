@@ -28,6 +28,7 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
+        public static void ResetInstance() => _instance = null;
 
         public void AddPackage(List<ICard>? cards)
         {

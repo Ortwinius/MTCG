@@ -10,6 +10,8 @@ using MTCG.Utilities;
 using MTCG.Server.RequestHandler;
 using MTCG.Server.ResponseHandler;
 using System.Diagnostics;
+using MTCG.Server.DI;
+using MTCG.Server.Endpoints.Initializer;
 
 namespace MTCG.Server
 {
@@ -28,7 +30,7 @@ namespace MTCG.Server
             _httpParser = new HttpParser();
             _responseHandler = new HttpResponseHandler();
 
-            InitializeEndpoints();
+            EndpointInitializer.InitializeEndpoints(_serviceProvider, _requestHandler);
         }
 
         /*
@@ -89,31 +91,31 @@ namespace MTCG.Server
             }
         }
 
-        private void InitializeEndpoints()
-        {
-            Console.WriteLine("[Server] Initializing endpoint mapping");
-            // retrieve registered services from DI container
-            var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndpoint>();
-            var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
-            var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
-            var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
-            var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
-            var statsEndpoint = _serviceProvider.GetRequiredService<StatsEndpoint>();
-            var scoreboardEndpoint = _serviceProvider.GetRequiredService<ScoreboardEndpoint>();
-            var battlesEndpoint = _serviceProvider.GetRequiredService<BattlesEndpoint>();
+        //private void InitializeEndpoints()
+        //{
+        //    Console.WriteLine("[Server] Initializing endpoint mapping");
+        //    // retrieve registered services from DI container
+        //    var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndpoint>();
+        //    var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
+        //    var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
+        //    var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
+        //    var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
+        //    var statsEndpoint = _serviceProvider.GetRequiredService<StatsEndpoint>();
+        //    var scoreboardEndpoint = _serviceProvider.GetRequiredService<ScoreboardEndpoint>();
+        //    var battlesEndpoint = _serviceProvider.GetRequiredService<BattlesEndpoint>();
 
-            // add endpoints to requestHandler
-            _requestHandler.AddEndpoint("/users", usersEndpoint);
-            _requestHandler.AddEndpoint("/users/{username}", usersEndpoint);
-            _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
-            _requestHandler.AddEndpoint("/packages", packagesEndpoint);
-            _requestHandler.AddEndpoint("/cards", cardsEndpoint);
-            _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
-            _requestHandler.AddEndpoint("/deck", deckEndpoint);
-            _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
-            _requestHandler.AddEndpoint("/stats", statsEndpoint);
-            _requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
-            _requestHandler.AddEndpoint("/battles", battlesEndpoint);
-        }
+        //    // add endpoints to requestHandler
+        //    _requestHandler.AddEndpoint("/users", usersEndpoint);
+        //    _requestHandler.AddEndpoint("/users/{username}", usersEndpoint);
+        //    _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
+        //    _requestHandler.AddEndpoint("/packages", packagesEndpoint);
+        //    _requestHandler.AddEndpoint("/cards", cardsEndpoint);
+        //    _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
+        //    _requestHandler.AddEndpoint("/deck", deckEndpoint);
+        //    _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
+        //    _requestHandler.AddEndpoint("/stats", statsEndpoint);
+        //    _requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
+        //    _requestHandler.AddEndpoint("/battles", battlesEndpoint);
+        //}
     }
 }

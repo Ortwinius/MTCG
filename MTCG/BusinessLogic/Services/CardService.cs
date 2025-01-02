@@ -30,6 +30,7 @@ namespace MTCG.BusinessLogic.Services
             }
             return _instance;
         }
+        public static void ResetInstance() => _instance = null;
         public List<ICard>? GetUserCards(int userId)
         {
             var cards = _cardRepository.GetUserCards(userId);
@@ -38,30 +39,6 @@ namespace MTCG.BusinessLogic.Services
                 throw new UserStackIsEmptyException();
             }
 
-            Console.WriteLine($"[DEBUG] Retrieving cards for user ID: {userId}");
-            foreach (var card in cards)
-            {
-                Console.WriteLine($"[DEBUG] User Card ID: {card.Id}, Name: {card.Name}");
-            }
-
-            return cards;
-        }
-
-        public List<ICard> ConvertCardIdsToCards(string[] cardIds)
-        {
-            var cards = new List<ICard>();
-            foreach (var id in cardIds)
-            {
-                var card = GetCardById(Guid.Parse(id)); // Hol die Karte mit der ID
-                if (card != null)
-                {
-                    cards.Add(card);
-                }
-                else
-                {
-                    Console.WriteLine($"Warning: Card with ID {id} was not found.");
-                }
-            }
             return cards;
         }
 
