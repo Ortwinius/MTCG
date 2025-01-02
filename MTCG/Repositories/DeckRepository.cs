@@ -1,5 +1,6 @@
 ﻿using MTCG.Models.Card;
 using MTCG.Utilities;
+using MTCG.Utilities.CustomExceptions;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -91,6 +92,37 @@ namespace MTCG.Repositories
             {
                 Console.WriteLine($"Error resetting deck: {ex.Message}");
                 throw;
+            }
+        }
+        /*
+        Used so that cards of loser get transferred to winner
+        */
+        public void TransferDeckCardsOwnership(List<Guid> cardIds, int userId)
+        {
+            Console.WriteLine($"[DeckRepository] Updating card ownership for user {userId}");
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            try
+            {
+                // update ownership for all cards   
+                foreach (var cardId in cardIds)
+                {
+                    var command = new NpgsqlCommand(
+                        "UPDATE cards " +
+                        "SET owned_by = @owned_by " +
+                        "WHERE card_id = @card_id", connection);
+
+                    DataLayer.AddParameter(command, "card_id", cardId);
+                    DataLayer.AddParameter(command, "owned_by", userId);
+
+                    command.ExecuteNonQuery();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new DbTransactionException($"Error while trying update card ownership for user {userId}: {ex.Message}\n Rollback executed");
             }
         }
     }

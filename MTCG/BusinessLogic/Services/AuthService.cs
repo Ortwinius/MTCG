@@ -103,13 +103,13 @@ namespace MTCG.BusinessLogic.Services
         // Optionally: also checks if user is admin and validates token
         public void EnsureAuthenticated(string authToken, string? username = null, bool allowAdmin = false)
         {
-            // Überprüfen, ob der Benutzer ein Admin ist, wenn Adminrechte erlaubt sind
+            // check if hes admin
             if (allowAdmin && IsAdmin(authToken))
             {
                 return; 
             }
 
-            // Überprüfen, ob der Benutzername vorhanden ist und das Token übereinstimmt
+            // check if path username matches authtoken
             if (username != null)
             {
                 var user = _userRepository.GetUserByUsername(username);
@@ -125,7 +125,7 @@ namespace MTCG.BusinessLogic.Services
                 return;
             }
 
-            // Token-Validierung ohne spezifischen Benutzernamen
+            // validation without specfic path username
             if (!_userRepository.ValidateToken(authToken))
             {
                 throw new UnauthorizedException("Authentication token is invalid.");

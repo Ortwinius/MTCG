@@ -245,5 +245,6 @@ namespace MTCG.Repositories
             return user != null && user.Username == "admin";
         }
 
+
     }
 }

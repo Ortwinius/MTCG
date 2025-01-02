@@ -2,6 +2,7 @@
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
 using MTCG.Utilities;
+using MTCG.Utilities.CustomExceptions;
 using Npgsql;
 using NpgsqlTypes;
 using System;

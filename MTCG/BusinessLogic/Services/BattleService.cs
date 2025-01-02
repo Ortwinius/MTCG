@@ -12,6 +12,7 @@ using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
 using System.Globalization;
 using MTCG.Models.Users.DTOs;
+using System.Transactions;
 /*
 Singleton BattleService 
 is a container for handling fights between cards
@@ -47,30 +48,34 @@ namespace MTCG.BusinessLogic.Services
         /*
         returns BattleLog
         */
-        public List<string>? StartBattle(User lhs, User rhs)
+        public List<string> StartBattle(User lhs, User rhs)
         {
+            List<string> battleLog = [$"Starting battle between {lhs.Username} and {rhs.Username}"];
             Console.WriteLine($"[BattleService] Starting battle between {lhs.Username} and {rhs.Username}");
-            List<string> battleLog = new();
 
-            var deckLhs = GetDeckOrThrow(lhs);
-            var deckRhs = GetDeckOrThrow(rhs);
+            var initialDeckLhs = GetDeck(lhs);
+            var initialDeckRhs = GetDeck(rhs);
+
+            var currentDeckLhs = new List<ICard>(initialDeckLhs);
+            var currentDeckRhs = new List<ICard>(initialDeckRhs);
 
             int roundCount = 0;
 
-            while (roundCount < Constants.MaxBattleRounds && deckLhs.Count > 0 && deckRhs.Count > 0)
+            while (roundCount < Constants.MaxBattleRounds && currentDeckLhs.Count > 0 && currentDeckRhs.Count > 0)
             {
                 roundCount++;
-                ExecuteBattleRound(lhs, rhs, deckLhs, deckRhs, battleLog, roundCount);
+                ExecuteBattleRound(lhs, rhs, currentDeckLhs, currentDeckRhs, battleLog, roundCount);
             }
 
-            DetermineBattleOutcome(lhs, rhs, deckLhs, deckRhs, battleLog);
-            UpdateUserStats(lhs, rhs, deckLhs.Count > deckRhs.Count, deckLhs, deckRhs);
+            ProcessBattleResults(lhs, rhs, currentDeckLhs, currentDeckRhs, battleLog);
+            ApplyCardTransfers(lhs, rhs, initialDeckLhs, initialDeckRhs, currentDeckLhs, currentDeckRhs);
+            UpdateUserStats(lhs, rhs, currentDeckLhs.Count > currentDeckRhs.Count);
 
             Console.WriteLine($"[BattleService] Battle complete between {lhs.Username} and {rhs.Username}");
             return battleLog;
         }
 
-        private List<ICard> GetDeckOrThrow(User user)
+        private List<ICard> GetDeck(User user)
         {
             var deck = _deckRepository.GetDeckOfUser(user.UserId);
             if (deck == null || deck.Count == 0)
@@ -96,12 +101,14 @@ namespace MTCG.BusinessLogic.Services
             if (damageLhs > damageRhs)
             {
                 battleLog.Add($"{lhs.Username} wins the round! {rhs.Username}'s card {cardRhs.Name} is taken.\n");
+                Console.WriteLine($"[BattleService] Card \"{cardRhs.Name}\" is transferred to {lhs.Username}");
                 deckRhs.Remove(cardRhs);
                 deckLhs.Add(cardRhs);
             }
             else if (damageRhs > damageLhs)
             {
                 battleLog.Add($"{rhs.Username} wins the round! {lhs.Username}'s card {cardLhs.Name} is taken.\n");
+                Console.WriteLine($"[BattleService] Card \"{cardLhs.Name}\" is transferred to {rhs.Username}");
                 deckLhs.Remove(cardLhs);
                 deckRhs.Add(cardLhs);
             }
@@ -111,7 +118,7 @@ namespace MTCG.BusinessLogic.Services
             }
         }
 
-        private void DetermineBattleOutcome(
+        private void ProcessBattleResults(
             User lhs, User rhs,
             List<ICard> deckLhs, List<ICard> deckRhs,
             List<string> battleLog)
@@ -132,9 +139,40 @@ namespace MTCG.BusinessLogic.Services
             }
         }
 
+        private void ApplyCardTransfers(
+            User lhs, User rhs,
+            List<ICard> initialDeckLhs, List<ICard> initialDeckRhs,
+            List<ICard> finalDeckLhs, List<ICard> finalDeckRhs)
+        {
+            var cardsGainedByLhs = finalDeckLhs.Except(initialDeckLhs).ToList();
+            var cardsGainedByRhs = finalDeckRhs.Except(initialDeckRhs).ToList();
+
+            using var transaction = new TransactionScope();
+
+            try
+            {
+                if (cardsGainedByLhs.Any())
+                {
+                    _deckRepository.TransferDeckCardsOwnership(cardsGainedByLhs.Select(card => card.Id).ToList(), lhs.UserId);
+                }
+
+                if (cardsGainedByRhs.Any())
+                {
+                    _deckRepository.TransferDeckCardsOwnership(cardsGainedByRhs.Select(card => card.Id).ToList(), rhs.UserId);
+                }
+
+                transaction.Complete();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[BattleService] Error during card transfer: {ex.Message}");
+                throw;
+            }
+        }
+
         private void UpdateUserStats(
             User lhs, User rhs,
-            bool isLhsWinner, List<ICard> deckLhs, List<ICard> deckRhs)
+            bool isLhsWinner)
         {
             var statsLhs = _userRepository.GetUserStatsByToken(lhs.AuthToken!);
             var statsRhs = _userRepository.GetUserStatsByToken(rhs.AuthToken!);
@@ -146,18 +184,17 @@ namespace MTCG.BusinessLogic.Services
                 statsLhs.Elo = CalculateElo(statsLhs.Elo, statsRhs.Elo, true);
                 statsRhs.Elo = CalculateElo(statsRhs.Elo, statsLhs.Elo, false);
             }
-            else if (deckRhs.Count > deckLhs.Count)
+            else
             {
-                statsRhs!.Wins++;
                 statsLhs!.Losses++;
-                statsRhs.Elo = CalculateElo(statsRhs.Elo, statsLhs.Elo, true);
+                statsRhs!.Wins++;
                 statsLhs.Elo = CalculateElo(statsLhs.Elo, statsRhs.Elo, false);
+                statsRhs.Elo = CalculateElo(statsRhs.Elo, statsLhs.Elo, true);
             }
 
             _userRepository.UpdateUserStats(lhs.Username, statsLhs!);
             _userRepository.UpdateUserStats(rhs.Username, statsRhs!);
         }
-
         private int CalculateElo(int eloA, int eloB, bool isAWinner)
         {
             Console.WriteLine($"[BattleService] Old Elo for {(isAWinner ? "Winner" : "Loser")}: {eloA}");
