@@ -39,7 +39,8 @@ namespace MTCG.Server.DIConfig
                 DeckService.GetInstance(sp.GetRequiredService<DeckRepository>()));
             services.AddSingleton<BattleService>(sp =>
                 BattleService.GetInstance(sp.GetRequiredService<BattleRepository>(),
-                                          sp.GetRequiredService<DeckRepository>()));
+                                          sp.GetRequiredService<DeckRepository>(),
+                                          sp.GetRequiredService<UserRepository>()));
             // Endpoints (Transient)
             services.AddTransient<UsersEndpoint>();
             services.AddTransient<SessionsEndpoint>();

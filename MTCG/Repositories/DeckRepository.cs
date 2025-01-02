@@ -73,5 +73,25 @@ namespace MTCG.Repositories
                 throw;
             }
         }
+        // used for a loser to reset his deck
+        public void ResetDeck(int userId)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            try
+            {
+                var deleteCmd = new NpgsqlCommand(
+                    "DELETE FROM deck_cards WHERE deck_id = @deck_id",
+                    connection);
+                DataLayer.AddParameter(deleteCmd, "deck_id", userId);
+                deleteCmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error resetting deck: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

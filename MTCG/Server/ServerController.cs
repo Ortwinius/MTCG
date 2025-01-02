@@ -30,7 +30,11 @@ namespace MTCG.Server
             InitializeEndpoints();
         }
 
-        public void Listen()
+        /*
+        Multithreaded listening to incoming client requests.
+        For every request a thread is created (and joined after running)
+        */
+        public void ListenAsync()
         {
             Console.WriteLine($"[Server] Server listening on http://localhost:{_port}/");
             var server = new TcpListener(IPAddress.Any, _port);
@@ -39,7 +43,7 @@ namespace MTCG.Server
             while (true)
             {
                 var client = server.AcceptTcpClient();
-                HandleClient(client);
+                Task.Run(() => HandleClient(client));
             }
         }
 
@@ -55,7 +59,7 @@ namespace MTCG.Server
                 using var reader = new StreamReader(client.GetStream());
 
                 var request = _httpParser.Parse(reader);
-                var response = _requestHandler.HandleRequestAsync(request);
+                var response = _requestHandler.HandleRequest(request);
 
                 _responseHandler.SendResponse(writer, response);
             }

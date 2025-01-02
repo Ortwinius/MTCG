@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.Eventing.Reader;
+using System.Text.Json.Serialization;
 
 namespace MTCG.Models.Card.Monster
 {
@@ -47,12 +48,6 @@ namespace MTCG.Models.Card.Monster
             ElemType = elemType; 
             Damage = damage;
             MonType = monType;
-        }
-
-        public void attack(ICard other)
-        {
-            Console.WriteLine($"{Name} Monster attacking {other.Name} - Type ?");
-            // TODO
         }
     }
 }

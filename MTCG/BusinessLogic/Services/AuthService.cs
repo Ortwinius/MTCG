@@ -58,10 +58,10 @@ namespace MTCG.BusinessLogic.Services
         #region Login
 
         // Login Http "POST /sessions"
-        public void Login(string inputUsername, string inputPassword, out string? authToken)
+        public void Login(string inputUsername, string inputPassword, out string authToken)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
-            authToken = null;
+            //authToken = null;
 
             // user not found:
             if (user == null)

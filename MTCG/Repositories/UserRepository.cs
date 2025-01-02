@@ -202,6 +202,24 @@ namespace MTCG.Repositories
 
             cmd.ExecuteNonQuery();
         }
+        public void UpdateUserStats(string username, UserStatsDTO userStats)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+            var cmd = new NpgsqlCommand(
+                "UPDATE users SET " +
+                "elo = @elo, " +
+                "wins = @wins, " +
+                "losses = @losses " +
+                "WHERE username = @username", connection);
+
+            DataLayer.AddParameter(cmd, "elo", userStats.Elo);
+            DataLayer.AddParameter(cmd, "wins", userStats.Wins);
+            DataLayer.AddParameter(cmd, "losses", userStats.Losses);
+            DataLayer.AddParameter(cmd, "username", username);
+
+            cmd.ExecuteNonQuery();
+        }
         public bool ValidateToken(string token)
         {
             using var connection = DataLayer.GetConnection();

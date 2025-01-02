@@ -44,10 +44,5 @@ namespace MTCG.Models.Card.Spell
             Damage = damage;
             SpellType = spellType;
         }
-        public void attack(ICard other)
-        {
-            Console.WriteLine($"{Name} Spell attacking {other.Name} - Type ?");
-            // TODO
-        }
     }
 }

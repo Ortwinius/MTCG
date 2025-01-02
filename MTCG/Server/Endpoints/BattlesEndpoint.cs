@@ -9,10 +9,10 @@ namespace MTCG.Server.Endpoints
     public class BattlesEndpoint : IHttpEndpoint
     {
         private static readonly ConcurrentQueue<User> Lobby = new();
+        private static readonly object LobbyLock = new object();
         private readonly BattleService _battleService;
         private readonly AuthService _authService;
         private readonly UserService _userService;
-
         public BattlesEndpoint(BattleService battleService, AuthService authService, UserService userService)
         {
             _battleService = battleService;
@@ -41,21 +41,33 @@ namespace MTCG.Server.Endpoints
 
                 Console.WriteLine($"[Lobby] {user!.Username} entered the lobby.");
 
-                // Add user to the lobby and check for an opponent
-                Lobby.Enqueue(user);
-
-
-                if (Lobby.Count >= 1 && Lobby.TryDequeue(out var opponent))
+                lock (LobbyLock)
                 {
-                    if (opponent.Username != user.Username)
-                    {
-                        Console.WriteLine($"[BattlesEndpoint] ");
-                        _battleService.StartBattle(user, opponent);
-                    }
-                }
-                
+                    Lobby.Enqueue(user);
 
-                return new ResponseObject(202, "Waiting for an opponent...");
+                    while (true)
+                    {
+                        // Check if there are at least 2 users in the lobby
+                        if (Lobby.Count > 1)
+                        {
+                            // Try to dequeue two users for a battle
+                            if (Lobby.TryDequeue(out var opponent) && opponent != user)
+                            {
+                                Console.WriteLine($"[Lobby] Match found: {user.Username} vs {opponent.Username}");
+                                var battleLog = _battleService.StartBattle(user, opponent);
+
+                                // Serialize the battle log into JSON response
+                                var jsonLog = string.Join("\n", battleLog);
+                                return new ResponseObject(200, $"Battle Request successful. Log: \n{jsonLog}");
+                            }
+                        }
+
+                        // If not enough users, wait
+                        Console.WriteLine($"[Lobby] {user.Username} is waiting for an opponent...");
+                        Monitor.Wait(LobbyLock);
+                    }
+
+                }
             }
             catch(DeckIsNullException)
             {

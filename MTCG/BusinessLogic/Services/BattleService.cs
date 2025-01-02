@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using MTCG.Utilities;
 using MTCG.Utilities.CustomExceptions;
+using MTCG.Models.Card.Monster;
+using MTCG.Models.Card.Spell;
+using System.Globalization;
+using MTCG.Models.Users.DTOs;
 /*
 Singleton BattleService 
 is a container for handling fights between cards
@@ -23,17 +27,19 @@ namespace MTCG.BusinessLogic.Services
         private static BattleService? _instance;
         private readonly DeckRepository _deckRepository;
         private readonly BattleRepository _battleRepository;
+        private readonly UserRepository _userRepository;
 
-        public BattleService(BattleRepository battleRespository, DeckRepository deckRepository)
+        public BattleService(BattleRepository battleRespository, DeckRepository deckRepository, UserRepository userRepository)
         {
             _battleRepository = battleRespository;
             _deckRepository = deckRepository;
+            _userRepository = userRepository;
         }
-        public static BattleService GetInstance(BattleRepository battleRespository, DeckRepository deckRepository)
+        public static BattleService GetInstance(BattleRepository battleRespository, DeckRepository deckRepository, UserRepository userRepository)
         {
             if(_instance == null)
             {
-                _instance = new BattleService(battleRespository, deckRepository);
+                _instance = new BattleService(battleRespository, deckRepository, userRepository);
             }
             return _instance;
         }
@@ -41,70 +47,213 @@ namespace MTCG.BusinessLogic.Services
         /*
         returns BattleLog
         */
-        public string? StartBattle(User lhs, User rhs)
+        public List<string>? StartBattle(User lhs, User rhs)
         {
-            string? battleLog = "";
-            // first get decks of users and throw error if they are not configured
-            var deckLhs = _deckRepository.GetDeckOfUser(lhs.UserId);
-            var deckRhs = _deckRepository.GetDeckOfUser(rhs.UserId);
-            
-            if(deckLhs == null || deckRhs == null)
+            Console.WriteLine($"[BattleService] Starting battle between {lhs.Username} and {rhs.Username}");
+            List<string> battleLog = new();
+
+            var deckLhs = GetDeckOrThrow(lhs);
+            var deckRhs = GetDeckOrThrow(rhs);
+
+            int roundCount = 0;
+
+            while (roundCount < Constants.MaxBattleRounds && deckLhs.Count > 0 && deckRhs.Count > 0)
+            {
+                roundCount++;
+                ExecuteBattleRound(lhs, rhs, deckLhs, deckRhs, battleLog, roundCount);
+            }
+
+            DetermineBattleOutcome(lhs, rhs, deckLhs, deckRhs, battleLog);
+            UpdateUserStats(lhs, rhs, deckLhs.Count > deckRhs.Count, deckLhs, deckRhs);
+
+            Console.WriteLine($"[BattleService] Battle complete between {lhs.Username} and {rhs.Username}");
+            return battleLog;
+        }
+
+        private List<ICard> GetDeckOrThrow(User user)
+        {
+            var deck = _deckRepository.GetDeckOfUser(user.UserId);
+            if (deck == null || deck.Count == 0)
             {
                 throw new DeckIsNullException();
             }
-            // draw card from deckLhs and from deckRhs
+            return deck;
+        }
+
+        private void ExecuteBattleRound(
+            User lhs, User rhs,
+            List<ICard> deckLhs, List<ICard> deckRhs,
+            List<string> battleLog, int roundCount)
+        {
+            battleLog.Add($"Round {roundCount}:");
+
             var cardLhs = deckLhs.ElementAt(new Random().Next(deckLhs.Count));
             var cardRhs = deckRhs.ElementAt(new Random().Next(deckRhs.Count));
 
-            // if one player has run out of cards, the other player wins
-            if(CheckWinner(lhs, cardLhs, rhs, cardRhs, ref battleLog))
-                return battleLog;
+            int damageLhs = CalculateDamage(cardLhs, cardRhs, battleLog);
+            int damageRhs = CalculateDamage(cardRhs, cardLhs, battleLog);
 
-            throw new NotImplementedException();
-            //ExecuteBattleRound(cardA, cardB, playerA, playerB);
-        }
-        private void ExecuteBattleRound(ICard cardA, ICard cardB, User playerA, User playerB)
-        {
-            //// retrieve damage from cards
-            //int damageA = cardA.Damage;
-            //int damageB = cardB.Damage;
-
-            //// spell card vs monster
-            //// TODO
-
-            //// check absolute damage difference (to be changed for check if its monster vs monster)
-            //if (damageA > damageB)
-            //{
-            //    Console.WriteLine($"{playerA.Username}'s card {cardA.Name} wins this round.");
-            //    // Karte von playerB zu playerA transferieren
-            //    _deckService.TransferCard(playerB, playerA, cardB.Id.ToString());
-            //}
-            //else if (damageB > damageA)
-            //{
-            //    Console.WriteLine($"{playerB.Username}'s card {cardB.Name} wins this round.");
-            //    // Karte von playerA zu playerB transferieren
-            //    _deckService.TransferCard(playerA, playerB, cardA.Id.ToString());
-            //}
-            //else
-            //{
-            //    Console.WriteLine("It's a draw. No cards are transferred.");
-            //}
-        }
-        bool CheckWinner(User lhs, ICard cardLhs, User rhs, ICard cardRhs, ref string? battleLog)
-        {
-            if (cardLhs == null || cardRhs == null)
+            if (damageLhs > damageRhs)
             {
-                if (cardLhs == null)
-                {
-                    battleLog += $"\nOh no! User {lhs.Username} has run out of cards.\nThe winner is: {rhs.Username}";
-                }
-                else
-                {
-                    battleLog += $"\nOh no! User {rhs.Username} has run out of cards.\nThe winner is: {lhs.Username}";
-                }
-                return true;
+                battleLog.Add($"{lhs.Username} wins the round! {rhs.Username}'s card {cardRhs.Name} is taken.\n");
+                deckRhs.Remove(cardRhs);
+                deckLhs.Add(cardRhs);
             }
-            return false;
+            else if (damageRhs > damageLhs)
+            {
+                battleLog.Add($"{rhs.Username} wins the round! {lhs.Username}'s card {cardLhs.Name} is taken.\n");
+                deckLhs.Remove(cardLhs);
+                deckRhs.Add(cardLhs);
+            }
+            else
+            {
+                battleLog.Add("It's a draw! No cards are moved.\n");
+            }
         }
+
+        private void DetermineBattleOutcome(
+            User lhs, User rhs,
+            List<ICard> deckLhs, List<ICard> deckRhs,
+            List<string> battleLog)
+        {
+            if (deckLhs.Count > 0 && deckRhs.Count == 0)
+            {
+                battleLog.Add($"Battle result: {lhs.Username} wins the battle!");
+                _deckRepository.ResetDeck(rhs.UserId);
+            }
+            else if (deckRhs.Count > 0 && deckLhs.Count == 0)
+            {
+                battleLog.Add($"Battle result: {rhs.Username} wins the battle!");
+                _deckRepository.ResetDeck(lhs.UserId);
+            }
+            else
+            {
+                battleLog.Add("Battle result: It's a draw! No Elo changes.");
+            }
+        }
+
+        private void UpdateUserStats(
+            User lhs, User rhs,
+            bool isLhsWinner, List<ICard> deckLhs, List<ICard> deckRhs)
+        {
+            var statsLhs = _userRepository.GetUserStatsByToken(lhs.AuthToken!);
+            var statsRhs = _userRepository.GetUserStatsByToken(rhs.AuthToken!);
+
+            if (isLhsWinner)
+            {
+                statsLhs!.Wins++;
+                statsRhs!.Losses++;
+                statsLhs.Elo = CalculateElo(statsLhs.Elo, statsRhs.Elo, true);
+                statsRhs.Elo = CalculateElo(statsRhs.Elo, statsLhs.Elo, false);
+            }
+            else if (deckRhs.Count > deckLhs.Count)
+            {
+                statsRhs!.Wins++;
+                statsLhs!.Losses++;
+                statsRhs.Elo = CalculateElo(statsRhs.Elo, statsLhs.Elo, true);
+                statsLhs.Elo = CalculateElo(statsLhs.Elo, statsRhs.Elo, false);
+            }
+
+            _userRepository.UpdateUserStats(lhs.Username, statsLhs!);
+            _userRepository.UpdateUserStats(rhs.Username, statsRhs!);
+        }
+
+        private int CalculateElo(int eloA, int eloB, bool isAWinner)
+        {
+            Console.WriteLine($"[BattleService] Old Elo for {(isAWinner ? "Winner" : "Loser")}: {eloA}");
+            double expectedA = 1 / (1 + Math.Pow(10, (eloB - eloA) / 400.0));
+            int k = 32;
+            int newElo = eloA + (int)(k * (isAWinner ? 1 - expectedA : 0 - expectedA));
+            Console.WriteLine($"[BattleService] New Elo for {(isAWinner ? "Winner" : "Loser")}: {newElo}");
+            return newElo;
+        }
+        private int CalculateDamage(ICard attacker, ICard defender, List<string> battleLog)
+        {
+            int damage = attacker.Damage;
+
+            if (attacker is MonsterCard monsterA && defender is MonsterCard monsterB)
+            {
+                if (monsterA.MonType == MonsterType.Goblin && monsterB.MonType == MonsterType.Dragon)
+                {
+                    battleLog.Add($"{monsterA.Name} (Goblin) is too afraid to attack {monsterB.Name} (Dragon). Damage is 0.");
+                    return 0;
+                }
+
+                if (monsterA.MonType == MonsterType.Wizzard && monsterB.MonType == MonsterType.Ork)
+                {
+                    battleLog.Add($"{monsterA.Name} (Wizzard) controls {monsterB.Name} (Ork). Damage is 0.");
+                    return 0;
+                }
+
+                if (monsterA.MonType == MonsterType.FireElf && monsterB.MonType == MonsterType.Dragon)
+                {
+                    battleLog.Add($"{monsterA.Name} (FireElf) evades {monsterB.Name} (Dragon)'s attack. Damage is 0.");
+                    return 0;
+                }
+
+                return damage;
+            }
+
+            if (attacker is SpellCard spellA && defender is MonsterCard monster)
+            {
+                if (monster.MonType == MonsterType.Knight && spellA.ElemType == ElementType.Water)
+                {
+                    battleLog.Add($"{spellA.Name} (WaterSpell) drowns {monster.Name} (Knight). Instant defeat.");
+                    return int.MaxValue;
+                }
+
+                if (monster.MonType == MonsterType.Kraken)
+                {
+                    battleLog.Add($"{monster.Name} (Kraken) is immune to spells. Damage is 0.");
+                    return 0;
+                }
+            }
+
+            if (attacker is SpellCard || defender is SpellCard)
+            {
+                damage = ApplyEffectiveness(attacker, defender, battleLog);
+            }
+
+            return damage;
+        }
+
+        private int ApplyEffectiveness(ICard attacker, ICard defender, List<string> battleLog)
+        {
+            int damage = attacker.Damage;
+
+            if (attacker.ElemType == ElementType.Water && defender.ElemType == ElementType.Fire)
+            {
+                damage *= 2;
+                battleLog.Add($"{attacker.Name} (Water) is super effective against {defender.Name} (Fire). Damage is doubled to {damage}.");
+            }
+            else if (attacker.ElemType == ElementType.Fire && defender.ElemType == ElementType.Water)
+            {
+                damage /= 2;
+                battleLog.Add($"{attacker.Name} (Fire) is not effective against {defender.Name} (Water). Damage is halved to {damage}.");
+            }
+            else if (attacker.ElemType == ElementType.Fire && defender.ElemType == ElementType.Normal)
+            {
+                damage *= 2;
+                battleLog.Add($"{attacker.Name} (Fire) is super effective against {defender.Name} (Normal). Damage is doubled to {damage}.");
+            }
+            else if (attacker.ElemType == ElementType.Normal && defender.ElemType == ElementType.Fire)
+            {
+                damage /= 2;
+                battleLog.Add($"{attacker.Name} (Normal) is not effective against {defender.Name} (Fire). Damage is halved to {damage}.");
+            }
+            else if (attacker.ElemType == ElementType.Normal && defender.ElemType == ElementType.Water)
+            {
+                damage *= 2;
+                battleLog.Add($"{attacker.Name} (Normal) is super effective against {defender.Name} (Water). Damage is doubled to {damage}.");
+            }
+            else if (attacker.ElemType == ElementType.Water && defender.ElemType == ElementType.Normal)
+            {
+                damage /= 2;
+                battleLog.Add($"{attacker.Name} (Water) is not effective against {defender.Name} (Normal). Damage is halved to {damage}.");
+            }
+
+            return damage;
+        }
+
     }
 }

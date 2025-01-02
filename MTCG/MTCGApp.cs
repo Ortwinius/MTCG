@@ -13,7 +13,7 @@ namespace MTCG
 
             var serverController = new ServerController(serviceProvider);
 
-            serverController.Listen();
+            serverController.ListenAsync();
         }
     }
 
