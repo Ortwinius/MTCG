@@ -4,7 +4,7 @@ using MTCG.Models.Card.Spell;
 using MTCG.Repositories.DL;
 using MTCG.Repositories.Interfaces;
 using MTCG.Utilities;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using Npgsql;
 using NpgsqlTypes;
 using System;
@@ -28,12 +28,39 @@ namespace MTCG.Repositories
 
             using var reader = command.ExecuteReader();
 
+            if(!reader.HasRows)
+            {
+                return null;
+            }
+
             return DataLayer.ParseCardsFromReader(reader);
         }
+        //public ICard? GetCardById(Guid id)
+        //{
+        //    using var connection = DataLayer.GetConnection();
+        //    connection.Open();
+
+        //    var command = new NpgsqlCommand(
+        //        "SELECT card_id, name, type, element, damage, owned_by " +
+        //        "FROM cards " +
+        //        "WHERE card_id = @card_id", connection);
+
+        //    DataLayer.AddParameter(command, "card_id", id);
+
+        //    using var reader = command.ExecuteReader();
+
+        //    if (!reader.HasRows)
+        //    {
+        //        return null;
+        //    }
+        //    return DataLayer.ParseCardFromReader(reader);
+        //}
         public ICard? GetCardById(Guid id)
         {
+            Console.WriteLine($"[CardRepository] Fetching card with ID: {id}");
             using var connection = DataLayer.GetConnection();
             connection.Open();
+            Console.WriteLine("[CardRepos] Connection opened");
 
             var command = new NpgsqlCommand(
                 "SELECT card_id, name, type, element, damage, owned_by " +
@@ -42,9 +69,20 @@ namespace MTCG.Repositories
 
             DataLayer.AddParameter(command, "card_id", id);
 
-            using var reader = command.ExecuteReader();
+            Console.WriteLine("[CardRepos] SQL Command prepared");
+            Console.WriteLine($"Executing SQL: SELECT card_id, name, type, element, damage, owned_by FROM cards WHERE card_id = '{id}'");
 
-            return DataLayer.ParseCardFromReader(reader);
+            using var reader = command.ExecuteReader();
+            Console.WriteLine("[CardRepos] Command executed");
+
+            if (reader.Read()) // Versuchen Sie direkt zu lesen
+            {
+                Console.WriteLine("[CardRepos] Card found in the result set");
+                return DataLayer.ParseCardFromReader(reader);
+            }
+
+            Console.WriteLine($"[CardRepository] No card found with ID: {id}");
+            return null;
         }
 
         public void AddCard(ICard card, int? ownerUserId = null)
@@ -94,6 +132,40 @@ namespace MTCG.Repositories
 
             return DataLayer.ParseCardsFromReader(reader);
         }
+        public int GetOwnerOfCard(Guid cardToTrade)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
 
+            var cmd = new NpgsqlCommand(
+                "SELECT owned_by " +
+                "FROM cards " +
+                "WHERE card_id = @card_id", connection);
+
+            DataLayer.AddParameter(cmd, "card_id", cardToTrade);
+
+            using var reader = cmd.ExecuteReader();
+
+            if (reader.Read()) 
+            {
+                return reader.GetInt32(0); 
+            }
+
+            throw new DbTransactionException($"No owner could be found for card {cardToTrade}");
+        }
+        public void UpdateCardOwnership(Guid id, int userId)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var cmd = new NpgsqlCommand(
+                "UPDATE cards " +
+                "SET owned_by = @new_owner_id " +
+                "WHERE card_id = @card_id", connection);
+            DataLayer.AddParameter(cmd, "card_id", id);
+            DataLayer.AddParameter(cmd, "new_owner_id", userId);
+
+            cmd.ExecuteNonQuery();
+        }
     }
 }

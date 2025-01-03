@@ -1,7 +1,7 @@
 ﻿using MTCG.Models.Users.DTOs;
 using MTCG.Models.Users;
 using MTCG.Repositories;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using Microsoft.AspNetCore.Identity;
 using MTCG.Repositories.Interfaces;
 

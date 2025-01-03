@@ -2,7 +2,7 @@
 using MTCG.Models.Card;
 using MTCG.Models.Users;
 using System.Security.Cryptography;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using MTCG.Repositories;
 using MTCG.Repositories.Interfaces;
 

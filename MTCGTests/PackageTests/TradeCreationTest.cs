@@ -4,7 +4,7 @@ using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
 using MTCG.Models.Users;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace MTCGTests.PackageTests
 {
     [TestFixture]
-    public class PackageLogicTest
+    public class TradeCreationTest
     {
         private PackageService _packageService;
         private IPackageRepository _packageRepository;

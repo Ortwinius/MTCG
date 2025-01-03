@@ -1,5 +1,4 @@
-﻿
-namespace MTCG.Utilities.CustomExceptions
+﻿namespace MTCG.Utilities.Exceptions.CustomExceptions
 {
     [Serializable]
     internal class InvalidPackageException : Exception

@@ -3,7 +3,7 @@ using MTCG.Models.ResponseObject;
 using MTCG.BusinessLogic.Services;
 using System.Text.Json;
 using MTCG.Utilities.CardJsonConverter;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 
 namespace MTCG.Server.Endpoints
 {
@@ -20,7 +20,12 @@ namespace MTCG.Server.Endpoints
             _userService = userService;
         }
 
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
+        public ResponseObject HandleRequest(
+            string method,
+            string path,
+            string? body,
+            Dictionary<string, string> headers,
+            Dictionary<string, string>? routeParams = null)
         {
             switch (method)
             {
@@ -52,17 +57,9 @@ namespace MTCG.Server.Endpoints
 
                 return new ResponseObject(200, jsonCards);
             }
-            catch(UnauthorizedException)
+            catch (Exception ex)
             {
-                return new ResponseObject(401, "Unauthorized");
-            }
-            catch (NotEnoughCoinsException)
-            {
-                return new ResponseObject(403, "Not enough coins");
-            }
-            catch(NoPackageAvailableException)
-            {
-                return new ResponseObject(404, "No package available");
+                return ExceptionHandler.HandleException(ex);
             }
         }
 
@@ -88,26 +85,9 @@ namespace MTCG.Server.Endpoints
 
                 return new ResponseObject(201, "Package successfully created.");
             }
-            catch (UnauthorizedException)
-            {
-                return new ResponseObject(401, "Unauthorized.");
-            }
-            catch (NotAdminException)
-            {
-                return new ResponseObject(403, "Forbidden: Admin rights required.");
-            }
-            catch (InvalidPackageException ex)
-            {
-                return new ResponseObject(400, ex.Message);
-            }
-            catch (PackageConflictException)
-            {
-                return new ResponseObject(409, "One or more cards are already in a package.");
-            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
-                return new ResponseObject(500, "Internal server error.");
+                return ExceptionHandler.HandleException(ex);
             }
         }
 

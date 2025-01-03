@@ -2,7 +2,7 @@
 using MTCG.Models.Card;
 using MTCG.Models.ResponseObject;
 using MTCG.Utilities.CardJsonConverter;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,12 @@ namespace MTCG.Server.Endpoints
             _userService = userService;
         }
 
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
+        public ResponseObject HandleRequest(
+            string method,
+            string path,
+            string? body,
+            Dictionary<string, string> headers,
+            Dictionary<string, string>? routeParams = null)
         {
             switch (method)
             {
@@ -52,13 +57,9 @@ namespace MTCG.Server.Endpoints
 
                 return new ResponseObject(200, jsonUserCards);
             }
-            catch(UnauthorizedException)
+            catch (Exception ex)
             {
-                return new ResponseObject(401, "Unauthorized");
-            }
-            catch(UserStackIsEmptyException)
-            {
-                return new ResponseObject(204, "The request was fine, but the user doesn't have any cards.");
+                return ExceptionHandler.HandleException(ex);
             }
         }
     }

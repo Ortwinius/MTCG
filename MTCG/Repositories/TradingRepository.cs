@@ -11,14 +11,52 @@ namespace MTCG.Repositories
 {
     public class TradingRepository : ITradingRepository
     {
-        public void ExecuteTrade(Guid tradeId, Guid offeredCardId)
+        public void ExecuteTrade(Guid cardId, int userId)
         {
-            throw new NotImplementedException();
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var cmd = new NpgsqlCommand(
+                "UPDATE cards " +
+                "SET owned_by = @user_id " +
+                "WHERE card_id = @card_id", connection);
+
+            DataLayer.AddParameter(cmd, "user_id", userId);
+            DataLayer.AddParameter(cmd, "card_id", cardId);
+
+            cmd.ExecuteNonQuery();
         }
 
         public void CreateTradingDeal(TradingDeal deal)
         {
-            throw new NotImplementedException();
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var cmd = new NpgsqlCommand(
+                "INSERT INTO tradings (trade_id, card_to_trade, card_type, min_damage) " +
+                "VALUES (@trade_id, @card_to_trade, @card_type, @min_damage)",
+                connection);
+
+            DataLayer.AddParameter(cmd, "trade_id", deal.Id);
+            DataLayer.AddParameter(cmd, "card_to_trade", deal.CardToTrade);
+            DataLayer.AddParameter(cmd, "card_type", deal.Type);
+            DataLayer.AddParameter(cmd, "min_damage", deal.MinDamage);
+
+            cmd.ExecuteNonQuery();
+        }
+        public void DeleteTradingDeal(Guid tradeId)
+        {
+            using var connection = DataLayer.GetConnection();
+            connection.Open();
+
+            var cmd = new NpgsqlCommand(
+                "DELETE FROM tradings " +
+                "WHERE trade_id = @trade_id",
+                connection);
+
+            DataLayer.AddParameter(cmd, "trade_id", tradeId);
+
+            cmd.ExecuteNonQuery();
         }
 
         public List<TradingDeal> GetAllTradings()
@@ -38,10 +76,10 @@ namespace MTCG.Repositories
             {
                 var deal = new TradingDeal
                 {
-                    Id = reader.GetGuid(reader.GetOrdinal("trade_id")),
-                    CardToTrade = reader.GetGuid(reader.GetOrdinal("card_to_trade")),
-                    Type = reader.GetString(reader.GetOrdinal("card_type")),
-                    MinDamage = reader.GetInt32(reader.GetOrdinal("min_damage"))
+                    Id = reader.GetGuid(0),
+                    CardToTrade = reader.GetGuid(1),
+                    Type = reader.GetString(2),
+                    MinDamage = reader.GetInt32(3)
                 };
 
                 tradingDeals.Add(deal);
@@ -55,28 +93,52 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
+            Console.WriteLine($"[TradingRepository] Fetching trade with ID: {tradeId}");
+
             var cmd = new NpgsqlCommand(
-                "SELECT trade_id, card_to_trade, card_type, min_damage " +
+                "SELECT * " +
                 "FROM tradings " +
                 "WHERE trade_id = @trade_id",
                 connection);
 
             DataLayer.AddParameter(cmd, "trade_id", tradeId);
 
-            using var reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            try
             {
-                return new TradingDeal
+                using var reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
                 {
-                    Id = reader.GetGuid(reader.GetOrdinal("trade_id")),
-                    CardToTrade = reader.GetGuid(reader.GetOrdinal("card_to_trade")),
-                    Type = reader.GetString(reader.GetOrdinal("card_type")),
-                    MinDamage = reader.GetInt32(reader.GetOrdinal("min_damage"))
-                };
+                    Console.WriteLine("[TradingRepository] Rows found in the result set.");
+                }
+                else
+                {
+                    Console.WriteLine("[TradingRepository] No rows found in the result set.");
+                }
+
+                if (reader.Read())
+                {
+                    var trade = new TradingDeal
+                    {
+                        Id = reader.GetGuid(0),
+                        CardToTrade = reader.GetGuid(1),
+                        Type = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        MinDamage = reader.GetInt32(3)
+                    };
+
+                    Console.WriteLine($"[TradingRepository] Trade details: {trade.Id}, {trade.CardToTrade}, {trade.Type}, {trade.MinDamage}");
+                    return trade;
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[TradingRepository] Error retrieving trade: {ex.Message}");
+                throw new InvalidOperationException("Error retrieving trade from the database.", ex);
+            }
+
             return null;
         }
+
 
     }
 }

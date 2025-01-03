@@ -5,7 +5,7 @@ using MTCG.Models.Users;
 using MTCG.Models.Users.DTOs;
 using MTCG.Repositories;
 using MTCG.Utilities;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using System.ComponentModel.Design;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -27,7 +27,12 @@ namespace MTCG.Server.Endpoints
         POST /users
         GET /users/{username}
         */
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
+        public ResponseObject HandleRequest(
+            string method, 
+            string path, 
+            string? body, 
+            Dictionary<string, string> headers, 
+            Dictionary<string, string>? routeParams = null)
         {
             switch(method)
             {
@@ -56,14 +61,13 @@ namespace MTCG.Server.Endpoints
 
                 return new ResponseObject(201, "User successfully registered.");
             }
-            catch (UserAlreadyExistsException)
+            catch (Exception ex)
             {
-                return new ResponseObject(409, "User with same username already registered.");
+                return ExceptionHandler.HandleException(ex);
             }
         }
         /*
-         * Returns Name, Bio and image of user
-        TODO : throw user not found exception in getUserByValidToken ? or somewhere else 
+        Returns Name, Bio and image of user
         */
         private ResponseObject GetUserData(string username, Dictionary<string, string> headers)
         {
@@ -82,13 +86,9 @@ namespace MTCG.Server.Endpoints
 
                 return new ResponseObject(200, jsonUserData);
             }
-            catch (UnauthorizedException)
+            catch (Exception ex)
             {
-                return new ResponseObject(401, "Unauthorized");
-            }
-            catch (UserNotFoundException)
-            {
-                return new ResponseObject(404, "User not found.");
+                return ExceptionHandler.HandleException(ex);
             }
         }
 
@@ -100,21 +100,14 @@ namespace MTCG.Server.Endpoints
 
                 _authService.EnsureAuthenticated(token, username, allowAdmin: true);
 
-                // parse UserDataDTO from body
                 var userData = JsonSerializer.Deserialize<UserDataDTO>(body);
-                // print it:
-                Console.WriteLine($"[UsersEndpoint] Updating user data: {userData!.Name}, {userData.Bio}, {userData.Image}");
 
                 _userService.UpdateUserData(username, userData!);
                 return new ResponseObject(200, "User data successfully updated.");
             }
-            catch(UnauthorizedException)
+            catch (Exception ex)
             {
-                return new ResponseObject(401, "Unauthorized");
-            }
-            catch (UserNotFoundException)
-            {
-                return new ResponseObject(404, "User not found.");
+                return ExceptionHandler.HandleException(ex);
             }
         }
     }

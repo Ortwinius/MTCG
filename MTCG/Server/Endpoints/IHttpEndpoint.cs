@@ -6,9 +6,9 @@ namespace MTCG.Server.Endpoints
     {
         public ResponseObject? HandleRequest(
             string method, 
-            string path, 
+            string path,
+            string? body,
             Dictionary<string, string> headers, 
-            string? body, 
             Dictionary<string, string>? routeParams = null
             );
     }

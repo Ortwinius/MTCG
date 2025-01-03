@@ -19,9 +19,14 @@ namespace MTCG.Server.Endpoints
             _authService = authService;
             _userService = userService;
         }
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
+        public ResponseObject HandleRequest(
+            string method,
+            string path,
+            string? body,
+            Dictionary<string, string> headers,
+            Dictionary<string, string>? routeParams = null)
         {
-            switch(method)
+            switch (method)
             {
                 case "GET":
                     return GetUserStats(headers);
@@ -43,9 +48,9 @@ namespace MTCG.Server.Endpoints
 
                 return new ResponseObject(200, jsonUserStats);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return new ResponseObject(400, Helpers.CreateStandardJsonResponse(e.Message));
+                return ExceptionHandler.HandleException(ex);
             }
         }
     }

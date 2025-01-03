@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using MTCG.Models.Users;
 using MTCG.Models.Users.DTOs;
 using MTCG.Repositories;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 
 /*
 Singleton Service for User-related authentication logic 
@@ -42,7 +43,6 @@ namespace MTCG.BusinessLogic.Services
             // 409: check if user already exists
             if (_userRepository.UserExists(inputUsername))
             {
-                Console.WriteLine("Error: Username already exists");
                 throw new UserAlreadyExistsException();
             }
 
@@ -64,33 +64,23 @@ namespace MTCG.BusinessLogic.Services
         public void Login(string inputUsername, string inputPassword, out string authToken)
         {
             var user = _userRepository.GetUserByUsername(inputUsername);
-            //authToken = null;
-
-            // user not found:
             if (user == null)
-            {
-                Console.WriteLine("Invalid username");
-                throw new UserNotFoundException();
-            }
-            // verify password
+                throw new UserNotFoundException("Invalid username or user does not exist.");
+
             var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.Password, inputPassword);
-
             if (verificationResult != PasswordVerificationResult.Success)
-            {
-                Console.WriteLine("Invalid password");
-                throw new UnauthorizedException();
-            }
-        
-            user.AuthToken = user.Username + "-mtcgToken";
-            authToken = user.AuthToken; // for out parameter
+                throw new UnauthorizedException("Invalid password.");
 
-            // update user in db with new authToken
+            authToken = $"{user.Username}-mtcgToken";
+            user.AuthToken = authToken;
+
             _userRepository.UpdateUser(user);
 
-            Console.WriteLine($"Logging in... Welcome {user.Username}!");
+            Console.WriteLine($"[AuthService] Login successful. Welcome {user.Username}!");
         }
+
         #endregion
-        
+
         #region SessionValidation
         public string GetAuthToken(Dictionary<string, string> headers)
         {
@@ -112,7 +102,7 @@ namespace MTCG.BusinessLogic.Services
                 return; 
             }
 
-            // check if path username matches authtoken
+            // check if path username matches authtoken by comparring pulled users authtoken with inserted authtoken
             if (username != null)
             {
                 var user = _userRepository.GetUserByUsername(username);

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MTCG.Utilities;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
 using System.Globalization;
@@ -150,15 +150,18 @@ namespace MTCG.BusinessLogic.Services
             using var transaction = new TransactionScope();
             try
             {
+                List<Guid> gainedGuids = new();
+
                 if (cardsGainedByLhs.Any())
                 {
-
-                    _deckRepository.TransferDeckCardsOwnership(cardsGainedByLhs.Select(card => card.Id).ToList(), lhs.UserId);
+                    gainedGuids = cardsGainedByLhs.Select(card => card.Id).ToList();
+                    _deckRepository.TransferDeckCardsOwnership(gainedGuids, lhs.UserId);
                 }
 
                 if (cardsGainedByRhs.Any())
                 {
-                    _deckRepository.TransferDeckCardsOwnership(cardsGainedByRhs.Select(card => card.Id).ToList(), rhs.UserId);
+                    gainedGuids = cardsGainedByRhs.Select(card => card.Id).ToList();
+                    _deckRepository.TransferDeckCardsOwnership(gainedGuids, rhs.UserId);
                 }
 
                 transaction.Complete();

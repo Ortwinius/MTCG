@@ -1,7 +1,7 @@
 ﻿using MTCG.BusinessLogic.Services;
 using MTCG.Models.Users;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using NSubstitute;
 using NUnit.Framework;
 using System;

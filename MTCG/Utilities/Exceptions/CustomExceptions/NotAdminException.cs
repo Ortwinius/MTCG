@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Utilities.CustomExceptions
+namespace MTCG.Utilities.Exceptions.CustomExceptions
 {
     public class NotAdminException : Exception
     {

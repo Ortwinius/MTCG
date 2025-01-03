@@ -2,7 +2,7 @@
 using MTCG.Repositories.DL;
 using MTCG.Repositories.Interfaces;
 using MTCG.Utilities;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using Npgsql;
 using System;
 using System.Collections.Generic;

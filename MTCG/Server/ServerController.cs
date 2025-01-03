@@ -12,6 +12,7 @@ using MTCG.Server.ResponseHandler;
 using System.Diagnostics;
 using MTCG.Server.DI;
 using MTCG.Server.Endpoints.Initializer;
+using Npgsql.Internal;
 
 namespace MTCG.Server
 {
@@ -58,20 +59,21 @@ namespace MTCG.Server
             var timer = Stopwatch.StartNew();
             Console.WriteLine("[Server] Accepted client, executing request");
 
+            using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
+            using var reader = new StreamReader(client.GetStream());
+
             try
             {
-                using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
-                using var reader = new StreamReader(client.GetStream());
-
                 var request = _httpParser.Parse(reader);
 
                 var response = _requestHandler.HandleRequest(request);
 
-                _responseHandler.SendResponse(writer, response!);
+                _responseHandler.SendResponse(writer, response);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[Server] Error while trying to handle client requests: {ex.Message}");
+                _responseHandler.SendResponse(writer, new ResponseObject(500, $"Internal server error: {ex.Message}"));
             }
             finally
             {

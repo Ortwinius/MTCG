@@ -2,7 +2,7 @@
 using MTCG.Models.Card;
 using MTCG.Models.Card.Monster;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using NSubstitute;
 using System;
 using System.Collections.Generic;

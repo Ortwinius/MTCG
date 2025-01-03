@@ -47,7 +47,7 @@ namespace MTCG.Server.RequestHandler
 
             if (_staticEndpoints.ContainsKey(request.Path))
             {
-                return _staticEndpoints[request.Path].HandleRequest(request.Method!, request.Path, request.Headers, request.Body);
+                return _staticEndpoints[request.Path].HandleRequest(request.Method!, request.Path, request.Body, request.Headers);
             }
 
             foreach (var (pattern, endpoint) in _dynamicEndpoints)
@@ -55,7 +55,7 @@ namespace MTCG.Server.RequestHandler
                 if (Regex.IsMatch(request.Path, pattern))
                 {
                     var routeParams = Helpers.ExtractRouteParameters(request.Path, pattern);
-                    return endpoint.HandleRequest(request.Method!, request.Path, request.Headers, request.Body, routeParams);
+                    return endpoint.HandleRequest(request.Method!, request.Path, request.Body, request.Headers, routeParams);
                 }
             }
 

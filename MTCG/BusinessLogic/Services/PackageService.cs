@@ -2,7 +2,7 @@
 using MTCG.Models.Users;
 using MTCG.Repositories;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using System;
 using System.Collections.Generic;
 
@@ -35,12 +35,6 @@ namespace MTCG.BusinessLogic.Services
             if (cards == null || cards.Count != 5)
                 throw new InvalidPackageException("A package must contain exactly 5 cards.");
 
-            Console.WriteLine("[DEBUG] Creating package with cards:");
-            foreach (var card in cards)
-            {
-                Console.WriteLine($"[DEBUG] Card ID: {card.Id}, Name: {card.Name}");
-            }
-
             if (!_packageRepository.AddPackage(cards))
             {
                 throw new PackageConflictException();
@@ -58,12 +52,6 @@ namespace MTCG.BusinessLogic.Services
             if (cards == null)
             {
                 throw new NoPackageAvailableException();
-            }
-
-            Console.WriteLine($"[DEBUG] User {user.Username} is acquiring a package...");
-            foreach (var card in cards)
-            {
-                Console.WriteLine($"[DEBUG] Acquired Card ID: {card.Id}, Name: {card.Name}");
             }
 
             user.Coins -= 5;

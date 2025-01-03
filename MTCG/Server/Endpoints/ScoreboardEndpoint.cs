@@ -1,7 +1,7 @@
 ﻿using MTCG.BusinessLogic.Services;
 using MTCG.Models.ResponseObject;
 using MTCG.Utilities;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,12 @@ namespace MTCG.Server.Endpoints
             _authService = authService;
             _userService = userService;
         }
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
+        public ResponseObject HandleRequest(
+            string method,
+            string path,
+            string? body,
+            Dictionary<string, string> headers,
+            Dictionary<string, string>? routeParams = null)
         {
             switch (method)
             {

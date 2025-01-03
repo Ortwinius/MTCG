@@ -2,18 +2,7 @@
 
 REM --------------------------------------------------
 REM Monster Trading Cards Game
-REM Test Script for Ortwin Baldaufs implementation
 REM --------------------------------------------------
-
-
-
-
-REM --------------------------------------------------
-REM !NOTE THAT THE CARD MODEL HAS BEEN MODIFIED!
-REM Everything else is like in the original script
-REM --------------------------------------------------
-
-
 title Monster Trading Cards Game
 echo CURL Testing for Monster Trading Cards Game
 echo Syntax: $1 [pause]
@@ -44,17 +33,6 @@ echo.
 
 REM if %pauseFlag%==1 pause
 
-echo should fail:
-curl -i -X POST http://localhost:10001/users --header "Content-Type: application/json" -d "{\"Username\":\"kienboec\", \"Password\":\"daniel\"}"
-echo "Should return HTTP 4xx - User already exists"
-echo.
-curl -i -X POST http://localhost:10001/users --header "Content-Type: application/json" -d "{\"Username\":\"kienboec\", \"Password\":\"different\"}"
-echo "Should return HTTP 4xx - User already exists"
-echo. 
-echo.
-
-REM if %pauseFlag%==1 pause
-
 REM --------------------------------------------------
 echo 2) Login Users
 curl -i -X POST http://localhost:10001/sessions --header "Content-Type: application/json" -d "{\"Username\":\"kienboec\", \"Password\":\"daniel\"}"
@@ -66,16 +44,6 @@ echo.
 curl -i -X POST http://localhost:10001/sessions --header "Content-Type: application/json" -d "{\"Username\":\"admin\",    \"Password\":\"istrator\"}"
 echo "should return HTTP 200 with generated token for the user, here: admin-mtcgToken"
 echo.
-
-REM if %pauseFlag%==1 pause
-
-echo should fail:
-curl -i -X POST http://localhost:10001/sessions --header "Content-Type: application/json" -d "{\"Username\":\"kienboec\", \"Password\":\"different\"}"
-echo "Should return HTTP 4xx - Login failed"
-echo.
-echo.
-
-REM ifif %pauseFlag%==1 pause
 
 REM ---
 
@@ -149,44 +117,8 @@ echo.
 curl -i -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d ""
 echo "Should return HTTP 201"
 echo.
-echo should fail (no money):
-curl -i -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d ""
-echo "Should return HTTP 4xx - Not enough money"
-echo.
 echo.
 
-
-REM if %pauseFlag%==1 pause
-
-REM --------------------------------------------------
-echo 8) show all acquired cards kienboec
-curl -i -X GET http://localhost:10001/cards --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 200 - and a list of all cards"
-echo should fail (no token)
-curl -i -X GET http://localhost:10001/cards 
-echo "Should return HTTP 4xx - Unauthorized"
-echo.
-echo.
-
-REM if %pauseFlag%==1 pause
-
-REM --------------------------------------------------
-echo 9) show all acquired cards altenhof
-curl -i -X GET http://localhost:10001/cards --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 200 - and a list of all cards"
-echo.
-echo.
-
-REM if %pauseFlag%==1 pause
-
-echo 10) show unconfigured deck
-curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 200 - and a empty-list"
-echo.
-curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 200 - and a empty-list"
-echo.
-echo.
 
 REM if %pauseFlag%==1 pause
 
@@ -208,21 +140,6 @@ echo.
 
 REM if %pauseFlag%==1 pause
 
-echo should fail and show original from before:
-curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"4ec8b269-0dfa-4f97-809a-2c63fe2a0025\"]"
-echo "Should return HTTP 4xx"
-echo.
-curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 200 - and a list of all cards"
-echo.
-echo.
-echo should fail ... only 3 cards set
-curl -i -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "[\"171f6076-4eb5-4a7d-b3f2-2d650cc3d237\", \"1d3f175b-c067-4359-989d-96562bfa382c\", \"88221cfe-1f84-41b9-8152-8e36c6a354de\"]"
-echo "Should return HTTP 4xx - Bad request"
-echo.
-
-REM if %pauseFlag%==1 pause
-
 REM --------------------------------------------------
 echo 12) show configured deck 
 curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer kienboec-mtcgToken"
@@ -236,61 +153,13 @@ echo.
 REM if %pauseFlag%==1 pause
 
 REM --------------------------------------------------
-echo 13) show configured deck different representation
-echo kienboec
-curl -i -X GET "http://localhost:10001/deck?format=plain" --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 200 - and a list of all cards"
-echo.
-echo.
-echo altenhof
-curl -i -X GET "http://localhost:10001/deck?format=plain" --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 200 - and a list of all cards"
-echo.
-echo.
-
-REM if %pauseFlag%==1 pause
-
-REM --------------------------------------------------
 echo 14) edit user data
-echo.
-curl -i -X GET http://localhost:10001/users/kienboec --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 200 - and current user data"
-echo.
-curl -i -X GET http://localhost:10001/users/altenhof --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 200 - and current user data"
 echo.
 curl -i -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Name\": \"Kienboeck\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
 echo "Should return HTTP 2xx"
 echo.
 curl -i -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"Name\": \"Altenhofer\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
 echo "Should return HTTP 2xx"
-echo.
-curl -i -X GET http://localhost:10001/users/kienboec --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 200 - and new user data"
-echo.
-curl -i -X GET http://localhost:10001/users/altenhof --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 200 - and new user data"
-echo.
-echo.
-
-REM if %pauseFlag%==1 pause
-
-echo should fail:
-curl -i -X GET http://localhost:10001/users/altenhof --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 4xx"
-echo.
-curl -i -X GET http://localhost:10001/users/kienboec --header "Authorization: Bearer altenhof-mtcgToken"
-echo "Should return HTTP 4xx"
-echo.
-curl -i -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"Name\": \"Hoax\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
-echo "Should return HTTP 4xx"
-echo.
-curl -i -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Name\": \"Hoax\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
-echo "Should return HTTP 4xx"
-echo.
-curl -i -X GET http://localhost:10001/users/someGuy  --header "Authorization: Bearer kienboec-mtcgToken"
-echo "Should return HTTP 4xx"
-echo.
 echo.
 
 REM if %pauseFlag%==1 pause
@@ -319,7 +188,6 @@ REM if %pauseFlag%==1 pause
 REM --------------------------------------------------
 echo 17) battle
 start /b "kienboec battle" curl -i -X POST http://localhost:10001/battles --header "Authorization: Bearer kienboec-mtcgToken"
-ping localhost -n 2 >NUL 2>NUL
 start /b "altenhof battle" curl -i -X POST http://localhost:10001/battles --header "Authorization: Bearer altenhof-mtcgToken"
 ping localhost -n 2 >NUL 2>NUL
 

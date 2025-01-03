@@ -19,8 +19,8 @@ namespace MTCG.Models.TradingDeal
         [JsonPropertyName("CardToTrade")]
         public Guid CardToTrade { get; set; }
         [JsonPropertyName("Type")]
-        public string? Type;
-        [JsonPropertyName("MinDamage")]
+        public string? Type { get; set; }
+        [JsonPropertyName("MinimumDamage")]
         public int MinDamage { get; set; } 
     }
 }

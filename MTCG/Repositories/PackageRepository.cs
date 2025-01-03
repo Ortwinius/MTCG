@@ -1,14 +1,10 @@
 ﻿using MTCG.Models.Card;
 using MTCG.Models.Card.Monster;
 using MTCG.Models.Card.Spell;
-using MTCG.Models.Users;
 using MTCG.Repositories.DL;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using Npgsql;
-using System;
-using System.Collections.Generic;
 
 namespace MTCG.Repositories
 {
@@ -82,15 +78,6 @@ namespace MTCG.Repositories
                 throw new DbTransactionException($"Error while trying to add package: {ex.Message}\n Rollback executed");
             }
 
-            using var debugCommand = new NpgsqlCommand("SELECT package_id FROM packages ORDER BY package_id ASC", connection);
-            using var reader = debugCommand.ExecuteReader();
-            Console.WriteLine("[DEBUG] Current package order in the database:");
-            while (reader.Read())
-            {
-                Console.WriteLine($"[DEBUG] Package ID: {reader["package_id"]}");
-            }
-
-
             return true;
         }
 
@@ -107,23 +94,23 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            //Console.WriteLine("Db transaction starting");
             using var transaction = connection.BeginTransaction();
             try
             {
-                // Paket abrufen
-                // "SELECT package_id FROM packages ORDER BY package_id ASC LIMIT 1"
                 using var packageCommand = new NpgsqlCommand(
-                    "SELECT package_id FROM packages ORDER BY package_id ASC LIMIT 1 FOR UPDATE",
+                    "SELECT package_id " +
+                    "FROM packages " +
+                    "ORDER BY package_id ASC " +
+                    "LIMIT 1 FOR UPDATE",
                     connection, transaction);
 
                 var packageId = packageCommand.ExecuteScalar() as int?;
                 if (packageId == null)
                 {
-                    return null; // Keine Pakete verfügbar
+                    return null; // no package available
                 }
 
-                // Karten aus dem Paket lesen
+                // get cards from package
                 using var cardCommand = new NpgsqlCommand(
                     "SELECT c.card_id, c.name, c.type, c.element, c.damage " +
                     "FROM cards c " +
@@ -139,13 +126,11 @@ namespace MTCG.Repositories
                     cards = DataLayer.ParseCardsFromReader(cardReader);
                 }
 
-                // Kartenbesitz aktualisieren
-                var cardIds = cards.Select(card => card.Id).ToList();
-
                 // update ownership
+                var cardIds = cards.Select(card => card.Id).ToList();
                 UpdatePackageOwnership(cardIds, userId);
 
-                // Paket löschen
+                // delete package from available packages
                 using var deletePackageCommand = new NpgsqlCommand(
                     "DELETE FROM packages WHERE package_id = @package_id",
                     connection, transaction);
@@ -159,7 +144,6 @@ namespace MTCG.Repositories
             catch(Exception ex) 
             {
                 transaction.Rollback();
-                //return null;
                 throw new DbTransactionException($"Db Error while trying to buy package: " + ex.Message);
             }
         }
@@ -179,7 +163,6 @@ namespace MTCG.Repositories
 
             using var cmd = new NpgsqlCommand(query, connection);
 
-            // Parameter dynamisch hinzufügen
             for (int i = 0; i < ids.Count; i++)
             {
                 DataLayer.AddParameter(cmd, $"@id{i}", ids[i]);
@@ -191,7 +174,6 @@ namespace MTCG.Repositories
         // updates ownership of 5 cards (in cards not packages !)
         public void UpdatePackageOwnership(List<Guid> cardIds, int userId)
         {
-            //Console.WriteLine("Updating ownership");
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
@@ -219,22 +201,6 @@ namespace MTCG.Repositories
                 transaction.Rollback();
                 throw new DbTransactionException($"Error while trying update card ownership for user {userId}: {ex.Message}\n Rollback executed");
             }
-        }
-
-        public void UpdateSingleCardOwnership(Guid cardId, int userId)
-        {
-            using var connection = DataLayer.GetConnection();
-            connection.Open();
-
-            var command = new NpgsqlCommand(
-                "UPDATE cards " +
-                "SET owned_by = @owned_by" +
-                "WHERE card_id = @card_id", connection);
-
-            DataLayer.AddParameter(command, "card_id", cardId);
-            DataLayer.AddParameter(command, "owned_by", userId);
-
-            command.ExecuteNonQuery();
         }
     }
 }

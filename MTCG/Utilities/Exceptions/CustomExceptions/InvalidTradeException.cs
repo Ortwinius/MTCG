@@ -1,5 +1,4 @@
-﻿
-namespace MTCG.BusinessLogic.Services
+﻿namespace MTCG.Utilities.Exceptions.CustomExceptions
 {
     [Serializable]
     internal class InvalidTradeException : Exception

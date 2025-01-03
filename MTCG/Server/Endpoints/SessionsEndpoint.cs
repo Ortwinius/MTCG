@@ -2,7 +2,7 @@
 using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
 using MTCG.Repositories;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using System;
 using System.Text.Json;
 
@@ -19,7 +19,12 @@ namespace MTCG.Server.Endpoints
         }
 
         // This method now returns a ResponseObject
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
+        public ResponseObject HandleRequest(
+            string method,
+            string path,
+            string? body,
+            Dictionary<string, string> headers,
+            Dictionary<string, string>? routeParams = null)
         {
             switch (method)
             {
@@ -34,37 +39,19 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                User? user = JsonSerializer.Deserialize<User>(body);
-
+                var user = JsonSerializer.Deserialize<User>(body);
                 if (user == null)
-                {
-                    return new ResponseObject(400, "Invalid JSON structure");
-                }
+                    throw new JsonException("Invalid JSON payload.");
 
-                if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Password))
-                {
-                    return new ResponseObject(400, "Username and password must not be empty");
-                }
+                _authService.Login(user.Username, user.Password, out var authToken);
 
-                string authToken = "";
-                _authService.Login(user.Username, user.Password, out authToken);
                 return new ResponseObject(200, $"Login successful. AuthToken: {authToken}");
-            }
-            catch (UnauthorizedException)
-            {
-                return new ResponseObject(401, "Unauthorized");
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
-                Console.WriteLine($"JSON string: {body}");
-                return new ResponseObject(400, "Invalid JSON provided");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
-                return new ResponseObject(500, "Internal server error");
+                return ExceptionHandler.HandleException(ex);
             }
         }
+
     }
 }

@@ -6,5 +6,7 @@ namespace MTCG.Repositories.Interfaces
     {
         ICard? GetCardById(Guid id);
         List<ICard>? GetUserCards(int userId);
+        int GetOwnerOfCard(Guid cardToTrade);
+        void UpdateCardOwnership(Guid id, int userId);
     }
 }

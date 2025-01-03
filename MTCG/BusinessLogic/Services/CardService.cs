@@ -3,7 +3,7 @@ using MTCG.Models.Card.Monster;
 using MTCG.Models.Users;
 using MTCG.Repositories;
 using MTCG.Repositories.Interfaces;
-using MTCG.Utilities.CustomExceptions;
+using MTCG.Utilities.Exceptions.CustomExceptions;
 using System;
 using System.Collections;
 using System.Collections.Generic;

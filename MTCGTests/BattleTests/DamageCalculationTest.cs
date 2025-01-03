@@ -128,25 +128,20 @@ namespace MTCGTests.BattleTests
         [Test]
         public void CalculateDamage_DragonVsFireElf_ShouldReturnZeroDamage()
         {
-            // Arrange
             var fireElf = new MonsterCard { Id = Guid.NewGuid(), Name = "Fire Elf", Damage = 30, ElemType = ElementType.Fire, MonType = MonsterType.FireElf };
             var dragon = new MonsterCard { Id = Guid.NewGuid(), Name = "Dragon", Damage = 70, ElemType = ElementType.Fire, MonType = MonsterType.Dragon };
 
-            // Act
             var damage = _battleService.CalculateDamage(dragon, fireElf, _battleLog);
 
-            // Assert
             Assert.AreEqual(0, damage);
         }
 
         [Test]
         public void CalculateDamage_SpellVsSpell_ShouldReturnElementEffectivenessDamage()
         {
-            // Arrange
             var fireSpell = new SpellCard { Id = Guid.NewGuid(), Name = "Fire Spell", Damage = 40, ElemType = ElementType.Fire };
             var waterSpell = new SpellCard { Id = Guid.NewGuid(), Name = "Water Spell", Damage = 50, ElemType = ElementType.Water };
 
-            // Act
             var damage = _battleService.CalculateDamage(fireSpell, waterSpell, _battleLog);
 
             // fire is weak against water -> should be halfed -> 40 / 2 = 20
