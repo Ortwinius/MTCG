@@ -19,7 +19,7 @@ namespace MTCG.Server.Endpoints
         }
 
         // This method now returns a ResponseObject
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
         {
             switch (method)
             {

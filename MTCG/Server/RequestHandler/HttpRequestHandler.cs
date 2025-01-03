@@ -3,6 +3,7 @@ using MTCG.Models.HttpRequest;
 using System.Collections.Generic;
 using MTCG.Models.ResponseObject;
 using System.Text.RegularExpressions;
+using MTCG.Utilities;
 
 namespace MTCG.Server.RequestHandler
 {
@@ -24,10 +25,7 @@ namespace MTCG.Server.RequestHandler
         {
             if (path.Contains("{"))
             {
-                string pattern = "^" + path
-                    .Replace("{", "(?<")  // Begin a named group
-                    .Replace("}", ">[^/]+)") + "$"; // End the named group and specify allowed characters
-
+                string pattern = Helpers.ConvertToRegexPattern(path);
                 _dynamicEndpoints.Add((pattern, endpoint));
             }
             else
@@ -35,7 +33,6 @@ namespace MTCG.Server.RequestHandler
                 _staticEndpoints[path] = endpoint;
             }
         }
-
 
         /*
         Differentiating between static endpoints and dynamic ones like users/{username}
@@ -55,24 +52,16 @@ namespace MTCG.Server.RequestHandler
 
             foreach (var (pattern, endpoint) in _dynamicEndpoints)
             {
-                var match = Regex.Match(request.Path, pattern);
-                if (match.Success)
+                if (Regex.IsMatch(request.Path, pattern))
                 {
-                    var routeParams = new Dictionary<string, string>();
-                    foreach (var groupName in match.Groups.Keys)
-                    {
-                        if (groupName != "0" && match.Groups[groupName].Success)
-                        {
-                            routeParams[groupName] = match.Groups[groupName].Value;
-                        }
-                    }
-
-                    return endpoint.HandleRequest(request.Method!, request.Path, request.Headers, request.Body);
+                    var routeParams = Helpers.ExtractRouteParameters(request.Path, pattern);
+                    return endpoint.HandleRequest(request.Method!, request.Path, request.Headers, request.Body, routeParams);
                 }
             }
 
             Console.WriteLine($"[Server] Error: Endpoint {request.Path} not found");
             return new ResponseObject(404, "Endpoint not Found");
         }
+
     }
 }

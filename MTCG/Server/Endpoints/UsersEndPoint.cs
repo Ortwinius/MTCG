@@ -27,16 +27,16 @@ namespace MTCG.Server.Endpoints
         POST /users
         GET /users/{username}
         */
-        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body)
+        public ResponseObject HandleRequest(string method, string path, Dictionary<string, string> headers, string? body, Dictionary<string, string>? routeParams = null)
         {
             switch(method)
             {
                 case "POST":
                     return RegisterUser(body!);
-                case "GET" when path.StartsWith("/users/"):                 
-                    return GetUserData(Helpers.ExtractUsernameFromPath(path), headers);
-                case "PUT" when path.StartsWith("/users/"):
-                    return UpdateUserData(Helpers.ExtractUsernameFromPath(path), body!, headers);
+                case "GET" when routeParams != null && routeParams.ContainsKey("username"):
+                    return GetUserData(routeParams["username"], headers);
+                case "PUT" when routeParams != null && routeParams.ContainsKey("username"):
+                    return UpdateUserData(routeParams["username"], body!, headers);
             }
 
             return new ResponseObject(405, "Method not allowed.");

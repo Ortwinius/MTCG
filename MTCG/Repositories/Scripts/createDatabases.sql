@@ -64,12 +64,10 @@ CREATE TABLE IF NOT EXISTS deck_cards(
     FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS battles(
-    battle_id SERIAL PRIMARY KEY,
-    player1_id INT,
-    player2_id INT,
-    winner_id INT,
-    FOREIGN KEY (player1_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (player2_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (winner_id) REFERENCES users(user_id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS tradings(
+    trade_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    card_to_trade UUID,
+    card_type VARCHAR(20),
+    min_damage INT,
+    FOREIGN KEY (card_to_trade) REFERENCES cards(card_id) ON DELETE CASCADE
 );

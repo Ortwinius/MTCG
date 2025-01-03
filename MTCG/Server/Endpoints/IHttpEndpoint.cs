@@ -4,6 +4,12 @@ namespace MTCG.Server.Endpoints
 {
     public interface IHttpEndpoint
     {
-        public ResponseObject? HandleRequest(string method, string path, Dictionary<string, string> headers, string? body);
+        public ResponseObject? HandleRequest(
+            string method, 
+            string path, 
+            Dictionary<string, string> headers, 
+            string? body, 
+            Dictionary<string, string>? routeParams = null
+            );
     }
 }

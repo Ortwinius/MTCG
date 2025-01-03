@@ -35,8 +35,9 @@ namespace MTCG.Server.Endpoints.Initializer
             requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
             requestHandler.AddEndpoint("/battles", battlesEndpoint);
             requestHandler.AddEndpoint("/tradings", tradingsEndpoint);
-            requestHandler.AddEndpoint("/tradings/{username}", tradingsEndpoint);
+            requestHandler.AddEndpoint("/tradings/{tradingdealId}", tradingsEndpoint);
 
+            Console.WriteLine("[Server] Initialized endpoint mapping");
         }
     }
 }

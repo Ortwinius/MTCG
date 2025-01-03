@@ -63,22 +63,11 @@ namespace MTCG.Server
                 using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
                 using var reader = new StreamReader(client.GetStream());
 
-                Console.WriteLine($"[Timer] Stream setup complete: {timer.ElapsedMilliseconds} ms");
-
-                // Parse the HTTP request
-                timer.Restart();
                 var request = _httpParser.Parse(reader);
-                Console.WriteLine($"[Timer] Request parsed: {timer.ElapsedMilliseconds} ms");
 
-                // Handle the parsed request
-                timer.Restart();
                 var response = _requestHandler.HandleRequest(request);
-                Console.WriteLine($"[Timer] Request handled: {timer.ElapsedMilliseconds} ms");
 
-                // Send the HTTP response back to the client
-                timer.Restart();
                 _responseHandler.SendResponse(writer, response!);
-                Console.WriteLine($"[Timer] Response sent: {timer.ElapsedMilliseconds} ms");
             }
             catch (Exception ex)
             {
@@ -90,32 +79,5 @@ namespace MTCG.Server
                 Console.WriteLine($"[Timer] Total time to handle client request: {timer.ElapsedMilliseconds} ms");
             }
         }
-
-        //private void InitializeEndpoints()
-        //{
-        //    Console.WriteLine("[Server] Initializing endpoint mapping");
-        //    // retrieve registered services from DI container
-        //    var usersEndpoint = _serviceProvider.GetRequiredService<UsersEndpoint>();
-        //    var sessionsEndpoint = _serviceProvider.GetRequiredService<SessionsEndpoint>();
-        //    var packagesEndpoint = _serviceProvider.GetRequiredService<PackagesEndpoint>();
-        //    var cardsEndpoint = _serviceProvider.GetRequiredService<CardsEndpoint>();
-        //    var deckEndpoint = _serviceProvider.GetRequiredService<DeckEndpoint>();
-        //    var statsEndpoint = _serviceProvider.GetRequiredService<StatsEndpoint>();
-        //    var scoreboardEndpoint = _serviceProvider.GetRequiredService<ScoreboardEndpoint>();
-        //    var battlesEndpoint = _serviceProvider.GetRequiredService<BattlesEndpoint>();
-
-        //    // add endpoints to requestHandler
-        //    _requestHandler.AddEndpoint("/users", usersEndpoint);
-        //    _requestHandler.AddEndpoint("/users/{username}", usersEndpoint);
-        //    _requestHandler.AddEndpoint("/sessions", sessionsEndpoint);
-        //    _requestHandler.AddEndpoint("/packages", packagesEndpoint);
-        //    _requestHandler.AddEndpoint("/cards", cardsEndpoint);
-        //    _requestHandler.AddEndpoint("/transactions/packages", packagesEndpoint);
-        //    _requestHandler.AddEndpoint("/deck", deckEndpoint);
-        //    _requestHandler.AddEndpoint("/deck?format=plain", deckEndpoint);
-        //    _requestHandler.AddEndpoint("/stats", statsEndpoint);
-        //    _requestHandler.AddEndpoint("/scoreboard", scoreboardEndpoint);
-        //    _requestHandler.AddEndpoint("/battles", battlesEndpoint);
-        //}
     }
 }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MTCG.Server.Endpoints;
 using MTCG.Server.RequestHandler;
+using System.Text.RegularExpressions;
 
 namespace MTCG.Utilities
 {
@@ -21,10 +22,35 @@ namespace MTCG.Utilities
             return JsonSerializer.Serialize(new { responseBody = message });
         }
 
-        public static string ExtractUsernameFromPath(string path)
+        // Converts a route template (e.g., "users/{username}") to a regex pattern
+        public static string ConvertToRegexPattern(string routeTemplate)
         {
-            var segments = path.Split('/');
-            return segments.Length > 2 ? segments[2] : throw new ArgumentException("Invalid path");
+            if (string.IsNullOrEmpty(routeTemplate))
+                throw new ArgumentException("Route template cannot be null or empty.");
+
+            // Replace route parameters (e.g., {username}) with named groups
+            string pattern = "^" + routeTemplate
+                .Replace("{", "(?<")  // Start named group
+                .Replace("}", ">[^/]+)") + "$"; // End named group and match until the next "/"
+            return pattern;
+        }
+
+        // Extract route parameters (e.g., {username}) from a matched path
+        public static Dictionary<string, string> ExtractRouteParameters(string path, string pattern)
+        {
+            var match = Regex.Match(path, pattern);
+            if (!match.Success)
+                throw new InvalidOperationException("The provided path does not match the expected pattern.");
+
+            var routeParams = new Dictionary<string, string>();
+            foreach (var groupName in match.Groups.Keys)
+            {
+                if (groupName != "0" && match.Groups[groupName].Success)
+                {
+                    routeParams[groupName] = match.Groups[groupName].Value;
+                }
+            }
+            return routeParams;
         }
     }
 }
