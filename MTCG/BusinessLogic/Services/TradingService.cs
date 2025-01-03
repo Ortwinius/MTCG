@@ -154,7 +154,7 @@ namespace MTCG.BusinessLogic.Services
         }
 
         // check if the card is of the correct type and has the required damage
-        private bool ValidateOfferedCard(TradingDeal trade, Guid offeredCardId)
+        internal bool ValidateOfferedCard(TradingDeal trade, Guid offeredCardId)
         {
             var card = _cardRepository.GetCardById(offeredCardId);
 

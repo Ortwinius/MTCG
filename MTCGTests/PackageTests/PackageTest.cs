@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace MTCGTests.PackageTests
 {
     [TestFixture]
-    public class TradeCreationTest
+    public class PackageTest
     {
         private PackageService _packageService;
         private IPackageRepository _packageRepository;
@@ -31,7 +31,7 @@ namespace MTCGTests.PackageTests
         [Test]
         public void AddPackage_ValidPackage_ShouldAddSuccessfully()
         {
-            // Arrange
+            
             var cards = new List<ICard>
             {
                 Substitute.For<ICard>(), Substitute.For<ICard>(),
@@ -41,7 +41,6 @@ namespace MTCGTests.PackageTests
 
             _packageRepository.AddPackage(cards).Returns(true);
 
-            // Act & Assert
             Assert.DoesNotThrow(() => _packageService.AddPackage(cards));
             _packageRepository.Received(1).AddPackage(cards);
         }
@@ -49,17 +48,16 @@ namespace MTCGTests.PackageTests
         [Test]
         public void AddPackage_InvalidPackage_ShouldThrowInvalidPackageException()
         {
-            // Arrange
+            
             var cards = new List<ICard> { Substitute.For<ICard>() }; // Less than 5 cards
 
-            // Act & Assert
             Assert.Throws<InvalidPackageException>(() => _packageService.AddPackage(cards));
         }
 
         [Test]
         public void AcquirePackage_UserHasEnoughCoins_ShouldAcquireSuccessfully()
         {
-            // Arrange
+            
             var user = new User { UserId = 1, Username = "TestUser", Coins = 10 };
             var cards = new List<ICard>
             {
@@ -70,10 +68,10 @@ namespace MTCGTests.PackageTests
 
             _packageRepository.AcquirePackage(user.UserId).Returns(cards);
 
-            // Act
+            
             var acquiredCards = _packageService.AcquirePackage(user);
 
-            // Assert
+            
             Assert.AreEqual(cards, acquiredCards);
             Assert.AreEqual(5, user.Coins); // Coins reduced by 5
             _userRepository.Received(1).UpdateUser(user);
@@ -82,10 +80,9 @@ namespace MTCGTests.PackageTests
         [Test]
         public void AcquirePackage_UserHasNotEnoughCoins_ShouldThrowNotEnoughCoinsException()
         {
-            // Arrange
+            
             var user = new User { UserId = 1, Username = "TestUser", Coins = 2 };
 
-            // Act & Assert
             Assert.Throws<NotEnoughCoinsException>(() => _packageService.AcquirePackage(user));
             _packageRepository.DidNotReceive().AcquirePackage(Arg.Any<int>());
         }

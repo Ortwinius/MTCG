@@ -28,7 +28,7 @@ namespace MTCGTests.BattleTests
         [Test]
         public void ExecuteBattleRound_ShouldCorrectlyProcessWinner()
         {
-            // Arrange
+            
             var lhs = new User { Username = "PlayerA" };
             var rhs = new User { Username = "PlayerB" };
 
@@ -36,10 +36,10 @@ namespace MTCGTests.BattleTests
             var deckRhs = new List<ICard> { new MonsterCard { Name = "CardB", Damage = 30 } };
             var battleLog = new List<string>();
 
-            // Act
+            
             _battleService.ExecuteBattleRound(lhs, rhs, deckLhs, deckRhs, battleLog, 1);
 
-            // Assert
+            
             Assert.AreEqual(2, deckLhs.Count); // CardB should be added to PlayerA's deck
             Assert.AreEqual(0, deckRhs.Count); // PlayerB's deck should be empty
         }

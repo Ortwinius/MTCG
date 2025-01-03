@@ -26,7 +26,7 @@ namespace MTCGTests.CardConversionTests
         [Test]
         public void Deserialize_MonsterCard_Success()
         {
-            // Arrange
+            
             string json = @"
             {
                 ""Id"": ""845f0dc7-37d0-426e-994e-43fc3ac83c08"",
@@ -37,10 +37,10 @@ namespace MTCGTests.CardConversionTests
                 ""MonType"": ""Goblin""
             }";
 
-            // Act
+            
             var card = JsonSerializer.Deserialize<ICard>(json, _options);
 
-            // Assert
+            
             Assert.IsNotNull(card);
             Assert.IsInstanceOf<MonsterCard>(card);
             var monsterCard = (MonsterCard)card;
@@ -52,7 +52,7 @@ namespace MTCGTests.CardConversionTests
         [Test]
         public void Deserialize_SpellCard_Success()
         {
-            // Arrange
+            
             string json = @"
             {
                 ""Id"": ""e85e3976-7c86-4d06-9a80-641c2019a79f"",
@@ -63,10 +63,10 @@ namespace MTCGTests.CardConversionTests
                 ""SpellType"": ""FireSpell""
             }";
 
-            // Act
+            
             var card = JsonSerializer.Deserialize<ICard>(json, _options);
 
-            // Assert
+            
             Assert.IsNotNull(card);
             Assert.IsInstanceOf<SpellCard>(card);
             var spellCard = (SpellCard)card;

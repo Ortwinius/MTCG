@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using MTCG.Server.Parser;
 using MTCG.Utilities;
 using MTCG.Server.RequestHandler;
-using MTCG.Server.ResponseHandler;
 using System.Diagnostics;
 using MTCG.Server.DI;
 using MTCG.Server.Endpoints.Initializer;
@@ -18,6 +17,7 @@ namespace MTCG.Server
 {
     public class ServerController
     {
+        private static readonly object WriterLock = new();
         private readonly IServiceProvider _serviceProvider; // DI-Container
         private readonly HttpRequestHandler _requestHandler;
         private readonly HttpResponseHandler _responseHandler;
@@ -68,7 +68,11 @@ namespace MTCG.Server
 
                 var response = _requestHandler.HandleRequest(request);
 
-                _responseHandler.SendResponse(writer, response);
+                //lock(WriterLock)
+                //{
+                    _responseHandler.SendResponse(writer, response);
+                //}
+
             }
             catch (Exception ex)
             {

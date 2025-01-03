@@ -25,17 +25,17 @@ namespace MTCGTests.BattleTests
         [Test]
         public void CalculateElo_ShouldUpdateCorrectlyForWinnerAndLoser()
         {
-            // Arrange
+            
             int winnerElo = 1200;
             int loserElo = 1000;
 
-            // Act
+            
             int newWinnerElo = _battleService.CalculateElo(winnerElo, loserElo, true);
             int newLoserElo = _battleService.CalculateElo(loserElo, winnerElo, false);
 
-            // Assert
-            Assert.That(newWinnerElo, Is.GreaterThan(winnerElo), "Winner's Elo should increase.");
-            Assert.That(newLoserElo, Is.LessThan(loserElo), "Loser's Elo should decrease.");
+            
+            Assert.That(newWinnerElo, Is.GreaterThan(winnerElo));
+            Assert.That(newLoserElo, Is.LessThan(loserElo));
         }
     }
 }

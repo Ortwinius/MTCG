@@ -37,7 +37,7 @@ namespace MTCGTests.BattleTests
         [TestCase(ElementType.Water, ElementType.Normal, 50, 25)]
         public void ApplyEffectiveness_ShouldCalculateCorrectDamage(ElementType attackerType, ElementType defenderType, int baseDamage, int expectedDamage)
         {
-            // Arrange
+            
             var attacker = Substitute.For<ICard>();
             attacker.Damage.Returns(baseDamage);
             attacker.ElemType.Returns(attackerType);
@@ -47,10 +47,10 @@ namespace MTCGTests.BattleTests
             defender.ElemType.Returns(defenderType);
             defender.Name.Returns("DefenderCard");
 
-            // Act
+            
             var actualDamage = _battleService.ApplyEffectiveness(attacker, defender, _battleLog);
 
-            // Assert
+            
             Assert.AreEqual(expectedDamage, actualDamage);
         }
 
@@ -147,6 +147,5 @@ namespace MTCGTests.BattleTests
             // fire is weak against water -> should be halfed -> 40 / 2 = 20
             Assert.AreEqual(20, damage);
         }
-
     }
 }

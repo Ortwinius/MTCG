@@ -25,16 +25,16 @@ namespace MTCGTests.UserTests
         [Test]
         public void Register_UserDoesNotExist_ShouldRegisterSuccessfully()
         {
-            // Arrange
+            
             var username = "dasddassad";
             var password = "asdasdasda";
 
             _userRepository.UserExists(username).Returns(false); // user doesnt exist
 
-            // Act
+            
             _authService.Register(username, password);
 
-            // Assert that password was hashed and authtoken was generated
+             // assert that password was hashed and authtoken was generated
             _userRepository.Received(1).AddUser(Arg.Is<User>(u =>
                 u.Username == username &&
                 !string.IsNullOrWhiteSpace(u.Password) && 
@@ -45,7 +45,7 @@ namespace MTCGTests.UserTests
         [Test]
         public void Login_UserExistsAndPasswordIsCorrect_ShouldLoginSuccessfully()
         {
-            // Arrange
+            
             var username = "dasddassad";
             var password = "asdasdasda";
 
@@ -58,10 +58,10 @@ namespace MTCGTests.UserTests
 
             var authToken = string.Empty;
 
-            // Act
+            
             Assert.DoesNotThrow(() => _authService.Login(username, password, out authToken));
 
-            // Assert
+            
             Assert.IsFalse(string.IsNullOrWhiteSpace(authToken)); // authtoken is generated
             _userRepository.Received(1).UpdateUser(Arg.Is<User>(u => u.AuthToken == authToken)); // ensure that UpdateUser gets called
         }

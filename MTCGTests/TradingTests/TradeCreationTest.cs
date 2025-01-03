@@ -35,7 +35,7 @@ namespace MTCGTests.TradingTests
         [Test]
         public void CreateTradingDeal_ValidDeal_ShouldCreateSuccessfully()
         {
-            // Arrange
+            
             var deal = new TradingDeal
             {
                 Id = Guid.NewGuid(),
@@ -71,14 +71,13 @@ namespace MTCGTests.TradingTests
             _tradingRepository.GetAllTradings().Returns(new List<TradingDeal>());
             _cardRepository.GetUserCards(user.UserId).Returns(userCards);
             _deckRepository.GetDeckOfUser(user.UserId).Returns(new List<ICard>());
-            // Act & Assert
             Assert.DoesNotThrow(() => _tradingService.CreateTradingDeal(deal, user));
             _tradingRepository.Received(1).CreateTradingDeal(deal);
         }
         [Test]
         public void CreateTradingDeal_UserHasNoCards_ShouldThrowInvalidTradeException()
         {
-            // Arrange
+            
             var deal = new TradingDeal
             {
                 Id = Guid.NewGuid(),
@@ -98,7 +97,6 @@ namespace MTCGTests.TradingTests
             _cardRepository.GetUserCards(user.UserId).Returns(new List<ICard>()); // No cards
             _deckRepository.GetDeckOfUser(user.UserId).Returns(new List<ICard>());
 
-            // Act & Assert
             var ex = Assert.Throws<InvalidTradeException>(() => _tradingService.CreateTradingDeal(deal, user));
             Assert.AreEqual("User doesnt have any cards to trade.", ex.Message);
             _tradingRepository.DidNotReceive().CreateTradingDeal(Arg.Any<TradingDeal>());
@@ -107,7 +105,7 @@ namespace MTCGTests.TradingTests
         [Test]
         public void CreateTradingDeal_CardDoesNotBelongToUser_ShouldThrowInvalidTradeException()
         {
-            // Arrange
+            
             var deal = new TradingDeal
             {
                 Id = Guid.NewGuid(),
@@ -144,7 +142,6 @@ namespace MTCGTests.TradingTests
             _cardRepository.GetUserCards(user.UserId).Returns(userCards);
             _deckRepository.GetDeckOfUser(user.UserId).Returns(new List<ICard>());
 
-            // Act & Assert
             var ex = Assert.Throws<InvalidTradeException>(() => _tradingService.CreateTradingDeal(deal, user));
             Assert.AreEqual("Card does not belong to the user.", ex.Message);
             _tradingRepository.DidNotReceive().CreateTradingDeal(Arg.Any<TradingDeal>());

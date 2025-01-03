@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace MTCGTests.DeckTests
 {
     [TestFixture]
-    public class DeckLogicTest
+    public class DeckTest
     {
         private DeckService _deckService;
         private IDeckRepository _deckRepository;
@@ -29,18 +29,17 @@ namespace MTCGTests.DeckTests
         [Test]
         public void GetDeckOfUser_DeckIsNull_ShouldThrowDeckIsNullException()
         {
-            // Arrange
+            
             var userId = 1;
             _deckRepository.GetDeckOfUser(userId).Returns((List<ICard>?)null);
 
-            // Act & Assert
             Assert.Throws<DeckIsNullException>(() => _deckService.GetDeckOfUser(userId));
         }
 
         [Test]
         public void ConfigureUserDeck_InvalidDeckSize_ShouldThrowInvalidDeckSizeException()
         {
-            // Arrange
+            
             var userId = 1;
             var userCards = new List<ICard>
             {
@@ -52,14 +51,13 @@ namespace MTCGTests.DeckTests
             };
             var cardIdsToAdd = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() }; // Only 3 cards
 
-            // Act & Assert
             Assert.Throws<InvalidDeckSizeException>(() => _deckService.ConfigureUserDeck(userId, userCards, cardIdsToAdd));
         }
 
         [Test]
         public void ConfigureUserDeck_DuplicateCardIds_ShouldThrowInvalidDeckSizeException()
         {
-            // Arrange
+            
             var userId = 1;
             var userCards = new List<ICard>
             {
@@ -77,13 +75,12 @@ namespace MTCGTests.DeckTests
             var duplicateCardId = userCards[0].Id;
             var cardIdsToAdd = new List<Guid> { duplicateCardId, duplicateCardId, Guid.NewGuid(), Guid.NewGuid() };
 
-            // Act & Assert
             Assert.Throws<InvalidDeckSizeException>(() => _deckService.ConfigureUserDeck(userId, userCards, cardIdsToAdd));
         }
         [Test]
         public void ConfigureUserDeck_UserDoesNotOwnAllCards_ShouldThrowInvalidDeckSizeException()
         {
-            // Arrange
+            
             var userId = 1;
             var userCards = new List<ICard>
             {
@@ -102,7 +99,6 @@ namespace MTCGTests.DeckTests
                 userCards[2].Id  // Valid
             };
 
-            // Act & Assert
             Assert.Throws<InvalidDeckSizeException>(() => _deckService.ConfigureUserDeck(userId, userCards, cardIdsToAdd));
         }
     }

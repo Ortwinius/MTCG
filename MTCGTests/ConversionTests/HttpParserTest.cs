@@ -21,7 +21,7 @@ namespace MTCGTests.ConversionTests
         [Test]
         public void Parse_ValidHttpRequest_Success()
         {
-            // Arrange
+            
             string httpRequest =
                 "POST /users HTTP/1.1\r\n" +
                 "Content-Type: application/json\r\n" +
@@ -32,10 +32,10 @@ namespace MTCGTests.ConversionTests
 
             using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(httpRequest)));
 
-            // Act
+            
             var result = _parser.Parse(reader);
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.AreEqual("POST", result.Method);
             Assert.AreEqual("/users", result.Path);
@@ -49,7 +49,7 @@ namespace MTCGTests.ConversionTests
         [Test]
         public void Parse_MissingAuthorizationHeader_Fail()
         {
-            // Arrange
+            
             string httpRequest =
                 "POST /users HTTP/1.1\r\n" +
                 "Content-Type: application/json\r\n" +
@@ -59,10 +59,10 @@ namespace MTCGTests.ConversionTests
 
             using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(httpRequest)));
 
-            // Act
+            
             var result = _parser.Parse(reader);
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.AreEqual("POST", result.Method);
             Assert.AreEqual("/users", result.Path);
@@ -74,7 +74,7 @@ namespace MTCGTests.ConversionTests
         [Test]
         public void Parse_InvalidJsonBody_EmptyBody()
         {
-            // Arrange
+            
             string httpRequest =
                 "POST /users HTTP/1.1\r\n" +
                 "Content-Type: application/json\r\n" +
@@ -84,10 +84,10 @@ namespace MTCGTests.ConversionTests
 
             using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(httpRequest)));
 
-            // Act
+            
             var result = _parser.Parse(reader);
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.AreEqual("POST", result.Method);
             Assert.AreEqual("/users", result.Path);

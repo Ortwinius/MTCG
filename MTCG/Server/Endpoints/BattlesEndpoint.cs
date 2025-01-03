@@ -1,18 +1,21 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
+using System.Text.Json;
 using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
 using MTCG.BusinessLogic.Services;
-using System.Diagnostics;
-using MTCG.Utilities.Exceptions.CustomExceptions;
+using System.Threading.Tasks;
 
 namespace MTCG.Server.Endpoints
 {
     public class BattlesEndpoint : IHttpEndpoint
     {
-        private static readonly ConcurrentQueue<User> Lobby = new();
+        private static Queue<(TaskCompletionSource<string> Tcs, User User)> _userQueue = new();
+        private static readonly object _lobbyLock = new();
+        private static readonly object _writeLock = new(); 
         private readonly BattleService _battleService;
         private readonly AuthService _authService;
         private readonly UserService _userService;
+
         public BattlesEndpoint(BattleService battleService, AuthService authService, UserService userService)
         {
             _battleService = battleService;
@@ -40,35 +43,78 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-
-                // authenticate user
+                // Authentifiziere den Benutzer
                 var token = _authService.GetAuthToken(headers);
                 var user = _userService.GetUserByToken(token);
 
                 Console.WriteLine($"[Lobby] {user!.Username} entered the lobby.");
 
-                User? opponent = null;
+                // Initialisiere TaskCompletionSource
+                var tcs = new TaskCompletionSource<string>();
 
-                // check if there is an opponent in the lobby
-                if (Lobby.TryDequeue(out opponent) && opponent != user)
+                lock (_lobbyLock)
                 {
-                    Console.WriteLine($"[Lobby] Match found: {user.Username} vs {opponent.Username}");
+                    if (_userQueue.Count > 0)
+                    {
+                        var (opponentTcs, opponentUser) = _userQueue.Dequeue();
 
-                    var battleLog = _battleService.TryBattle(user, opponent);
+                        Console.WriteLine($"[Lobby] Match found: {user.Username} vs {opponentUser.Username}");
 
-                    var formattedBattleLog = string.Join("\n", battleLog);
-                    return new ResponseObject(200, $"Battle Request successful. Log: \n{formattedBattleLog}");
+                        // Start the battle
+                        var battleLog = _battleService.TryBattle(user, opponentUser);
+                        var formattedLog = string.Join("\n", battleLog);
+
+                        // synchronize writing to the TaskCompletionSources
+                        Monitor.Enter(_writeLock);
+                        try
+                        {
+                            tcs.SetResult(formattedLog);
+                        }
+                        finally
+                        {
+                            Monitor.Exit(_writeLock);
+                        }
+
+                        Monitor.Enter(_writeLock);
+                        try
+                        {
+                            opponentTcs.SetResult(formattedLog);
+                        }
+                        finally
+                        {
+                            Monitor.Exit(_writeLock);
+                        }
+                    }
+                    else
+                    {
+                        // If no opponent is available, add user to queue
+                        _userQueue.Enqueue((tcs, user));
+                        Console.WriteLine($"[Lobby] {user.Username} is waiting for an opponent...");
+                    }
                 }
-                else
+
+                // Timeout-Logik
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
+                var completedTask = Task.WhenAny(tcs.Task, timeoutTask).Result;
+
+                if (completedTask == timeoutTask)
                 {
-                    // no opponent found, add user to lobby
-                    Lobby.Enqueue(user);
-                    Console.WriteLine($"[Lobby] {user.Username} is waiting for an opponent...");
-                    return new ResponseObject(202, "Waiting for an opponent...");
+                    lock (_lobbyLock)
+                    {
+                        // Remove user from queue if still present
+                        _userQueue = new Queue<(TaskCompletionSource<string>, User)>(
+                            _userQueue.Where(entry => entry.Tcs != tcs));
+                    }
+
+                    Console.WriteLine($"[Lobby] Timeout for user {user.Username}");
+                    return new ResponseObject(408, "No opponent found for user.");
                 }
+
+                return new ResponseObject(200, $"Battle Request successful. Log:\n{tcs.Task.Result}");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[Error] Exception occurred in EnterLobby: {ex.Message}");
                 return ExceptionHandler.HandleException(ex);
             }
         }
