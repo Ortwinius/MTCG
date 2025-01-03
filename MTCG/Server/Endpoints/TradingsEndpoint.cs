@@ -49,18 +49,6 @@ namespace MTCG.Server.Endpoints
 
                 var tradings = _tradingService.GetAllTradings();
 
-                Console.WriteLine($"Trades:");
-                if (tradings != null && tradings.Count() == 0)
-                {
-                    Console.WriteLine("No trades available.");
-                }
-                else
-                {
-                    for (int i = 0; i < tradings!.Count(); i++)
-                    {
-                        Console.WriteLine($"Trade {i}: {tradings![i].Id}");
-                    }
-                }
                 // jsonify them
                 var jsonTrades = JsonSerializer.Serialize(tradings, new JsonSerializerOptions
                 {

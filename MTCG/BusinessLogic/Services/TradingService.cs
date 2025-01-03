@@ -99,13 +99,10 @@ namespace MTCG.BusinessLogic.Services
         */
         public void ExecuteTrade(Guid tradeId, Guid offeredCardId, User user)
         {
-            Console.WriteLine($"[TradingService] Executing trade with ID {tradeId}.");
             var trade = _tradingRepository.GetTradingById(tradeId);
-            Console.WriteLine("Trade has been found and returned");
 
             if (trade == null)
             {
-                Console.WriteLine($"[TradingService] Trade with ID {tradeId} not found in db.");
                 throw new TradeNotFoundException();
             }
 
@@ -113,27 +110,16 @@ namespace MTCG.BusinessLogic.Services
             
             if (userCards == null || !userCards.Any())
             {
-                Console.WriteLine($"[TradingService] User {user.Username} doesnt have any cards to trade.");
                 throw new InvalidTradeException("User doesnt have any cards to trade.");
             }
 
             if (userCards.Exists(c => c.Id == trade.CardToTrade))
             {
-                Console.WriteLine($"[TradingService] User {user.Username} is trying to trade with himself. His cards:");
-                foreach (var card in userCards)
-                {
-                    Console.WriteLine($"[TradingService] {card.Id}");
-                }
-                Console.WriteLine($"[TradingService] Trade card: {trade.CardToTrade}");
                 throw new InvalidTradeException("You cannot trade with yourself.");
             }
 
-            Console.WriteLine("[TradingService] User doesnt already possess the card he wants to get!! Checking the card parameters");
-
             if (!ValidateOfferedCard(trade, offeredCardId))
             {
-                Console.WriteLine($"[TradingService] Offered card {offeredCardId} does not meet the requirements.");
-                Console.WriteLine($"[TradingService] Trade requirements: Type: {trade.Type}, MinDamage: {trade.MinDamage}");
                 throw new InvalidTradeException("The offered card does not meet the requirements.");
             }
 
@@ -141,38 +127,26 @@ namespace MTCG.BusinessLogic.Services
 
             try
             {
-                Console.WriteLine($"[TradingService] Deleting trade with ID {tradeId}.");
                 _tradingRepository.DeleteTradingDeal(tradeId);
 
                 // change ownership of cards
-                Console.WriteLine($"[TradingService] Transferring cards {trade.CardToTrade} and {offeredCardId}.");
-                Console.WriteLine($"[TradingService] getting Id of trade creator");
                 var tradeCreatorId = _cardRepository.GetOwnerOfCard(trade.CardToTrade);
-                Console.WriteLine($"[TradingService] SUCCESSFUL getting Id of trade creator");
-                Console.WriteLine($"[TradingService] updating cardownership 1");
                 _cardRepository.UpdateCardOwnership(trade.CardToTrade, user.UserId);
-                Console.WriteLine($"[TradingService] SUCCESSFUL updating cardownership 1");
-                Console.WriteLine($"[TradingService] updating cardownership 2");
                 _cardRepository.UpdateCardOwnership(offeredCardId, tradeCreatorId);
-                Console.WriteLine($"[TradingService] SUCCESSFUL updating cardownership 2");
 
-                Console.WriteLine("[TradingService] Committing transaction.");
                 transaction.Complete();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"[TradingService] Error during trade execution: {ex.Message}");
                 throw;
             }
         }
         public void DeleteTradingDeal(Guid tradeId, User? user)
         {
-            Console.WriteLine($"[TradingService] Deleting trade with ID {tradeId}.");
             var trade = _tradingRepository.GetTradingById(tradeId);
 
             if (trade == null)
             {
-                Console.WriteLine($"[TradingService] Trade with ID {tradeId} not found in db.");
                 throw new TradeNotFoundException();
             }
 
@@ -182,7 +156,6 @@ namespace MTCG.BusinessLogic.Services
         // check if the card is of the correct type and has the required damage
         private bool ValidateOfferedCard(TradingDeal trade, Guid offeredCardId)
         {
-            Console.WriteLine("[TradingService] Trying to check parameters of card");
             var card = _cardRepository.GetCardById(offeredCardId);
 
             if (card == null)
@@ -196,8 +169,6 @@ namespace MTCG.BusinessLogic.Services
                 "spell" => card is SpellCard,
                 _ => false
             };
-
-            Console.WriteLine($"[TradingService] {offeredCardId} meets requirements? {isCorrectType && card.Damage >= trade.MinDamage}");
 
             return isCorrectType && card.Damage >= trade.MinDamage;
         }
