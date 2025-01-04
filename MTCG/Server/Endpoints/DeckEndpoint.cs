@@ -53,8 +53,8 @@ namespace MTCG.Server.Endpoints
                 // check if format should be plain
                 if(path.Contains("?format=plain"))
                 {
-                    var plainDeck = deckCards!.Select(c => c.Name).ToList();
-                    var plainDeckString = string.Join(", ", plainDeck);
+                    var plainDeck = deckCards!;
+                    var plainDeckString = string.Join("\n", plainDeck.Select(c => $" - \"{c.Name}\" => Damage: {c.Damage}, Element: {c.ElemType}"));
                     return new ResponseObject(200, plainDeckString);
                 }
                 else
