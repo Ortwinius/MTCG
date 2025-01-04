@@ -40,7 +40,7 @@ namespace MTCG.Server
         */
         public void ListenAsync()
         {
-            Console.WriteLine($"[Server] Server listening on http://localhost:{_port}/");
+            Console.WriteLine($"[Server] Listening on http://localhost:{_port}/");
             var server = new TcpListener(IPAddress.Any, _port);
             server.Start();
 
@@ -57,7 +57,7 @@ namespace MTCG.Server
         private void HandleClient(TcpClient client)
         {
             var timer = Stopwatch.StartNew();
-            Console.WriteLine("[Server] Accepted client, executing request");
+            Console.WriteLine("[Server] Executing request");
 
             using var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
             using var reader = new StreamReader(client.GetStream());
@@ -68,10 +68,7 @@ namespace MTCG.Server
 
                 var response = _requestHandler.HandleRequest(request);
 
-                //lock(WriterLock)
-                //{
-                    _responseHandler.SendResponse(writer, response);
-                //}
+                _responseHandler.SendResponse(writer, response);
 
             }
             catch (Exception ex)
@@ -82,7 +79,7 @@ namespace MTCG.Server
             finally
             {
                 timer.Stop();
-                Console.WriteLine($"[Timer] Total time to handle client request: {timer.ElapsedMilliseconds} ms");
+                Console.WriteLine($"[RequestTimer]: {timer.ElapsedMilliseconds} ms");
             }
         }
     }

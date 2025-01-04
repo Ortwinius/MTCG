@@ -10,8 +10,6 @@ public class HttpResponseHandler
             response = new ResponseObject(500, "Internal server error");
         }
 
-
-        Console.WriteLine("[Server] Sending HTTP response to client");
         int statusCode = response.StatusCode;
 
         string responseBody = response.ResponseBody is string

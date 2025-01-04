@@ -20,7 +20,7 @@ Singleton BattleService
 is a container for handling fights between cards
 If userA attacks user B => get one random card of userA's and userB's userDeck
 Those two cards fight each other depending on cardType(Monster/Spell), damage & effectivity
-calculateHigherDamage() => checks who deals more damage and returns card
+calculateDamage() => checks who deals more damage and returns card
 He who deals more damage wins and gets the card of the opponent - the opponent loses it
 */
 namespace MTCG.BusinessLogic.Services
@@ -60,7 +60,10 @@ namespace MTCG.BusinessLogic.Services
 
             int roundCount = 0;
 
-            while (roundCount < Constants.MaxBattleRounds && currentDeckLhs.Count > 0 && currentDeckRhs.Count > 0)
+            while (
+                roundCount < Constants.MaxBattleRounds 
+                && currentDeckLhs.Count > 0 
+                && currentDeckRhs.Count > 0)
             {
                 roundCount++;
                 ExecuteBattleRound(lhs, rhs, currentDeckLhs, currentDeckRhs, battleLog, roundCount);
@@ -83,22 +86,22 @@ namespace MTCG.BusinessLogic.Services
             var cardRhs = deckRhs.ElementAt(new Random().Next(deckRhs.Count));
 
             // applying mandatory unique feature powerSurge
-            int damageLhs = ApplyRandomPowerSurge(cardLhs, battleLog);
-            damageLhs = CalculateDamage(cardLhs, cardRhs, battleLog);
+            int surgedDamageLhs = ApplyRandomPowerSurge(cardLhs, battleLog);
+            int surgedDamageRhs = ApplyRandomPowerSurge(cardRhs, battleLog);
+            
+            int finalDamageLhs = CalculateDamage(cardLhs, cardRhs, battleLog);
+            int finalDamageRhs = CalculateDamage(cardRhs, cardLhs, battleLog);
 
-            int damageRhs = ApplyRandomPowerSurge(cardRhs, battleLog);
-            damageRhs = CalculateDamage(cardRhs, cardLhs, battleLog);
+            battleLog.Add($"{lhs.Username}: {cardLhs.Name} [+{finalDamageLhs}]");
+            battleLog.Add($"{rhs.Username}: {cardRhs.Name} [+{finalDamageRhs}]");
 
-            battleLog.Add($"{lhs.Username}: {cardLhs.Name} [+{damageLhs}]");
-            battleLog.Add($"{rhs.Username}: {cardRhs.Name} [+{damageRhs}]");
-
-            if (damageLhs > damageRhs)
+            if (finalDamageLhs > finalDamageRhs)
             {
                 battleLog.Add($"{lhs.Username} wins this round! Card \"{cardRhs.Name}\" is taken.\n");
                 deckRhs.Remove(cardRhs);
                 deckLhs.Add(cardRhs);
             }
-            else if (damageRhs > damageLhs)
+            else if (finalDamageRhs > finalDamageLhs)
             {
                 battleLog.Add($"{rhs.Username} wins this round! Card \"{cardLhs.Name}\" is taken.\n");
                 deckLhs.Remove(cardLhs);
@@ -193,13 +196,13 @@ namespace MTCG.BusinessLogic.Services
         }
         internal int CalculateElo(int eloA, int eloB, bool isAWinner)
         {
-            //Console.WriteLine($"[BattleService] Old Elo for {(isAWinner ? "Winner" : "Loser")}: {eloA}");
+            Console.WriteLine($"[BattleService] Old Elo for {(isAWinner ? "Winner" : "Loser")}: {eloA}");
             double expectedA = 1 / (1 + Math.Pow(10, (eloB - eloA) / 400.0));
             int k = 32;
             int newElo = eloA + (int)(k * (isAWinner ? 1 - expectedA : 0 - expectedA));
             if (newElo <= 0) newElo = 1; // Elo should never be negative
 
-            //Console.WriteLine($"[BattleService] New Elo for {(isAWinner ? "Winner" : "Loser")}: {newElo}");
+            Console.WriteLine($"[BattleService] New Elo for {(isAWinner ? "Winner" : "Loser")}: {newElo}");
             return newElo;
         }
         internal int CalculateDamage(ICard attacker, ICard defender, List<string> battleLog)

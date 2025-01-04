@@ -193,6 +193,42 @@ ping localhost -n 2 >NUL 2>NUL
 
 REM if %pauseFlag%==1 pause
 
+echo 8) show all acquired cards kienboec
+curl -i -X GET http://localhost:10001/cards --header "Authorization: Bearer kienboec-mtcgToken"
+echo "Should return HTTP 200 - and a list of all cards , potentially empty"
+echo.
+
+echo 8) show all acquired cards altenhof
+curl -i -X GET http://localhost:10001/cards --header "Authorization: Bearer altenhof-mtcgToken"
+echo "Should return HTTP 200 - and a list of all cards, potentially empty"
+
+echo 12) show configured deck 
+curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer kienboec-mtcgToken"
+echo "Should return HTTP 200 - and a list of all cards"
+echo.
+curl -i -X GET http://localhost:10001/deck --header "Authorization: Bearer altenhof-mtcgToken"
+echo "Should return HTTP 200 - and a list of all cards"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 REM --------------------------------------------------
 echo 18) Stats 
 echo kienboec
