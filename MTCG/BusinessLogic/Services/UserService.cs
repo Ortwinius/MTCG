@@ -7,7 +7,6 @@ using MTCG.Repositories.Interfaces;
 
 namespace MTCG.BusinessLogic.Services
 {
-    // TODO
     public class UserService
     {
         private static UserService? _instance;

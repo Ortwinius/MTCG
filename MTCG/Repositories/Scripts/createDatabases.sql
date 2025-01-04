@@ -1,19 +1,3 @@
-DROP TABLE IF EXISTS cards;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF exists packages;
-DROP TABLE IF exists package_cards;
-DROP TABLE IF exists decks;
-DROP TABLE IF exists deck_cards;
-
--- Create Users table WITHOUT STATS
-CREATE TABLE IF NOT EXISTS users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    auth_token VARCHAR(255),
-);
-
--- Create Users table WITH stats
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,

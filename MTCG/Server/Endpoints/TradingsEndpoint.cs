@@ -49,7 +49,6 @@ namespace MTCG.Server.Endpoints
 
                 var tradings = _tradingService.GetAllTradings();
 
-                // jsonify them
                 var jsonTrades = JsonSerializer.Serialize(tradings, new JsonSerializerOptions
                 {
                     WriteIndented = true
