@@ -54,7 +54,6 @@ namespace MTCG.BusinessLogic.Services
 
             // 201: succesfully created -> save user in database
             _userRepository.AddUser(user);
-            Console.WriteLine($"Registration successful");
         }
         #endregion
 
@@ -75,8 +74,6 @@ namespace MTCG.BusinessLogic.Services
             user.AuthToken = authToken;
 
             _userRepository.UpdateUser(user);
-
-            Console.WriteLine($"[AuthService] Login successful. Welcome {user.Username}!");
         }
 
         #endregion

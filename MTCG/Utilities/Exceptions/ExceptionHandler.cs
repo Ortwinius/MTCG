@@ -7,7 +7,7 @@ public static class ExceptionHandler
 {
     public static ResponseObject HandleException(Exception ex)
     {
-        Console.WriteLine($"[Error] Exception occurred: {ex.Message}");
+        Console.WriteLine($"[Exception] {ex.Message}");
 
         return ex switch
         {
@@ -16,6 +16,7 @@ public static class ExceptionHandler
             InvalidTradeException => new ResponseObject(400, ex.Message),
             UnauthorizedException => new ResponseObject(401, "Unauthorized."),
             NotAdminException => new ResponseObject(403, "Admin rights required."),
+            InvalidDeckSizeException => new ResponseObject(403, "Invalid deck size."),
             NotEnoughCoinsException => new ResponseObject(403, "Not enough coins."),
             TradeNotFoundException => new ResponseObject(404, "Trading deal not found."),
             UserNotFoundException => new ResponseObject(404, "User not found."),

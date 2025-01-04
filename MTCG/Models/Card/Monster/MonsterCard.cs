@@ -10,7 +10,7 @@ namespace MTCG.Models.Card.Monster
         [JsonPropertyName("Name")]
         public string Name { get; set; }
         [JsonPropertyName("Damage")]
-        public int Damage { get; set;  } 
+        public int Damage { get; set; } 
         [JsonPropertyName("Element")]
         public ElementType ElemType { get; set; }
 

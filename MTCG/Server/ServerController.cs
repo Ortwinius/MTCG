@@ -68,7 +68,9 @@ namespace MTCG.Server
 
                 var response = _requestHandler.HandleRequest(request);
 
-                _responseHandler.SendResponse(writer, response);
+                lock (WriterLock)
+                    _responseHandler.SendResponse(writer, response);
+                //_responseHandler.SendResponse(writer, response);
 
             }
             catch (Exception ex)

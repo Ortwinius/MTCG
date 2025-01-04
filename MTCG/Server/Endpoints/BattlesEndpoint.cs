@@ -43,13 +43,11 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                // Authentifiziere den Benutzer
                 var token = _authService.GetAuthToken(headers);
                 var user = _userService.GetUserByToken(token);
 
                 Console.WriteLine($"[Lobby] {user!.Username} entered the lobby.");
 
-                // Initialisiere TaskCompletionSource
                 var tcs = new TaskCompletionSource<string>();
 
                 lock (_lobbyLock)
@@ -93,7 +91,7 @@ namespace MTCG.Server.Endpoints
                     }
                 }
 
-                // Timeout-Logik
+                // Timeout-Logic
                 var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
                 var completedTask = Task.WhenAny(tcs.Task, timeoutTask).Result;
 
@@ -110,11 +108,10 @@ namespace MTCG.Server.Endpoints
                     return new ResponseObject(408, "No opponent found for user.");
                 }
 
-                return new ResponseObject(200, $"Battle Request successful. Log:\n{tcs.Task.Result}");
+                return new ResponseObject(200, $"\n{tcs.Task.Result}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Error] Exception occurred in EnterLobby: {ex.Message}");
                 return ExceptionHandler.HandleException(ex);
             }
         }

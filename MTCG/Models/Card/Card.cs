@@ -33,7 +33,7 @@ namespace MTCG.Models.Card
     public interface ICard
     {
         Guid Id { get; } 
-        int Damage { get; }
+        int Damage { get; set; }
         string Name { get; }
         ElementType ElemType { get; }
     }

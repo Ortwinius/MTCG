@@ -101,7 +101,6 @@ namespace MTCG.Repositories
         */
         public void TransferDeckCardsOwnership(List<Guid> cardIds, int userId)
         {
-            Console.WriteLine($"[DeckRepository] Updating card ownership for user {userId}");
             using var connection = DataLayer.GetConnection();
             connection.Open();
 

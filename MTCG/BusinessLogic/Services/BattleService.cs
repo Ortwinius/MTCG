@@ -86,9 +86,9 @@ namespace MTCG.BusinessLogic.Services
             var cardRhs = deckRhs.ElementAt(new Random().Next(deckRhs.Count));
 
             // applying mandatory unique feature powerSurge
-            int surgedDamageLhs = ApplyRandomPowerSurge(cardLhs, battleLog);
-            int surgedDamageRhs = ApplyRandomPowerSurge(cardRhs, battleLog);
-            
+            cardLhs.Damage = ApplyRandomPowerSurge(cardLhs, battleLog);
+            cardRhs.Damage = ApplyRandomPowerSurge(cardRhs, battleLog);
+
             int finalDamageLhs = CalculateDamage(cardLhs, cardRhs, battleLog);
             int finalDamageRhs = CalculateDamage(cardRhs, cardLhs, battleLog);
 
@@ -164,7 +164,7 @@ namespace MTCG.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Error] {ex.Message}");
+                Console.WriteLine($"[Exception] {ex.Message}");
                 throw;
             }
         }
@@ -254,6 +254,14 @@ namespace MTCG.BusinessLogic.Services
             return damage;
         }
 
+        /*
+        Apply effectiveness based on elements
+        Water > Fire
+        Fire > Normal
+        Normal > Water
+        BUT: Not vice versa otherwise it would be doubled again e.g. 50 -> / 2 = 25, 50 -> * 2 = 100 => 25 vs 100 (four times the damage)
+        To make for a fairer fight, effectiveness is only applied once
+        */
         internal int ApplyEffectiveness(ICard attacker, ICard defender, List<string> battleLog)
         {
             int damage = attacker.Damage;
@@ -263,30 +271,15 @@ namespace MTCG.BusinessLogic.Services
                 damage *= 2;
                 battleLog.Add($"{attacker.Name} (Water) is super effective against {defender.Name} (Fire). Damage is doubled to {damage}.");
             }
-            else if (attacker.ElemType == ElementType.Fire && defender.ElemType == ElementType.Water)
-            {
-                damage /= 2;
-                battleLog.Add($"{attacker.Name} (Fire) is not effective against {defender.Name} (Water). Damage is halved to {damage}.");
-            }
             else if (attacker.ElemType == ElementType.Fire && defender.ElemType == ElementType.Normal)
             {
                 damage *= 2;
                 battleLog.Add($"{attacker.Name} (Fire) is super effective against {defender.Name} (Normal). Damage is doubled to {damage}.");
             }
-            else if (attacker.ElemType == ElementType.Normal && defender.ElemType == ElementType.Fire)
-            {
-                damage /= 2;
-                battleLog.Add($"{attacker.Name} (Normal) is not effective against {defender.Name} (Fire). Damage is halved to {damage}.");
-            }
             else if (attacker.ElemType == ElementType.Normal && defender.ElemType == ElementType.Water)
             {
                 damage *= 2;
                 battleLog.Add($"{attacker.Name} (Normal) is super effective against {defender.Name} (Water). Damage is doubled to {damage}.");
-            }
-            else if (attacker.ElemType == ElementType.Water && defender.ElemType == ElementType.Normal)
-            {
-                damage /= 2;
-                battleLog.Add($"{attacker.Name} (Water) is not effective against {defender.Name} (Normal). Damage is halved to {damage}.");
             }
 
             return damage;

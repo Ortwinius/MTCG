@@ -45,8 +45,6 @@ namespace MTCG.Server.Endpoints
                 var token = _authService.GetAuthToken(headers);
                 var user = _userService.GetUserByToken(token);
 
-                Console.WriteLine("[PackagesEndpoint] Authenticated user tries to buy a package -> [PackageService]");
-
                 var cards = _packageService.AcquirePackage(user!);
 
                 var jsonCards = JsonSerializer.Serialize(cards, new JsonSerializerOptions
@@ -67,8 +65,6 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                Console.WriteLine("Authorization header: " + headers["Authorization"]);
-
                 // Authentication and admin validation
                 var token = _authService.GetAuthToken(headers);
                 

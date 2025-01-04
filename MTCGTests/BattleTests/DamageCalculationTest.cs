@@ -30,11 +30,8 @@ namespace MTCGTests.BattleTests
 
         [Test]
         [TestCase(ElementType.Water, ElementType.Fire, 50, 100)]
-        [TestCase(ElementType.Fire, ElementType.Water, 50, 25)]
         [TestCase(ElementType.Fire, ElementType.Normal, 50, 100)]
-        [TestCase(ElementType.Normal, ElementType.Fire, 50, 25)]
         [TestCase(ElementType.Normal, ElementType.Water, 50, 100)]
-        [TestCase(ElementType.Water, ElementType.Normal, 50, 25)]
         public void ApplyEffectiveness_ShouldCalculateCorrectDamage(ElementType attackerType, ElementType defenderType, int baseDamage, int expectedDamage)
         {
             
@@ -105,16 +102,6 @@ namespace MTCGTests.BattleTests
             Assert.AreEqual(0, damage);
         }
         [Test]
-        public void CalculateDamage_FireSpellVsWaterMonster_ShouldHalfDamage()
-        {
-            var fireSpell = new SpellCard { Id = Guid.NewGuid(), Name = "Fire Spell", Damage = 40, ElemType = ElementType.Fire };
-            var waterMonster = new MonsterCard { Id = Guid.NewGuid(), Name = "Water Monster", Damage = 50, ElemType = ElementType.Water, MonType = MonsterType.WaterElf };
-
-            var damage = _battleService.CalculateDamage(fireSpell, waterMonster, _battleLog);
-
-            Assert.AreEqual(20, damage);
-        }
-        [Test]
         public void CalculateDamage_WaterSpellVsKnight_ShouldReturnInstantKill()
         {
             var waterSpell = new SpellCard { Id = Guid.NewGuid(), Name = "Water Spell", Damage = 40, ElemType = ElementType.Water };
@@ -134,18 +121,6 @@ namespace MTCGTests.BattleTests
             var damage = _battleService.CalculateDamage(dragon, fireElf, _battleLog);
 
             Assert.AreEqual(0, damage);
-        }
-
-        [Test]
-        public void CalculateDamage_SpellVsSpell_ShouldReturnElementEffectivenessDamage()
-        {
-            var fireSpell = new SpellCard { Id = Guid.NewGuid(), Name = "Fire Spell", Damage = 40, ElemType = ElementType.Fire };
-            var waterSpell = new SpellCard { Id = Guid.NewGuid(), Name = "Water Spell", Damage = 50, ElemType = ElementType.Water };
-
-            var damage = _battleService.CalculateDamage(fireSpell, waterSpell, _battleLog);
-
-            // fire is weak against water -> should be halfed -> 40 / 2 = 20
-            Assert.AreEqual(20, damage);
         }
     }
 }

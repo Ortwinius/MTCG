@@ -77,32 +77,20 @@ namespace MTCG.Server.Endpoints
         {
             try
             {
-                Console.WriteLine("[DeckEndpoint] Authenticating and retrieving user object");
                 var token = _authService.GetAuthToken(headers);
                 var user = _userService.GetUserByToken(token);
 
-                Console.WriteLine("[DeckEndpoint] Authentication successful -> Deserializing card ids");
                 var cardIdsToAdd = JsonSerializer.Deserialize<List<Guid>>(body);
 
-                Console.WriteLine("[DeckEndpoint] Deserialization successful - entering cardService to get user cards");
                 var userCards = _cardService.GetUserCards(user!.UserId);
 
-                Console.WriteLine("[DeckEndpoint] Entering deckService to configure deck -> [DeckService]");
                 _deckService.ConfigureUserDeck(user!.UserId, userCards, cardIdsToAdd);
 
                 return new ResponseObject(200, "Deck successfully configured.");
             }
-            catch(UnauthorizedException)
+            catch (Exception ex)
             {
-                return new ResponseObject(401, "Unauthorized");
-            }
-            catch(InvalidDeckSizeException)
-            {
-                return new ResponseObject(400, "The provided deck did not include the required amount of 4 unique cards.");
-            }
-            catch(CardNotOwnedByUserException)
-            {
-                return new ResponseObject(403, "At least one of the provided cards does not belong to the user or is not available.");
+                return ExceptionHandler.HandleException(ex);
             }
         }
     }
