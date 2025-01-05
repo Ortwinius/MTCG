@@ -10,9 +10,6 @@ namespace MTCG.Models.ResponseObject
     {
         public int StatusCode { get; set; }
         public string ResponseBody { get; set; }
-        public int V { get; }
-        public List<TradingDeal.TradingDeal>? Tradings { get; }
-
         public ResponseObject(int statusCode, string responseBody)
         {
             StatusCode = statusCode;

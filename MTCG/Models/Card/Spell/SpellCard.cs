@@ -25,15 +25,6 @@ namespace MTCG.Models.Card.Spell
             ElemType = ElementType.Normal;
             Damage = 0;
         }
-        public SpellCard(SpellType spellType, ElementType elementType, int damage)
-        {
-            Id = Guid.NewGuid();
-            SpellType = spellType;
-            ElemType = elementType;
-            Damage = damage;
-
-            Name = spellType.ToString(); // disgusting
-        }
 
         // for db
         public SpellCard(Guid id, string name, ElementType elemType, int damage, SpellType spellType)

@@ -60,23 +60,6 @@ namespace MTCG.Models.Users
         }
 
         /*
-        Constructor for whole User object with credentials, data and stats
-        */
-        public User(int userId, string username, string password, string? authToken, string? name, string? bio, string? image, int coins, int elo, int wins, int losses)
-        {
-            UserId = userId;
-            Username = username;
-            Password = password;
-            AuthToken = authToken;
-            Name = name;
-            Bio = bio;
-            Image = image;
-            Coins = coins;
-            Elo = elo;
-            Wins = wins;
-            Losses = losses;
-        }
-        /*
          Constructor for only userid, username, password, authtoken and coins
          Used for example for packages and trades
          */
