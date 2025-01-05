@@ -10,6 +10,8 @@ namespace MTCG.Utilities
     {
         public const string ServerUrl = "http://localhost:8000/";
         public const int ServerPort = 10001;
+        public const int BattleQueueTimeout = 10;
+
         public const int MaxBattleRounds = 100;
         public const int StartElo = 100;
         public const int DeckSize = 4;

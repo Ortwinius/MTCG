@@ -1,144 +1,194 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="MTCG.Repositories.CardRepository" Collapsed="true">
-    <Position X="17.75" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAEAAAAACAAAABAAAAAAAAAQAAAAAAAAgA=</HashCode>
-      <FileName>Repositories\CardRepository.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="MTCG.Repositories.UserRepository" Collapsed="true">
-    <Position X="17.75" Y="1.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAQAEAAAAAAAAARAAAIAgAAAAAAAAAAA=</HashCode>
-      <FileName>Repositories\UserRepository.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="MTCG.Models.Card.Spell.SpellCard" Collapsed="true">
-    <Position X="17.75" Y="5.75" Width="1.5" />
+    <Position X="24.25" Y="7.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAACAAQAAAAAAAAAAAAQIAAAAAACAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAACAAQAAAAAAAAAAAAQIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Card\Spell\SpellCard.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="MTCG.Models.Card.Monster.MonsterCard" Collapsed="true">
-    <Position X="19.5" Y="5.75" Width="1.5" />
+    <Position X="26.25" Y="7.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAACAAAAAAQAAAAAAAAQIAAAAAACAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAACAAAAAAQAAAAAAAAQIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Card\Monster\MonsterCard.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="MTCG.Server.ServerController">
-    <Position X="5" Y="1" Width="1.5" />
+    <Position X="8.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgAAABAAAAQAAEgIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AgAAAAAAQAQAAAgIAAACAAAAAAAAAAAAAEAAAAABAAA=</HashCode>
       <FileName>Server\ServerController.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="_requestHandler" />
-    </ShowAsAssociation>
   </Class>
-  <Class Name="MTCG.Server.Endpoints.UsersEndpoint">
-    <Position X="11.25" Y="1.75" Width="1.5" />
+  <Class Name="MTCG.Server.Endpoints.UsersEndpoint" Collapsed="true">
+    <Position X="12.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAgAAAAAABAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Server\Endpoints\UsersEndpoint.cs</FileName>
+      <HashCode>EAAAAAAAAAAAAABAAgAAAAAgAAAAAAAAAAAEAAAIAAA=</HashCode>
+      <FileName>Server\Endpoints\UsersEndPoint.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_authService" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="MTCG.Server.Endpoints.SessionsEndpoint">
-    <Position X="11.25" Y="4.25" Width="1.5" />
-    <AssociationLine Name="_authService" Type="MTCG.BusinessLogic.Services.AuthService" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12" Y="4.25" />
-        <Point X="12" Y="3.94" />
-        <Point X="13" Y="3.94" />
-        <Point X="13" Y="3.25" />
-        <Point X="15.5" Y="3.25" />
-      </Path>
-    </AssociationLine>
+  <Class Name="MTCG.Models.ResponseObject.ResponseObject" Collapsed="true">
+    <Position X="4.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAgAAAAAABAAAAAAAAgAAAAAAAAAAAAAAAAACE=</HashCode>
-      <FileName>Server\Endpoints\SessionsEndpoint.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="_authService" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="MTCG.Server.HttpParser">
-    <Position X="8" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Server\HttpParser.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="MTCG.Server.HttpRequestHandler">
-    <Position X="8" Y="1" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAEAAAAAAAAACA=</HashCode>
-      <FileName>Server\HttpRequestHandler.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="MTCG.Models.ResponseObject.ResponseObject">
-    <Position X="4.25" Y="3.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <HashCode>ACAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAQAAA=</HashCode>
       <FileName>Models\ResponseObject\ResponseObject.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MTCG.Models.HttpRequest.HttpRequest">
-    <Position X="6" Y="3.75" Width="1.5" />
+  <Class Name="MTCG.Models.HttpRequest.HttpRequest" Collapsed="true">
+    <Position X="4.5" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAAAIAAAAhAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\HttpRequest\HttpRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.Models.Users.User" Collapsed="true">
-    <Position X="19" Y="3.75" Width="1.5" />
+    <Position X="25.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAQAAAAAAAAAQAACAAAgAAAAAACAABCAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAQAAAgAAAACQAACAwAAAAAABAiAAAIAAAAAAA=</HashCode>
       <FileName>Models\Users\User.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MTCG.BusinessLogic.Services.AuthService">
-    <Position X="15.5" Y="0.75" Width="1.5" />
+    <Position X="15.5" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQEAAAgAAAAAAAAAAAAAAIgBBABAAAAAAAQAAAAAAA=</HashCode>
+      <HashCode>AAQEAAAgEAAAAAAAAAAAAAAADAABAAAIAIAQAAAAAAA=</HashCode>
       <FileName>BusinessLogic\Services\AuthService.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="MTCG.BusinessLogic.Services.CardService" Collapsed="true">
-    <Position X="15.5" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAEACAgAAAEAAIAACAAAAAABAAAAAAABAAAAAAAAgA=</HashCode>
-      <FileName>BusinessLogic\Services\CardService.cs</FileName>
-    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_userRepository" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="MTCG.BusinessLogic.Services.BattleService" Collapsed="true">
-    <Position X="15.5" Y="4.75" Width="1.5" />
+    <Position X="15.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAEAAAAAAIAAAAAAAIAAQAEBAEQABAAAAAAAAAAABA=</HashCode>
+      <HashCode>AACEAAAgABAgAAAAQEIACAkABAAAABAIAAAAAEAAAQA=</HashCode>
       <FileName>BusinessLogic\Services\BattleService.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_deckRepository" />
+      <Field Name="_userRepository" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MTCG.Server.Endpoints.TradingsEndpoint" Collapsed="true">
+    <Position X="12.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAABAAAAAAAIgACCAAAAAAAAEAQAAAAA=</HashCode>
+      <FileName>Server\Endpoints\TradingsEndpoint.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_tradingService" />
+      <Field Name="_authService" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MTCG.Server.DI.DIConfig" Collapsed="true">
+    <Position X="10" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Server\DI\DIConfig.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Server.Endpoints.Initializer.EndpointInitializer" Collapsed="true">
+    <Position X="10" Y="1.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Server\Endpoints\Initializer\EndpointInitializer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.Repositories.DL.DataLayer">
+    <Position X="20.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAEAAAAACAAAAAAAAAEAAABAAAAA=</HashCode>
+      <FileName>Repositories\DL\DataLayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BusinessLogic.Services.TradingService" Collapsed="true">
+    <Position X="15.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAACAgAAAAAACAMABAAAACAJBAAAAAAAAAA=</HashCode>
+      <FileName>BusinessLogic\Services\TradingService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_deckRepository" />
+      <Field Name="_tradingRepository" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MTCG.Server.Endpoints.BattlesEndpoint" Collapsed="true">
+    <Position X="12.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAABCAAAAAAIgAAQAAAAAAEAEAAAAAAA=</HashCode>
+      <FileName>Server\Endpoints\BattlesEndpoint.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_authService" />
+      <Field Name="_battleService" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MTCG.BusinessLogic.Services.UserService" Collapsed="true">
+    <Position X="15.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEBAAgAAAQAAAAIAAAAAAABBAAAAAoAAAAAAAIAAA=</HashCode>
+      <FileName>BusinessLogic\Services\UserService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BusinessLogic.Services.PackageService" Collapsed="true">
+    <Position X="15.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAEAAAgAAAAAAAAAAAAAAAABIAAAAAIAACAAAAAAAA=</HashCode>
+      <FileName>BusinessLogic\Services\PackageService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MTCG.BusinessLogic.Services.DeckService" Collapsed="true">
+    <Position X="15.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAEAAAAAACAAAAAAAAACAAABAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>BusinessLogic\Services\DeckService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_deckRepository" />
+    </ShowAsAssociation>
   </Class>
   <Interface Name="MTCG.Models.Card.ICard" Collapsed="true">
-    <Position X="18.5" Y="5" Width="1.5" />
+    <Position X="25.25" Y="6.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAACAAAAAAAAAAAAAAAQIAAAAAACAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAACAAAAAAAAAAAAAAAQIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Card\ICard.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="MTCG.Server.Endpoints.IHttpEndpoint" Collapsed="true">
-    <Position X="11.25" Y="0.5" Width="1.5" />
+    <Position X="12.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Server\Endpoints\IHttpEndpoint.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MTCG.Repositories.Interfaces.IDeckRepository" Collapsed="true">
+    <Position X="17.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAACAAAAAAAAAAAAAAAAEAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Repositories\Interfaces\IDeckRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MTCG.Repositories.Interfaces.IUserRepository" Collapsed="true">
+    <Position X="18.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAQAQAAIAAAAAEACRAAACAgAAAAAAAIAAA=</HashCode>
+      <FileName>Repositories\Interfaces\IUserRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MTCG.Repositories.ITradingRepository" Collapsed="true">
+    <Position X="17.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAACAAAAIAAAAAACABAAAAAAAAAAA=</HashCode>
+      <FileName>Repositories\Interfaces\ITradingRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

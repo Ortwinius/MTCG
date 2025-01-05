@@ -4,6 +4,7 @@ using MTCG.Models.ResponseObject;
 using MTCG.Models.Users;
 using MTCG.BusinessLogic.Services;
 using System.Threading.Tasks;
+using MTCG.Utilities;
 
 namespace MTCG.Server.Endpoints
 {
@@ -92,7 +93,7 @@ namespace MTCG.Server.Endpoints
                 }
 
                 // Timeout-Logic
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(Constants.BattleQueueTimeout));
                 var completedTask = Task.WhenAny(tcs.Task, timeoutTask).Result;
 
                 if (completedTask == timeoutTask)

@@ -93,8 +93,6 @@ namespace MTCG.Repositories
             using var connection = DataLayer.GetConnection();
             connection.Open();
 
-            Console.WriteLine($"[TradingRepository] Fetching trade with ID: {tradeId}");
-
             var cmd = new NpgsqlCommand(
                 "SELECT * " +
                 "FROM tradings " +
@@ -107,15 +105,6 @@ namespace MTCG.Repositories
             {
                 using var reader = cmd.ExecuteReader();
 
-                if (reader.HasRows)
-                {
-                    Console.WriteLine("[TradingRepository] Rows found in the result set.");
-                }
-                else
-                {
-                    Console.WriteLine("[TradingRepository] No rows found in the result set.");
-                }
-
                 if (reader.Read())
                 {
                     var trade = new TradingDeal
@@ -125,14 +114,11 @@ namespace MTCG.Repositories
                         Type = reader.IsDBNull(2) ? null : reader.GetString(2),
                         MinDamage = reader.GetInt32(3)
                     };
-
-                    Console.WriteLine($"[TradingRepository] Trade details: {trade.Id}, {trade.CardToTrade}, {trade.Type}, {trade.MinDamage}");
                     return trade;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[TradingRepository] Error retrieving trade: {ex.Message}");
                 throw new InvalidOperationException("Error retrieving trade from the database.", ex);
             }
 
