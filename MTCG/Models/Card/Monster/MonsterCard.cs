@@ -23,22 +23,6 @@ namespace MTCG.Models.Card.Monster
             Name = "";
             ElemType = ElementType.Normal;
         }
-        public MonsterCard(string name)
-        {
-            Id = Guid.NewGuid();
-            Name = name;
-            ElemType = ElementType.Normal;
-            Damage = 0;
-        }
-        public MonsterCard(MonsterType monsterType, ElementType elementType, int damage)
-        {
-            Id = Guid.NewGuid();
-            MonType = monsterType;
-            ElemType = elementType;
-            Damage = damage;
-
-            Name = monsterType.ToString(); // disgusting
-        }
 
         // for db
         public MonsterCard(Guid id, string name, ElementType elemType, int damage, MonsterType monType)

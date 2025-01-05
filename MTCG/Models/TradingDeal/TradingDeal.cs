@@ -7,11 +7,6 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models.TradingDeal
 {
-    public enum TradingCardType
-    {
-        Monster,
-        Spell
-    }
     public class TradingDeal
     {
         [JsonPropertyName("Id")]
